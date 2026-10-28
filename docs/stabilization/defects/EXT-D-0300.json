@@ -34,7 +34,7 @@
     "docs/stabilization/reports/failure-capture-source-verification-20261027.json",
     "docs/stabilization/reports/failure-capture-source-peer-20261027.json"
   ],
-  "next_action": "Successful new exact synchronized-main CI/development artifact, normal adoption, then one original guest Settings controls B native retest with new finite comparison receipt under unchanged normal gates. Inspect actual firstFalse/store/serialization categories; do not rebaseline/relax comparator or infer guest mode leak from sibling writes alone. Fullreload/late-report siblings and product/driver causes remain UNKNOWN/open; no closure from source guards.",
+  "next_action": "Restore original case-owned Settings fixture presence/shape across T40/T67/T37 through existing cleanup primitives, after reviewed plan; preserve immutable comparator/baseline/read/input/deadline/verdict and unrelated settings. Original initial/final fullReload surrounding retest and other D300 final-only gaps remain open. No blind rerun or app patch.",
   "transition_history": [
     {
       "at": "2026-10-27T19:40:18.049879+00:00",
@@ -57,9 +57,19 @@
   "bounded_source_verification": "docs/stabilization/reports/d300-owner-source-verification-20261027.json",
   "independent_source_review": "docs/stabilization/reports/d300-final-source-peer-20261027.json",
   "verification": {
-    "focused": { "tests": 1181, "pass": 1170, "fail": 0, "skip": 11 },
+    "focused": {
+      "tests": 1181,
+      "pass": 1170,
+      "fail": 0,
+      "skip": 11
+    },
     "compile_exit": 0,
-    "lint": { "files": 3506, "errors": 0, "warnings": 1037, "fixes_applied": false },
+    "lint": {
+      "files": 3506,
+      "errors": 0,
+      "warnings": 1037,
+      "fixes_applied": false
+    },
     "all_three_resource_finals": "valid0/admitted/resourceInvalidfalse",
     "behavior_A": "PARTIAL executed seams only; late source placement inspection",
     "integrity_B": "PASS bounded source/gates",
@@ -105,6 +115,21 @@
     "verification": "docs/stabilization/reports/settings-receipt-finish-20261027.json",
     "independent_source_review": "docs/stabilization/reports/settings-receipt-completion-peer-20261027.json",
     "gate_audit": "docs/stabilization/reports/settings-receipt-gate-audit-20261027.json",
-    "scope": "Same already-read initial/final failed T10 comparator samples produce finite first-predicate and three-store comparison receipt; residual whole-JSON mismatch retained. Original comparator/baseline/reads/restoration/verdict untouched. Getter snapshots and lazy primary-message read preserve original metadata; malformed comparator throws/receipt omission are intentional and guarded. No native false-predicate observation yet."
+    "scope": "Same already-read initial/final failed T10 comparator samples produce finite first-predicate and three-store comparison receipt; residual whole-JSON mismatch retained. Original comparator/baseline/reads/restoration/verdict untouched. Getter snapshots and lazy primary-message read preserve original metadata; malformed comparator throws/receipt omission are intentional and guarded. At source integration no native false-predicate observation existed; current_native_same_sample_retest now retains independently verified7f serialization mismatch. Original fullReload/surrounding gaps remain open."
+  },
+  "current_native_same_sample_retest": {
+    "run_id": 40615716489,
+    "source_sha": "7f1744da34bcce57ba83d91bfcf79d563fb34190",
+    "result": "Original mismatch reproduced, new finite same-sample receipt verified independently",
+    "predicates": "all six true",
+    "firstFalse": "serialization",
+    "serialization": "unequal",
+    "residual": false,
+    "store_difference": "Only Settings presence/field/parse/mode differ from absent baseline; Chat/Pilot equal",
+    "cause_scope": "Confirmed test-owned sibling lifecycle contamination, not application mode bug; last writer unknown",
+    "evidence": [
+      "docs/stabilization/reports/settings7f-native-20261028.json",
+      "docs/stabilization/reports/settings7f-failure-peer-20261028.json"
+    ]
   }
 }

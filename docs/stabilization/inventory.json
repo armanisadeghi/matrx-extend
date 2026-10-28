@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-28T00:26:29.260917+00:00",
+  "updated_at": "2026-10-28T01:47:20.516097+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -8655,33 +8655,38 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": 40590805172,
-              "source_sha": "f670242504c54f99f434d74236a3155b0d713e54",
-              "development_ci_run_id": 40587669744,
-              "development_artifact_id": 12774320314,
+              "run_id": 40615716489,
+              "source_sha": "7f1744da34bcce57ba83d91bfcf79d563fb34190",
+              "development_ci_run_id": 40614408686,
+              "development_artifact_id": 12785121542,
               "build_version": "0.2.630",
               "resource_invalid": false,
               "acceptance_run_successful": false,
               "full_case_pass": false,
               "new_product_credit": false,
               "observed_subtargets": [
-                "warm Ask refusal",
-                "actual settings/chat/pilot absence before/after panel reload",
-                "actual Chat Act consumer withoutAI"
+                "Original initial_mode_compare mismatch reproduced after T63/sequence62",
+                "Same-sample six predicates true; firstFalse serialization/unequal/residualfalse",
+                "Settings storage/field/parse/mode inequality against absent baseline; Chat/Pilot equal"
               ],
               "failure_stage": "warm_observation/initial_mode_compare",
               "error_code": "T10_shadow_baseline_mismatch_before_capture",
+              "confirmed_supporting_cause": "Test-owned T40/T67/T37 sibling lifecycle leaves Settings container/field presence after value-only cleanup; no application mode-selection failure proved. Exact last writer not proved.",
               "unverified": [
-                "specific false comparator predicate and late snapshot",
-                "full management extension Reload and worker/panel replacement",
-                "postextension consumer",
-                "exactbrowser/profile/backend/Store/currentmain"
+                "Original management full extension Reload and worker/panel replacement",
+                "Post-fullReload consumer and all full-extension surrounding rechecks",
+                "Exact Chrome version/profile path/backend and Store/current-main acceptance"
               ],
+              "raw_batch_counts": {
+                "pass": 5,
+                "fail": 5,
+                "unverified": 9
+              },
               "evidence": [
-                "docs/stabilization/reports/settings-controls-f670-20261027.json",
-                "docs/stabilization/reports/settings-f670-primary-diagnosis-20261027.json"
+                "docs/stabilization/reports/settings7f-native-20261028.json",
+                "docs/stabilization/reports/settings7f-failure-peer-20261028.json"
               ],
-              "scope": "Same later baseline boundary failed, now primary error retained. Five raw failures secondary missingfullrecheck, notfiveprovenbugs. Warm three absent store footprints/refusal/panelReload/consumer happen before later siblingwrites. Guest6CPU_PENDING2RECOVERED, finalnoninvalidchildfailed1; causal resource explanation unproven. No retry/rebaseline/comparator relaxation/appcause/closure."
+              "scope": "Frozen hosted DEV, not actual Store. All resources noninvalid; package/browser valid0 and guest child_failed1 after CPU recovery. Five raw failures miss full-extension rechecks; not five proved product bugs. No retry/AI/auth/fixture-secret mutation; remote profile deletion unverified. No applicable guest Settings verifier CLI/certificate exists; no wrong-mode refusal invented."
             }
           },
           "linked_defects": [
@@ -9071,6 +9076,41 @@
               },
               "superseded_at": "2026-10-27T13:49:16.578690+00:00",
               "reason": "Fresh independently reviewed source80 original consumer retest; partial status retained because storage-proof criterion remains unverified."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": 40590805172,
+                "source_sha": "f670242504c54f99f434d74236a3155b0d713e54",
+                "development_ci_run_id": 40587669744,
+                "development_artifact_id": 12774320314,
+                "build_version": "0.2.630",
+                "resource_invalid": false,
+                "acceptance_run_successful": false,
+                "full_case_pass": false,
+                "new_product_credit": false,
+                "observed_subtargets": [
+                  "warm Ask refusal",
+                  "actual settings/chat/pilot absence before/after panel reload",
+                  "actual Chat Act consumer withoutAI"
+                ],
+                "failure_stage": "warm_observation/initial_mode_compare",
+                "error_code": "T10_shadow_baseline_mismatch_before_capture",
+                "unverified": [
+                  "specific false comparator predicate and late snapshot",
+                  "full management extension Reload and worker/panel replacement",
+                  "postextension consumer",
+                  "exactbrowser/profile/backend/Store/currentmain"
+                ],
+                "evidence": [
+                  "docs/stabilization/reports/settings-controls-f670-20261027.json",
+                  "docs/stabilization/reports/settings-f670-primary-diagnosis-20261027.json"
+                ],
+                "scope": "Same later baseline boundary failed, now primary error retained. Five raw failures secondary missingfullrecheck, notfiveprovenbugs. Warm three absent store footprints/refusal/panelReload/consumer happen before later siblingwrites. Guest6CPU_PENDING2RECOVERED, finalnoninvalidchildfailed1; causal resource explanation unproven. No retry/rebaseline/comparator relaxation/appcause/closure."
+              },
+              "superseded_at": "2026-10-28T01:47:20.516097+00:00",
+              "reason": "Exact7f original-boundary native repetition retained the new same-sample diagnostic; no full-case pass or app-fix claim."
             }
           ],
           "attempt_history": [

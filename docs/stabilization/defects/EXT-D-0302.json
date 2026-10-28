@@ -42,5 +42,12 @@
   "source_hashes": {
     "scripts/generate-stabilization-tracker.py": "da69fd75e55fae14569f2bf46be90909d00e3154ae07c24fdc462356d82194ce",
     "scripts/test_stabilization_release_truth.py": "83110234ced2b76e193d4266f0c9190ef6dc4ac5de3b8c188f7df407a4f71633"
+  },
+  "hosted_source_ci": {
+    "source_sha": "d6282d509b6bd31c66e3a3aeac9c68b75086ce01",
+    "full_run_id": 40616270771,
+    "focused_run_id": 40616270765,
+    "conclusion": "success",
+    "direct_python_suite": "UNRUN: docs job skipped in full sourceCI; exact direct docs-job gate still required"
   }
 }

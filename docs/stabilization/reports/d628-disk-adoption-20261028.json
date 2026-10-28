@@ -1,0 +1,178 @@
+{
+  "task_id": "d628_disk_adoption",
+  "timestamp": "2026-10-28T01:53:28.684229+00:00",
+  "status": "PASS_disk_only",
+  "source_sha": "d6282d509b6bd31c66e3a3aeac9c68b75086ce01",
+  "ci": {
+    "conclusion": "success",
+    "headSha": "d6282d509b6bd31c66e3a3aeac9c68b75086ce01",
+    "status": "completed"
+  },
+  "focused": {
+    "conclusion": "success",
+    "headSha": "d6282d509b6bd31c66e3a3aeac9c68b75086ce01",
+    "status": "completed"
+  },
+  "artifact": {
+    "id": 12786150932,
+    "node_id": "MDg6QXJ0aWZhY3QxMjc4NjE1MDkzMg==",
+    "name": "matrx-extend-development-test-d6282d509b6bd31c66e3a3aeac9c68b75086ce01-40616270771-1",
+    "size_in_bytes": 49653051,
+    "url": "https://api.github.com/repos/armanisadeghi/matrx-extend/actions/artifacts/12786150932",
+    "archive_download_url": "https://api.github.com/repos/armanisadeghi/matrx-extend/actions/artifacts/12786150932/zip",
+    "expired": false,
+    "digest": "sha256:0c677c0e630977fa6edc3c63913fd1c8a9d3fde85cf9d53cac770bf5babc94c6",
+    "created_at": "2026-10-28T01:49:31Z",
+    "updated_at": "2026-10-28T01:49:31Z",
+    "expires_at": "2027-01-26T01:38:42Z",
+    "workflow_run": {
+      "id": 40616270771,
+      "repository_id": 1225111202,
+      "head_repository_id": 1225111202,
+      "head_branch": "main",
+      "head_sha": "d6282d509b6bd31c66e3a3aeac9c68b75086ce01"
+    }
+  },
+  "import": {
+    "actual_exit": 0,
+    "session_id": 55010,
+    "receipt": {
+      "schema_version": 1,
+      "eligibleStore": false,
+      "sourceSha": "d6282d509b6bd31c66e3a3aeac9c68b75086ce01",
+      "runId": 40616270771,
+      "runAttempt": 1,
+      "artifactId": 12786150932,
+      "githubArtifactDigest": "sha256:0c677c0e630977fa6edc3c63913fd1c8a9d3fde85cf9d53cac770bf5babc94c6",
+      "treeSha256": "dfc77ee51e9bd29bf617d227e0345f13c3d97dd86bd7ae1b4120158549bf7e91",
+      "ciReceiptSha256": "5d718cbaea0bcbebb27789886d94a40c6bda806959788f124be23ba9300c892e",
+      "provenanceSha256": "463e234e7a3612d76014d8bc1204ee4060cc08b4c75383d58e113c21d40c8bfa",
+      "source": {
+        "originMain": "d6282d509b6bd31c66e3a3aeac9c68b75086ce01",
+        "localHead": "d6282d509b6bd31c66e3a3aeac9c68b75086ce01",
+        "trackedDirty": true,
+        "untrackedRunnerInputs": [],
+        "claim": "exact_pushed_commit_only"
+      }
+    }
+  },
+  "standalone_verify": {
+    "actual_exit": 0,
+    "evidence": {
+      "schema_version": 1,
+      "kind": "ci_development_test",
+      "eligibleStore": false,
+      "publish_state": "not_published",
+      "repository": "armanisadeghi/matrx-extend",
+      "workflow": ".github/workflows/ci.yml",
+      "sourceSha": "d6282d509b6bd31c66e3a3aeac9c68b75086ce01",
+      "runId": 40616270771,
+      "runAttempt": 1,
+      "artifactId": 12786150932,
+      "githubArtifactDigest": "sha256:0c677c0e630977fa6edc3c63913fd1c8a9d3fde85cf9d53cac770bf5babc94c6",
+      "version": "0.2.630",
+      "treeSha256": "dfc77ee51e9bd29bf617d227e0345f13c3d97dd86bd7ae1b4120158549bf7e91",
+      "source": {
+        "originMain": "d6282d509b6bd31c66e3a3aeac9c68b75086ce01",
+        "localHead": "d6282d509b6bd31c66e3a3aeac9c68b75086ce01",
+        "trackedDirty": true,
+        "untrackedRunnerInputs": [],
+        "claim": "exact_pushed_commit_only"
+      }
+    }
+  },
+  "promotion": {
+    "actual_exit": 0,
+    "session_id": 87262,
+    "receipt": {
+      "schema_version": 1,
+      "kind": "ci_development_test_promotion",
+      "eligibleStore": false,
+      "publish_state": "not_published",
+      "observedAt": "2026-10-28T01:53:11.883Z",
+      "sourceSha": "d6282d509b6bd31c66e3a3aeac9c68b75086ce01",
+      "mainSha": "d6282d509b6bd31c66e3a3aeac9c68b75086ce01",
+      "compatibility": "exact-source",
+      "allowedDiffPaths": [],
+      "version": "0.2.630",
+      "runId": 40616270771,
+      "runAttempt": 1,
+      "artifactId": 12786150932,
+      "sourceDir": "/Volumes/Samsung2TB/code/matrx-extend/test-results/ci-artifacts/d6282d509b6bd31c66e3a3aeac9c68b75086ce01/40616270771-1/chrome-mv3",
+      "destinationDir": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+      "treeSha256": "dfc77ee51e9bd29bf617d227e0345f13c3d97dd86bd7ae1b4120158549bf7e91",
+      "fileCount": 2821
+    }
+  },
+  "post_promotion_tree": {
+    "treeSha256": "dfc77ee51e9bd29bf617d227e0345f13c3d97dd86bd7ae1b4120158549bf7e91",
+    "expected": "dfc77ee51e9bd29bf617d227e0345f13c3d97dd86bd7ae1b4120158549bf7e91",
+    "verified": true
+  },
+  "source_checks": "Immediately before import/promotion HEAD=origin/main=remote primary ref d628. Only parent-owned runtime-equivalent stabilization records pending; script accepted normal exact-source promotion; no source/policy edits or refusal. Import/standalone receipt correctly says exact_pushed_commit_only with trackedDirtytrue, not globally clean workingtree.",
+  "limits": [
+    "Disk maintenance only; no UI/CUA/native calls, test/build/install/release/CI dispatch/auth or fixture mutation.",
+    "Chrome controller unavailable in this lane; loaded owner copy/reload/Loaded-from/version/pin/current-source browser acceptance remain unverified. Last browser-loaded proof6e4 remains historical.",
+    "No product or Store/candidate acceptance.",
+    "Later source/metadata changes require current compatibility reassessment; no uninterrupted directory claim."
+  ],
+  "cleanup": "Import and promotion actualexit0; standaloneverify/posttree actual0; no owned processes left running.",
+  "next_action": "Root commit metadata, retain disk/current-loaded separation; reload only when permitted controller and normal fresh resource lease available.",
+  "private_originals": [
+    {
+      "path": ".output/stabilization-checkpoints/wake0109/d628-artifacts-original.json",
+      "bytes": 798,
+      "sha256": "ca2d2c3cca7dd08309808173d9969970c8e5ac2991e9e78305a6e08aad37d593"
+    },
+    {
+      "path": ".output/stabilization-checkpoints/wake0109/d628-ci-original.json",
+      "bytes": 99,
+      "sha256": "21cf075513503f0c931a8abff8b4a5114d6fe5a9a055aae9f0574ad43796afb6"
+    },
+    {
+      "path": ".output/stabilization-checkpoints/wake0109/d628-focused-original.json",
+      "bytes": 99,
+      "sha256": "21cf075513503f0c931a8abff8b4a5114d6fe5a9a055aae9f0574ad43796afb6"
+    },
+    {
+      "path": ".output/stabilization-checkpoints/wake0109/d628-pre-import-status.txt",
+      "bytes": 424,
+      "sha256": "1cd6fad0e9a3dabb83a44030ea898656bfa0ee39827fa7598b5c0b2ede325b59"
+    },
+    {
+      "path": ".output/stabilization-checkpoints/wake0109/d628-import.log",
+      "bytes": 170,
+      "sha256": "be7cac6238cd350c1841d00380fa129953f106e828fe856889497ad3ee5f1585"
+    },
+    {
+      "path": ".output/stabilization-checkpoints/wake0109/d628-import-status-original.json",
+      "bytes": 788,
+      "sha256": "f2e33b9b007d7b45ce985df6bdc3666823d93a8c72dc2a3c95b7efc0f3906d1e"
+    },
+    {
+      "path": ".output/stabilization-checkpoints/wake0109/d628-verify-original.json",
+      "bytes": 790,
+      "sha256": "95a30a1d570159452ba6d5fa030a5355f972ce3a84065a8376e8977275f8322c"
+    },
+    {
+      "path": ".output/stabilization-checkpoints/wake0109/d628-pre-promotion-status.txt",
+      "bytes": 424,
+      "sha256": "1cd6fad0e9a3dabb83a44030ea898656bfa0ee39827fa7598b5c0b2ede325b59"
+    },
+    {
+      "path": ".output/stabilization-checkpoints/wake0109/d628-promotion.log",
+      "bytes": 191,
+      "sha256": "a2c19a9a8d0e5cfccd345d845ae3faae266645a775c23be9618d9c8c38ee67dc"
+    },
+    {
+      "path": ".output/stabilization-checkpoints/wake0109/d628-promotion-receipt-original.json",
+      "bytes": 785,
+      "sha256": "e95a886e90dfff146414e75f625e1da33f891ec70845a0b8b44ad06bf7a25787"
+    },
+    {
+      "path": ".output/stabilization-checkpoints/wake0109/d628-post-promotion-tree.json",
+      "bytes": 189,
+      "sha256": "10e3935808e93dfcfc5b02d520442c9a9c4fabcb9b654c6b73d3dbcfb730d3f0"
+    }
+  ]
+}

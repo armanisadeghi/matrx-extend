@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-28 01:38 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-28T00:26:29.260917+00:00. 207 features · 833 cases · 1422 controls · 301 linked defect records.
+Generated 2026-10-28 01:54 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-28T01:47:20.516097+00:00. 207 features · 833 cases · 1422 controls · 301 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -561,7 +561,7 @@ These historical checks retain their original artifact boundary; they do not est
 - EXT-F-1003-T09 · admin: Unverified. Expanded membership-backed load/unavailable-organization criteria are unverified; original agent-selection evidence is retained whole as bounded history. Historical result/procedure objects are retained whole; no current native execution or applicability verdict is supplied by this source reconciliation.
   Evidence / build / date recorded: ['docs/stabilization/reports/settings-inventory-reconcile-20261026.json', 'docs/stabilization/reports/settings-inventory-peer-20261026.json']
 - EXT-F-1003-T10 · guest: Partial.
-  Evidence / build / date recorded: 40590805172, ['docs/stabilization/reports/settings-controls-f670-20261027.json', 'docs/stabilization/reports/settings-f670-primary-diagnosis-20261027.json']
+  Evidence / build / date recorded: 40615716489, ['docs/stabilization/reports/settings7f-native-20261028.json', 'docs/stabilization/reports/settings7f-failure-peer-20261028.json']
 - EXT-F-1003-T13 · guest: Unverified.
   Evidence / build / date recorded: settings-6f86-40195311320, ['docs/stabilization/reports/settings-native-b-1247.json', 'docs/stabilization/reports/native-6f86-evidence-peer-1307.json']
 - EXT-F-1003-T15 · admin: Pass. Actual adminUI on0.2.51; full control criteria includingreload verified, System/Fast/groups restored; resourcehealthy.

@@ -1,0 +1,259 @@
+{
+  "task_id": "settings7f-failure-peer",
+  "at": "2026-10-28T01:46:23.652957+00:00",
+  "scope": "Fresh saved-original/hash/source/API-read review only. No test suite, UI/native replay, workflow dispatch, AI, auth/fixture mutation, source edit or cleanup action.",
+  "verdict_A": {
+    "verdict": "FAIL original native acceptance; PASS bounded retained diagnosis evidence; no product closure",
+    "original": "T10_shadow_baseline_mismatch_before_capture / warm_observation / initial_mode_compare; terminaltrue after case_endT63 sequence62 at2026-10-28T01:42:30.548Z",
+    "raw_counts": {
+      "fail": 5,
+      "pass": 5,
+      "unverified": 9
+    },
+    "five_failure_scope": "T04/T10/T28/T40/T67 fail only mandatory missing full-extension recheck criterion. Five raw passes are T13/T22/T37/T46/T64; nine unverified. No five-new-product-defect claim.",
+    "same_sample": {
+      "stage": "initial",
+      "predicates": {
+        "visible": true,
+        "count": true,
+        "selection": true,
+        "baselineValue": true,
+        "observedValid": true,
+        "baselineValid": true
+      },
+      "firstFalse": "serialization",
+      "serialization": "unequal",
+      "residual": false,
+      "stores": [
+        {
+          "store": "settings",
+          "identity": "valid",
+          "observed": {
+            "status": "valid",
+            "storage": true,
+            "field": true
+          },
+          "baseline": {
+            "status": "absent",
+            "storage": false,
+            "field": false
+          },
+          "storagePresent": "unequal",
+          "fieldPresent": "unequal",
+          "parseStatus": "unequal",
+          "mode": "unequal",
+          "fingerprint": "equal",
+          "count": "equal"
+        },
+        {
+          "store": "chat",
+          "identity": "valid",
+          "observed": {
+            "status": "absent",
+            "storage": false,
+            "field": false
+          },
+          "baseline": {
+            "status": "absent",
+            "storage": false,
+            "field": false
+          },
+          "storagePresent": "equal",
+          "fieldPresent": "equal",
+          "parseStatus": "equal",
+          "mode": "equal",
+          "fingerprint": "equal",
+          "count": "equal"
+        },
+        {
+          "store": "pilot",
+          "identity": "valid",
+          "observed": {
+            "status": "absent",
+            "storage": false,
+            "field": false
+          },
+          "baseline": {
+            "status": "absent",
+            "storage": false,
+            "field": false
+          },
+          "storagePresent": "equal",
+          "fieldPresent": "equal",
+          "parseStatus": "equal",
+          "mode": "equal",
+          "fingerprint": "equal",
+          "count": "equal"
+        }
+      ]
+    },
+    "important_delta": "All six actual initial predicates true; firstFalse serialization, unequal/residualfalse, Settings observedvalid/storage+fieldpresent versus baselineabsent. Chat/Pilot absent-equal. This closes prior f670 specific-late-predicate UNKNOWN only, not full case or app cause."
+  },
+  "verdict_B": {
+    "verdict": "PASS bounded provenance/source/privacy with explicit limits",
+    "official_API_read": "Independently read actual run40615716489 completed/failure attempt1 exact7f, official artifact12785262604 digest matches ZIP; no dispatch or rerun.",
+    "original_manifest_checked": 24,
+    "manifest_mismatches": [],
+    "ZIP_sha256": "bd47e6a601790a3d180836e2a66d12a8657484483d385fa730b82aff644d9f66",
+    "members": [
+      {
+        "member": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-40615716489-1.jsonl",
+        "bytes": 1413,
+        "sha256": "a0077f814e9339569e51d3cc66f3c5d1547378c8b64a367dacd20c0dbec3fa8e",
+        "extracted_identical": true
+      },
+      {
+        "member": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-40615716489-1.jsonl",
+        "bytes": 7571,
+        "sha256": "0bfba7a3c82341acb0007accbae9e414118beddb1239398e008ec5fb4cea5bc3",
+        "extracted_identical": true
+      },
+      {
+        "member": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-40615716489-1.jsonl",
+        "bytes": 992,
+        "sha256": "4ceb8da86d8deb49445b545075568b1b6f6e6bd76f7cc6753f011f6dc95e127f",
+        "extracted_identical": true
+      },
+      {
+        "member": "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-3qLjNw/native-side-panel.png",
+        "bytes": 19709,
+        "sha256": "9b19214a70f24bfffdcb6caf6c7d435ade7779821709499c20c2f747535b1aa5",
+        "extracted_identical": true
+      },
+      {
+        "member": "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-3qLjNw/normal-target-after-open.png",
+        "bytes": 27046,
+        "sha256": "b40fd4bba1a54c1403ccecf49f36bc9de1cb5f67ef081a74294abfef37e8ef5c",
+        "extracted_identical": true
+      },
+      {
+        "member": "matrx-extend/matrx-extend/test-results/settings-local-controls-acceptance.json",
+        "bytes": 247211,
+        "sha256": "889ca4c381992eeda0fb6cb78a6bc24d4288e38eac597ec34c938d6e7ec6d453",
+        "extracted_identical": true
+      }
+    ],
+    "source": {
+      "frozen_sha": "7f1744da34bcce57ba83d91bfcf79d563fb34190",
+      "development_ci": 40614408686,
+      "development_artifact": 12785121542,
+      "development_digest": "348bcbcbf171dbbb18e52d608dd894becac6319596d0065e85e0591ea35b2932",
+      "native_build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.630",
+        "treeSha256": "4b943e25eb0ab30deb0f732d2cc74165c983570301833c288e8391223fc1dc57",
+        "verified": true
+      },
+      "source_file_hashes": {
+        "tests/browser/settings-guest-scrape-controls.mjs": {
+          "sha256": "e93bbd0b69b46f47ca47ada0ec1bd5b9803607c47f22137f17488c63125739ea",
+          "current_identical": true
+        },
+        "tests/browser/settings-local-controls-acceptance.mjs": {
+          "sha256": "c10d218b4b569fee6af3c1d1533115b5fcc0666d5b824d10219fc2161c01e340",
+          "current_identical": true
+        },
+        "tests/browser/settings-full-extension-rechecks.mjs": {
+          "sha256": "69252d3af765ed39225be95a8a9ef2876ac4e4c172c86e24793202e1ea0f4418",
+          "current_identical": true
+        },
+        "tests/browser/settings-guest-preference-batch.mjs": {
+          "sha256": "bf832a773eb27669e0fd9eaaed8f34f46fcaf5c69d6f3cc9bf557484e4a5d6b7",
+          "current_identical": true
+        },
+        "src/state/settings.ts": {
+          "sha256": "adc6f3483e4fab8374f807de0ad823238ef3923a4d064a28d6b758ebdb8a96ad",
+          "current_identical": true
+        }
+      },
+      "later_d628": "Diff is two reporting Python scripts and stabilization records only; native helper/app files above byte-identical, but run is frozen7f, never relabeled d628/current."
+    },
+    "resources": [
+      {
+        "member": "hosted-browser-40615716489-1.jsonl",
+        "event_counts": {
+          "RESOURCE_JOURNAL_OPENED": 1,
+          "RESOURCE_ADMITTED": 1,
+          "RESOURCE_WATCH_HEALTHY": 1,
+          "RESOURCE_JOB_EXIT": 1,
+          "RESOURCE_FINAL_DECISION": 1
+        },
+        "final": {
+          "schema": 1,
+          "at": "2026-10-28T01:37:34.919Z",
+          "runId": "hosted-browser-40615716489-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      },
+      {
+        "member": "hosted-guest-40615716489-1.jsonl",
+        "event_counts": {
+          "RESOURCE_JOURNAL_OPENED": 1,
+          "RESOURCE_ADMITTED": 1,
+          "RESOURCE_WATCH_HEALTHY": 8,
+          "RESOURCE_CPU_PENDING": 3,
+          "RESOURCE_PROCESS_ATTRIBUTION": 1,
+          "RESOURCE_CPU_RECOVERED": 1,
+          "RESOURCE_JOB_EXIT": 1,
+          "RESOURCE_FINAL_DECISION": 1
+        },
+        "final": {
+          "schema": 1,
+          "at": "2026-10-28T01:42:32.481Z",
+          "runId": "hosted-guest-40615716489-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 1,
+          "decision": "child_failed",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      },
+      {
+        "member": "hosted-package-40615716489-1.jsonl",
+        "event_counts": {
+          "RESOURCE_JOURNAL_OPENED": 1,
+          "RESOURCE_ADMITTED": 1,
+          "RESOURCE_JOB_EXIT": 1,
+          "RESOURCE_FINAL_DECISION": 1
+        },
+        "final": {
+          "schema": 1,
+          "at": "2026-10-28T01:35:35.569Z",
+          "runId": "hosted-package-40615716489-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      }
+    ],
+    "resource_scope": "All admitted/noninvalid; package+browser valid0, guest child_failed1; 3CPU_PENDING/1RECOVERED, no unsafe event. Recovered CPU events do not establish causality or invalidate recorded product assertions.",
+    "actor_record_correction": "Top-level source_sha/exact_ci_run_id and source_drift.native_dispatch_attemptedfalse describe prior707 preparation; reshape explicitly as historical in public projection. Current actual7f/native40615716489 must remain authoritative.",
+    "verifier_limit": "Source mode list contains verify-settings-member but no verify-settings-guest; generic verify is memberData, not applicable. Actor did not invoke an inapplicable verifier, no verifier refusal or acceptance certificate exists.",
+    "privacy": "Viewed both original PNGs: native image is guest toolbar/empty New Chat and default model label; target is public demo article/result prefix. Neither shows failed Settings boundary; preserve private originals, no raw bundle publication needed. No auth/Vault/account secrets visible in these bounded images; no blanket log/report-public-safe assertion.",
+    "cleanup": "Workflow terminal and guest has no owned auth/fixture/temporary-secret mutation per actor and guest route; remote profile/process deletion and exactChromeversion/backendSHA lack independent readback and stay unverified."
+  },
+  "source_diagnosis": {
+    "proven": "Test-owned sibling lifecycle creates Settings container compared by immutable T10 baseline and leaves it present; actual late receipt now proves that same Settings presence/field/parse/mode inequality caused the throw. Effective selected Act/count/visible all match. No UI-mode selection failure or application mode defect proven.",
+    "first_observed_creator": "T28 all44 digests equal sha256(String(undefined)); T40 initial storagePresentfalse, first toggle true and later cleanup storagePresenttrue, mode storedPresenttrue. T67 cleanup remains present; T37 later toggles Deep clean with boolean-only restore.",
+    "source_chain": "settings-local-controls runs T28→T40→T67 then T37 before captureGuestPreferenceBaselines. runGuestAutoScrapeCase snapshots only toggle.visible boolean and restores boolean. runGuestAutoScrapeModeCase snapshots only mode.stored and restores value. Neither restores original container/field absence. T37 similarly restores checked state only. state/settings uses full Zustand persistence without partialize: ordinary scrape writes serialize defaultPermissionMode together with all Settings state.",
+    "not_proven": "Exact last writer among subsequent T67/T37 at comparison instant; actual stored mode value is intentionally not in finite diagnostic. No need to prove it to identify fixture lifecycle class; do not infer guest permission leak."
+  },
+  "smallest_supported_plan": [
+    "Restore case-owned Settings fixture shape/presence across T40,T67,T37, not T10 expectation. Reuse/extend existing preserveFailureDuringCleanup and original-absence restoration primitive from settings-guest-preference-batch rather than duplicate storage writer or alter authoritative comparator.",
+    "Capture necessary container/field presence before each owned mutation; keep any opaque raw fixture snapshot inside browser if broader restore is needed, never in reports/commands. Restore originally absent container and originally missing fields, and preserve already-present unrelated settings. Cleanup failure must remain explicit and cannot replace primary case error.",
+    "Retain real UI toggle/select and reload consumer tests. Verify original baseline shape after cleanup AND panel reload. Do not call Theme cleanup earlier, recapture/rebaselineT10, relax JSON comparator, add timeout/guard exceptions, or patch application settings to satisfy harness.",
+    "Add meaningful guard failing existing real T40/T67/T37 caller sequence absent→mutation→value-only cleanup→immutableT10 comparison; cover initially absent, existing partial field-absent, existing field-present, primary+cleanup failure and surrounding sibling settings preservation. Native retest frozen reviewed artifact must reach original initial/final comparison and full-extension surrounding rechecks before closure."
+  ],
+  "limitations": [
+    "Independent evidence/source review, not an independent native replay. Original full-reload behavior remains missing; no fullcasepass, D299/D300 closure, Store/member/admin acceptance or release.",
+    "No source implementation or local suite run authorized/executed by this lane. Plan needs owner authorization and review before changes."
+  ]
+}

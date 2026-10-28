@@ -1,0 +1,67 @@
+{
+  "task_id": "wake0109_packet_peer",
+  "at": "2026-10-28T01:53:41.968583+00:00",
+  "status": "BOUNDED_METADATA_PUBLICATION_PASS_WITH_CURRENT_PROSE_CORRECTIONS",
+  "verdict_A": "PARTIAL: original Settings acceptance remains FAILED/PARTIAL; narrow new diagnostic observations are accurately recorded. D302 source/output review accepted but actual direct8Python execution remains UNRUN. No product or closure credit.",
+  "verdict_B": "PASS for bounded provenance, exact one-cell update/history and privacy-limited typed publication; reconcile current CI/stale source-era wording before final handoff.",
+  "inventory": {
+    "result_bearing_case_deltas": ["EXT-F-1003-T10"],
+    "mode": "guest",
+    "new_status": "partial",
+    "prior_guest_result_retained_exactly": true,
+    "full_case_pass": false,
+    "new_product_credit": false
+  },
+  "authority": {
+    "native_official_run": 40615716489,
+    "native_head_sha": "7f1744da34bcce57ba83d91bfcf79d563fb34190",
+    "native_status": "completed/failure",
+    "source_full_ci": 40616270771,
+    "source_head_sha": "d6282d509b6bd31c66e3a3aeac9c68b75086ce01",
+    "source_full_ci_status": "completed/success",
+    "source_jobs": "scope/resource-guard-integration/checks success; docs skipped, so this does not execute new direct Python suite"
+  },
+  "integrity": {
+    "original_references_checked": 24,
+    "hash_or_size_mismatches": 0,
+    "zip_sha256": "bd47e6a601790a3d180836e2a66d12a8657484483d385fa730b82aff644d9f66",
+    "zip_member_count": 6,
+    "public_projection_matches_exact_actor_except_declared_renames_and_added_root_scope_hash": true,
+    "public_peer_matches_private_peer": true,
+    "historical_707_fields": "exact_ci_run_id and source_drift renamed historical_707_ci_run_id and historical_707_source_drift; current7f native/development authority explicit"
+  },
+  "native": {
+    "counts": {
+      "pass": 5,
+      "fail": 5,
+      "unverified": 9
+    },
+    "progress": "T63 case_end/sequence62",
+    "failure": "T10_shadow_baseline_mismatch_before_capture / warm_observation/initial_mode_compare",
+    "same_sample": "six predicates true; firstFalse serialization; unequal/residualfalse; only Settings presence/field/parse/mode unequal vs absent baseline; Chat/Pilot equal",
+    "cause_scope": "Test-owned T40/T67/T37 lifecycle contamination accepted from original receipt plus independent source diagnosis; no application mode-selection failure or exact-last-writer proof",
+    "resources": "All admitted/resourceInvalidfalse; package/browser valid0; guest child_failed1. No unsafe/resource invalidity or causal CPU proof.",
+    "verifier": "Mode list has member-only verify-settings-member and generic memberData verify; no applicable verify-settings-guest mode/refusal/certificate invented."
+  },
+  "generated_views": {
+    "STATUS.md": "Existing Oct27 authenticated daily link, Published/Draft labels, current public listing explicitly unverified",
+    "CHECKLIST.md": "Same bounded current observation",
+    "STATUS.html": "Same bounded current observation and existing HTML link"
+  },
+  "privacy": "Typed projection includes finite diagnostic categories, exact source/build/run/digest/resource facts and private-file hashes/refs, not raw ZIP/log/AX/report/image payloads. Independent prior evidence peer visually inspected both guest/public demo PNGs; root did not publish raw bundle. This is not a blanket original-log publication approval.",
+  "corrections": [
+    {
+      "file": "docs/stabilization/COORDINATOR.md",
+      "finding": "Top current source/D302 prose still says automatic fullCI pending; official40616270771 is success, docs skipped. Update current truth while keeping direct8Python suite explicitly pending until docs job actually runs."
+    },
+    {
+      "file": "docs/stabilization/defects/EXT-D-0300.json",
+      "finding": "same_sample_diagnostic_source_unit.scope still ends No native false-predicate observation yet. Mark that source-era statement historical or point to new current_native_same_sample_retest so it cannot contradict actual new receipt."
+    }
+  ],
+  "limits": [
+    "No local suite/heavy/UI/CI dispatch/build/install/auth/source edit performed by reviewer.",
+    "No fresh native replay, remote profile deletion, Chrome version/backend identity or credential cleanup readback. No Store/current-main/member/admin/fullReload acceptance.",
+    "Actual hosted direct Python test count, omission/constant mutation checks and seeded subprocess failure not yet observed; D302 remains open."
+  ]
+}
