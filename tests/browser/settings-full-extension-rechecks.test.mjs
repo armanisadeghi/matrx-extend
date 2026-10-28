@@ -239,6 +239,12 @@ function fullRestartFixture({
   transportClasses = [],
   scrapeContainerPresent = true,
   materializeScrapeInT40 = false,
+  settingsFailureByCall = {},
+  materializeThemeMode = false,
+  mutateModeOnThemeRead = null,
+  sectionFailureByCall = {},
+  restorationFault = null,
+  rerun = rerunGuestSettingsAfterExtensionReload,
 } = {}) {
   const reportCases = cases();
   initializeFullExtensionRechecks(reportCases);
@@ -288,6 +294,8 @@ function fullRestartFixture({
     caseRunners: [],
     scrapeBaseline,
     removals: [],
+    observations: [],
+    sections: 0,
   };
   const modeDocument = realModeStorage ? new Window().document : null;
   if (modeDocument)
@@ -307,6 +315,14 @@ function fullRestartFixture({
     set: async (entries) => Object.assign(storage, entries),
   };
   let settingsCalls = 0;
+  const lifecycle = {
+    choiceReloadComplete: false,
+    restorationStarted: false,
+    restorationModeVerified: false,
+    restorationReload: false,
+    faultInjected: false,
+    recoveryFaultInjected: false,
+  };
   // CDP is the external dependency in the native-default-driver lane. The real
   // click/wait/restore helpers and production rerun callback remain in use.
   let pointerTarget;
@@ -439,6 +455,11 @@ function fullRestartFixture({
         state.selected = label;
         state.stored = value;
         if (preference.caseId === 'T04') {
+          if (materializeThemeMode)
+            storage[settingsKey] = JSON.stringify({
+              state: { theme: value, defaultPermissionMode: 'ask' },
+              version: 0,
+            });
           state.darkClass = value === 'dark';
           if (absentTheme) Object.assign(state, { storedPresent: true, storagePresent: true });
         }
@@ -447,6 +468,7 @@ function fullRestartFixture({
     async waitFor(name, read, accept) {
       const value = await read();
       assert.equal(accept(value), true, name);
+      if (name === 'Theme_light_after_extension_reload') lifecycle.choiceReloadComplete = true;
       if (
         name === 'T04_full_extension_baseline_restored' &&
         failBaselineRestore === 'observe_restored_baseline'
@@ -456,9 +478,37 @@ function fullRestartFixture({
       return value;
     },
   };
-  const settings = async (panel) => {
+  const settings = async (panel, onStep = () => {}) => {
     assert.equal(panel, activePanel);
     settingsCalls += 1;
+    onStep('settings_tab_wait_started');
+    onStep('before_click');
+    if (lifecycle.choiceReloadComplete && !lifecycle.restorationStarted)
+      lifecycle.restorationStarted = true;
+    if (
+      restorationFault === 'final_reload' &&
+      lifecycle.restorationReload &&
+      !lifecycle.faultInjected
+    ) {
+      lifecycle.faultInjected = true;
+      throw Object.assign(new Error('private'), {
+        driverFailure: { code: 'pointer_target_not_unique' },
+      });
+    }
+    if (
+      restorationFault === 'unknown_then_recovery' &&
+      lifecycle.faultInjected &&
+      !lifecycle.recoveryFaultInjected
+    ) {
+      lifecycle.recoveryFaultInjected = true;
+      throw Object.assign(new Error('private'), {
+        driverFailure: { code: 'pointer_stable_hit_not_observed' },
+      });
+    }
+    if (Object.hasOwn(settingsFailureByCall, settingsCalls))
+      throw settingsFailureByCall[settingsCalls];
+    onStep('click_returned');
+    onStep('guest_wait_started');
     if (failSettingsCalls.includes(settingsCalls)) {
       const error = new Error('private page https://private.example/path?token=secret');
       error.pageText = 'private user content';
@@ -468,10 +518,52 @@ function fullRestartFixture({
     if (states.T04) states.T04.activeSettings = true;
     if (states.T10) states.T10.activeSettings = true;
   };
-  const openSection = async (panel) => assert.equal(panel, activePanel);
+  const openSection = async (panel) => {
+    assert.equal(panel, activePanel);
+    calls.sections += 1;
+    if (
+      restorationFault === 'unknown_then_recovery' &&
+      lifecycle.restorationModeVerified &&
+      !lifecycle.faultInjected
+    ) {
+      lifecycle.faultInjected = true;
+      throw new Error('private first restoration');
+    }
+    if (Object.hasOwn(sectionFailureByCall, calls.sections))
+      throw sectionFailureByCall[calls.sections];
+  };
   const observePreference = async (panel, preference) => {
+    calls.observations.push(preference.caseId);
+    if (
+      preference.caseId === 'T04' &&
+      calls.observations.filter((id) => id === 'T04').length === mutateModeOnThemeRead
+    )
+      Object.assign(states.T10.shadowFootprint.stores[0], {
+        storagePresent: true,
+        fieldPresent: true,
+        parseStatus: 'valid',
+        mode: 'ask',
+        fingerprint: 'a'.repeat(64),
+      });
     assert.equal(panel, activePanel);
     currentPreference = preference;
+    if (preference.caseId === 'T10' && lifecycle.restorationStarted)
+      lifecycle.restorationModeVerified = true;
+    if (
+      restorationFault === 'baseline' &&
+      preference.caseId === 'T04' &&
+      lifecycle.restorationStarted &&
+      !lifecycle.faultInjected
+    ) {
+      lifecycle.faultInjected = true;
+      Object.assign(states.T10.shadowFootprint.stores[0], {
+        storagePresent: true,
+        fieldPresent: true,
+        parseStatus: 'valid',
+        mode: 'ask',
+        fingerprint: 'a'.repeat(64),
+      });
+    }
     if (realModeStorage && preference.caseId === 'T10')
       return observeGuestPreference(panel, preference, choiceDriver);
     return { ...states[preference.caseId] };
@@ -505,6 +597,8 @@ function fullRestartFixture({
       });
     }
     const previous = activePanel;
+    if (lifecycle.restorationStarted && states.T04.selected === 'System')
+      lifecycle.restorationReload = true;
     calls.reloads.push(previous.targetId);
     activePanel = makePanel(`panel-replacement-${calls.reloads.length}`);
     for (const id of ['T04', 'T10']) {
@@ -533,6 +627,7 @@ function fullRestartFixture({
   };
   return {
     reportCases,
+    lifecycle,
     storage,
     states,
     calls,
@@ -547,7 +642,7 @@ function fullRestartFixture({
     choiceDriver,
     reloadExtension,
     run: async () => {
-      await rerunGuestSettingsAfterExtensionReload({
+      await rerun({
         panel: activePanel,
         cases: reportCases,
         preferences: GUEST_PREFERENCES,
@@ -1051,4 +1146,232 @@ test('Theme replacement mode shadow remains observable before absent-container c
     f.calls.options.some(([id]) => id === 'T10'),
     false,
   );
+});
+
+// The real compound callback and final publisher must retain the original branch,
+// even though aggregate errors intentionally expose only a generic public message.
+test('compound Theme reopen distinguishes successful Settings open from exact-sample mode mismatch', async () => {
+  const f = fullRestartFixture({
+    realModeStorage: true,
+    scrapeContainerPresent: false,
+    absentTheme: true,
+    materializeThemeMode: true,
+  });
+  const mode = GUEST_PREFERENCES.find((item) => item.caseId === 'T10');
+  f.preExtensionBaselines.T10 = preferenceBaseline(
+    await f.observePreference(f.activePanel, mode),
+    mode,
+  );
+  await f.run();
+  const result = f.reportCases[0].fullExtensionReload;
+  assert.equal(result.status, 'fail');
+  assert.equal(result.firstChoiceFailureStage, 'choice_settings_reopen');
+  assert.equal(result.firstChoiceReopen.operation, 'mode_compare');
+  assert.equal(result.firstChoiceReopen.openStep, 'guest_wait_started');
+  assert.equal(result.firstChoiceReopen.failureCode, 'mode_baseline_mismatch');
+  assert.equal(result.firstChoiceReopen.modeComparison.stage, 'full_recheck');
+  assert.equal(result.firstChoiceReopen.modeComparison.serialization, 'unequal');
+  assert.equal(result.firstRestorationReopen.operation, 'mode_compare');
+  assert.equal(result.recoveryReopen.operation, 'mode_compare');
+  assert.equal(result.firstChoiceReopen.modeComparison.stores[0].storagePresent, 'unequal');
+  const finalCriterion = result.criteria.at(-1).evidence;
+  assert.deepEqual(finalCriterion.firstChoiceReopen, result.firstChoiceReopen);
+  assert.doesNotMatch(
+    JSON.stringify(result),
+    /defaultPermissionMode|"ask"|fingerprint.*[a-f0-9]{64}/,
+  );
+  assert.equal(f.calls.reloads.length, 1);
+  assert.deepEqual(f.calls.options, [['T04', 'Dark']]);
+  assert.equal(f.calls.observations.filter((id) => id === 'T10').length, 7);
+});
+
+test('compound reopen retains original pointer, first restoration and recovery independently', async () => {
+  const pointer = Object.freeze(
+    Object.assign(new Error('private URL https://private.example?token=secret'), {
+      driverFailure: { code: 'pointer_stable_hit_not_observed', arbitrary: 'private' },
+    }),
+  );
+  const wait = new Error('guest_settings_not_observed:{"transient":"private-content"}');
+  const hostile = Object.freeze(
+    Object.defineProperty({}, 'message', {
+      get() {
+        throw new Error('private getter');
+      },
+    }),
+  );
+  const f = fullRestartFixture({ settingsFailureByCall: { 2: pointer, 3: wait, 4: hostile } });
+  await f.run();
+  const result = f.reportCases[0].fullExtensionReload;
+  assert.equal(result.status, 'fail');
+  assert.equal(result.firstChoiceReopen.operation, 'settings_open');
+  assert.equal(result.firstChoiceReopen.failureCode, 'pointer_stable_hit_not_observed');
+  assert.equal(result.firstRestorationReopen.failureCode, 'guest_observation_unavailable');
+  assert.equal(result.recoveryReopen.failureCode, 'unavailable');
+  assert.equal(result.firstChoiceReopen.openStep, 'before_click');
+  assert.equal(result.firstChoiceReopen.modeComparison, null);
+  assert.doesNotMatch(JSON.stringify(result), /private|secret|https?:\/\//);
+  assert.equal(f.calls.reloads.length, 4);
+  assert.deepEqual(
+    f.calls.options.filter(([id]) => id === 'T04'),
+    [['T04', 'Dark']],
+  );
+});
+
+test('reopen diagnostic publication reprojects malformed and hostile values without exposing errors', async () => {
+  const hostile = Object.defineProperty({}, 'operation', {
+    get() {
+      throw new Error('private getter');
+    },
+  });
+  for (const value of [
+    Object.freeze({
+      operation: 'private',
+      openStep: 'secret',
+      failureCode: 'https://private.example',
+      modeComparison: { stage: 'private' },
+    }),
+    hostile,
+    'private',
+  ]) {
+    const item = cases()[0];
+    const error = Object.freeze(
+      Object.assign(new Error('private message'), {
+        safeCategory: 'full_extension_preference_or_restore_failed',
+        safeFirstChoiceReopen: value,
+      }),
+    );
+    await runFullExtensionRecheck(item, async () => {
+      throw error;
+    });
+    const result = item.fullExtensionReload;
+    assert.equal(result.status, 'fail');
+    assert.equal(result.firstChoiceReopen.operation, 'unavailable');
+    assert.equal(result.firstChoiceReopen.failureCode, 'unavailable');
+    assert.equal(result.firstChoiceReopen.modeComparison, null);
+    assert.doesNotMatch(JSON.stringify(result), /private|secret|https?:\/\//);
+  }
+  const item = cases()[0];
+  const error = Object.assign(new Error('private'), {
+    safeCategory: 'full_extension_preference_or_restore_failed',
+  });
+  Object.defineProperty(error, 'safeFirstChoiceReopen', {
+    get() {
+      throw new Error('private getter');
+    },
+  });
+  await runFullExtensionRecheck(item, async () => {
+    throw error;
+  });
+  assert.equal(item.fullExtensionReload.status, 'fail');
+  assert.equal(item.fullExtensionReload.firstChoiceReopen, null);
+  const primitive = cases()[0];
+  await runFullExtensionRecheck(primitive, async () => {
+    throw 'private';
+  });
+  assert.equal(primitive.fullExtensionReload.status, 'fail');
+  assert.doesNotMatch(JSON.stringify(primitive), /private/);
+});
+
+test('final serialized reopen receipt snapshots changing getters before enum validation', async () => {
+  const sentinel = 'https://private.example/settings?token=private-sentinel';
+  const receipt = {};
+  for (const [key, first] of Object.entries({
+    operation: 'settings_open',
+    openStep: 'before_click',
+    failureCode: 'pointer_target_not_unique',
+  })) {
+    let reads = 0;
+    Object.defineProperty(receipt, key, {
+      get() {
+        reads += 1;
+        return reads === 1 ? first : sentinel;
+      },
+    });
+  }
+  const item = cases()[0];
+  await runFullExtensionRecheck(item, async () => {
+    throw Object.assign(new Error(sentinel), {
+      safeCategory: 'full_extension_preference_or_restore_failed',
+      safeFirstChoiceReopen: receipt,
+    });
+  });
+  const result = item.fullExtensionReload;
+  assert.equal(result.status, 'fail');
+  assert.deepEqual(result.firstChoiceReopen, {
+    operation: 'settings_open',
+    openStep: 'before_click',
+    failureCode: 'pointer_target_not_unique',
+    modeComparison: null,
+  });
+  assert.doesNotMatch(JSON.stringify(item), /private|https?:\/\//);
+});
+
+test('diagnostic oracle rejects a constant-return replacement of the owned full-recheck function', async () => {
+  const returnedExpected = {
+    status: 'fail',
+    firstChoiceReopen: {
+      operation: 'settings_open',
+      failureCode: 'pointer_stable_hit_not_observed',
+    },
+  };
+  const f = fullRestartFixture({ rerun: async () => returnedExpected });
+  await f.run();
+  assert.throws(() => assert.deepEqual(f.reportCases[0].fullExtensionReload, returnedExpected));
+  assert.equal(f.reportCases[0].fullExtensionReload.status, 'missing');
+  assert.deepEqual(f.calls.reloads, []);
+  assert.deepEqual(f.calls.observations, []);
+});
+
+test('final restoration management-reload reopen preserves first restoration diagnostic', async () => {
+  const f = fullRestartFixture({ restorationFault: 'final_reload' });
+  await f.run();
+  const result = f.reportCases[0].fullExtensionReload;
+  assert.equal(result.status, 'fail');
+  assert.equal(result.firstChoiceFailureStage, 'not_failed');
+  assert.equal(f.lifecycle.faultInjected, true);
+  assert.equal(result.restorationFailureStage, 'restore_settings_reopen');
+  assert.equal(result.firstRestorationReopen.operation, 'settings_open');
+  assert.equal(result.firstRestorationReopen.failureCode, 'pointer_target_not_unique');
+  assert.equal(result.firstRestorationReopenStage, 'restore_settings_reopen');
+  assert.equal(result.recoveryReopen, null);
+  assert.deepEqual(
+    f.calls.options.filter(([id]) => id === 'T04'),
+    [
+      ['T04', 'Dark'],
+      ['T04', 'Light'],
+      ['T04', 'System'],
+    ],
+  );
+  assert.doesNotMatch(JSON.stringify(result), /private/);
+});
+
+test('baseline-restorer mode comparison preserves its original restoration receipt', async () => {
+  const f = fullRestartFixture({ absentTheme: true, restorationFault: 'baseline' });
+  await f.run();
+  const result = f.reportCases[0].fullExtensionReload;
+  assert.equal(result.status, 'fail');
+  assert.equal(result.firstChoiceFailureStage, 'not_failed');
+  assert.equal(f.lifecycle.faultInjected, true);
+  assert.equal(result.restorationFailureStage, 'restore_baseline_select');
+  assert.equal(result.firstRestorationReopen.operation, 'mode_compare');
+  assert.equal(result.firstRestorationReopen.modeComparison.serialization, 'unequal');
+  assert.equal(result.firstRestorationReopenStage, 'restore_baseline_select');
+  assert.equal(result.recoveryReopen, null);
+  assert.equal(f.calls.reloads.length, 2);
+  assert.deepEqual(f.calls.removals, []);
+});
+
+test('unavailable first restoration receipt retains its original stage instead of recovery data', async () => {
+  const f = fullRestartFixture({ restorationFault: 'unknown_then_recovery' });
+  await f.run();
+  const result = f.reportCases[0].fullExtensionReload;
+  assert.equal(result.status, 'fail');
+  assert.equal(f.lifecycle.faultInjected, true);
+  assert.equal(f.lifecycle.recoveryFaultInjected, true);
+  assert.equal(result.restorationFailureStage, 'restore_recovered_settings');
+  assert.equal(result.firstRestorationReopen, null);
+  assert.equal(result.firstRestorationReopenStage, 'restore_section');
+  assert.equal(result.recoveryReopen.operation, 'settings_open');
+  assert.equal(result.recoveryReopen.failureCode, 'pointer_stable_hit_not_observed');
+  assert.doesNotMatch(JSON.stringify(result), /private/);
 });

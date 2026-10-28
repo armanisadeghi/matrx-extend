@@ -1,3 +1,4 @@
+import { classifyReloadSettingsFailure } from './settings-reload-boundary.mjs';
 import { safeTransportFailureClass } from './profile-reload-capture.mjs';
 import {
   GUEST_EXTENSION_RECHECK_FAILURE_STAGES,
@@ -129,7 +130,7 @@ function safeModeComparison(error) {
   try {
     const value = error?.safeModeComparison;
     const stage = value?.stage;
-    if (!['initial', 'final'].includes(stage)) return null;
+    if (!['initial', 'final', 'full_recheck'].includes(stage)) return null;
     const predicateNames = [
       'visible',
       'count',
@@ -280,6 +281,83 @@ const AUTO_SCRAPE_WAIT_LABELS = new Set([
   'auto_scrape_baseline_restored',
 ]);
 
+const REOPEN_OPERATIONS = ['settings_open', 'mode_section_open', 'mode_read', 'mode_compare'];
+const REOPEN_OPEN_STEPS = [
+  'settings_tab_wait_started',
+  'before_click',
+  'click_returned',
+  'guest_wait_started',
+];
+const REOPEN_FAILURE_CODES = [
+  'pointer_target_not_unique',
+  'pointer_stable_hit_not_observed',
+  'pointer_initial_evaluation_failed',
+  'pointer_page_sample_failed',
+  'pointer_followup_evaluation_failed',
+  'pointer_press_dispatch_failed',
+  'pointer_release_dispatch_failed',
+  'panel_transport_closed',
+  'panel_runtime_exception',
+  'guest_observation_unavailable',
+  'settings_tab_not_ready',
+  'guest_state_not_observed',
+  'other',
+  'mode_baseline_mismatch',
+  'mode_baseline_unobserved',
+  'unavailable',
+];
+const diagnosticProperty = (error, key) => {
+  try {
+    return error?.[key];
+  } catch {
+    return undefined;
+  }
+};
+function safeSettingsReopenDiagnostic(value) {
+  if (!value) return null;
+  try {
+    const operation = value.operation;
+    const openStep = value.openStep;
+    const failureCode = value.failureCode;
+    const modeComparison = value.modeComparison;
+    return {
+      operation: REOPEN_OPERATIONS.includes(operation) ? operation : 'unavailable',
+      openStep: REOPEN_OPEN_STEPS.includes(openStep) ? openStep : 'unknown',
+      failureCode: REOPEN_FAILURE_CODES.includes(failureCode) ? failureCode : 'unavailable',
+      modeComparison: safeModeComparison({ safeModeComparison: modeComparison }),
+    };
+  } catch {
+    return {
+      operation: 'unavailable',
+      openStep: 'unknown',
+      failureCode: 'unavailable',
+      modeComparison: null,
+    };
+  }
+}
+// Only typed categories from the already-thrown failure; no additional browser read.
+function settingsReopenFailure(error, operation, openStep = 'unknown') {
+  let failureCode = 'unavailable';
+  try {
+    failureCode =
+      operation === 'mode_compare' && error?.message === 'T10_shadow_baseline_mismatch'
+        ? 'mode_baseline_mismatch'
+        : operation === 'mode_compare' && error?.message === 'T10_shadow_baseline_unobserved'
+          ? 'mode_baseline_unobserved'
+          : classifyReloadSettingsFailure(error, openStep).category;
+  } catch {
+    /* The diagnostic cannot replace the aggregate operation failure. */
+  }
+  const failure = new Error('settings_reopen_failed');
+  failure.safeSettingsReopenDiagnostic = {
+    operation,
+    openStep,
+    failureCode,
+    modeComparison: safeModeComparison(error),
+  };
+  return failure;
+}
+
 function safeGuestFailureDiagnostics(error) {
   const safeStage = (stage) =>
     stage === 'not_failed' || GUEST_EXTENSION_RECHECK_FAILURE_STAGES.includes(stage)
@@ -318,6 +396,16 @@ function safeGuestFailureDiagnostics(error) {
       : [];
   return {
     baselineRestoration: safePreferenceBaselineRestoration(error?.safeBaselineRestoration),
+    firstChoiceReopen: safeSettingsReopenDiagnostic(
+      diagnosticProperty(error, 'safeFirstChoiceReopen'),
+    ),
+    firstRestorationReopen: safeSettingsReopenDiagnostic(
+      diagnosticProperty(error, 'safeFirstRestorationReopen'),
+    ),
+    recoveryReopen: safeSettingsReopenDiagnostic(diagnosticProperty(error, 'safeRecoveryReopen')),
+    firstRestorationReopenStage: safeStage(
+      diagnosticProperty(error, 'safeFirstRestorationReopenStage'),
+    ),
     firstChoiceFailureStage: safeStage(error?.safeFirstChoiceFailureStage),
     restorationFailureStage: safeStage(error?.safeRestorationFailureStage),
     firstChoiceTransportClass: safeTransport(error?.safeFirstChoiceTransportClass),
@@ -561,17 +649,39 @@ export async function rerunGuestSettingsAfterExtensionReload({
   const modeBaseline = preExtensionBaselines?.T10
     ? structuredClone(preExtensionBaselines.T10)
     : undefined;
-  const verifyModeBeforeCleanup = async (target) => {
+  const verifyModeBeforeCleanup = async (target, openStep = 'unknown') => {
     if (!mode) return;
-    if (modeBaseline?.matched !== true) throw new Error('T10_shadow_baseline_unobserved');
-    await openSection(target, mode.section);
-    const observed = await observePreference(target, mode);
-    if (!preferenceBaselineMatches(observed, mode, modeBaseline))
-      throw new Error('T10_shadow_baseline_mismatch');
+    let operation = 'mode_compare';
+    try {
+      if (modeBaseline?.matched !== true) throw new Error('T10_shadow_baseline_unobserved');
+      operation = 'mode_section_open';
+      await openSection(target, mode.section);
+      operation = 'mode_read';
+      const observed = await observePreference(target, mode);
+      operation = 'mode_compare';
+      if (!preferenceBaselineMatches(observed, mode, modeBaseline)) {
+        const error = new Error('T10_shadow_baseline_mismatch');
+        try {
+          error.safeModeComparison = modeComparisonReceipt(observed, modeBaseline, 'full_recheck');
+        } catch {
+          /* Preserve the authoritative failed comparison. */
+        }
+        throw error;
+      }
+    } catch (error) {
+      throw settingsReopenFailure(error, operation, openStep);
+    }
   };
   const settingsBeforeTheme = async (target) => {
-    await settings(target);
-    await verifyModeBeforeCleanup(target);
+    let openStep = 'unknown';
+    try {
+      await settings(target, (step) => {
+        if (REOPEN_OPEN_STEPS.includes(step)) openStep = step;
+      });
+    } catch (error) {
+      throw settingsReopenFailure(error, 'settings_open', openStep);
+    }
+    await verifyModeBeforeCleanup(target, openStep);
   };
   try {
     for (const preference of preferences.filter((item) => ['T04', 'T10'].includes(item.caseId))) {
@@ -579,10 +689,11 @@ export async function rerunGuestSettingsAfterExtensionReload({
       // any sibling choice/cleanup, and again before a later reload can mask it.
       try {
         await verifyModeBeforeCleanup(activePanel);
-      } catch {
+      } catch (caughtError) {
         const error = Object.assign(new Error('T10_shadow_baseline_unverified'), {
           safeCategory: 'full_extension_preference_or_restore_failed',
           safeFirstChoiceFailureStage: 'initial_baseline_observation',
+          safeFirstChoiceReopen: diagnosticProperty(caughtError, 'safeSettingsReopenDiagnostic'),
         });
         await runFullExtensionRecheck(
           cases.find((candidate) => candidate.id.endsWith('T10')),
@@ -755,6 +866,16 @@ export async function rerunGuestSettingsAfterExtensionReload({
           const error = Object.assign(new Error('full_extension_preference_or_restore_failed'), {
             safeCategory: 'full_extension_preference_or_restore_failed',
           });
+          error.safeFirstChoiceReopen = diagnosticProperty(caughtError, 'safeFirstChoiceReopen');
+          error.safeFirstRestorationReopen = diagnosticProperty(
+            caughtError,
+            'safeFirstRestorationReopen',
+          );
+          error.safeRecoveryReopen = diagnosticProperty(caughtError, 'safeRecoveryReopen');
+          error.safeFirstRestorationReopenStage = diagnosticProperty(
+            caughtError,
+            'safeFirstRestorationReopenStage',
+          );
           error.safeBaselineRestoration = caughtError?.safeBaselineRestoration;
           error.safeFirstChoiceFailureStage = caughtError?.safeFirstChoiceFailureStage;
           error.safeRestorationFailureStage = caughtError?.safeRestorationFailureStage;

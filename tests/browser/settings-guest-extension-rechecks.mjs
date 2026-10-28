@@ -127,6 +127,18 @@ export async function runGuestChoicesAcrossExtensionRestarts({
   let choiceFailure = false;
   let restoreFailure = false;
   let baselineRestoration = null;
+  let choiceReopen = null;
+  let firstRestorationReopen = null;
+  let firstRestorationCaptured = false;
+  let firstRestorationReopenStage = 'not_failed';
+  let recoveryReopen = null;
+  const reopenDiagnostic = (error) => {
+    try {
+      return error?.safeSettingsReopenDiagnostic ?? null;
+    } catch {
+      return null;
+    }
+  };
 
   const safeDetailStage = (stage) =>
     GUEST_EXTENSION_RECHECK_FAILURE_STAGES.includes(stage) ? stage : 'unavailable';
@@ -204,14 +216,16 @@ export async function runGuestChoicesAcrossExtensionRestarts({
         entry.outcome = 'completed';
         entry.observation = observeResult(result);
         return result;
-      } catch {
+      } catch (error) {
         entry.outcome = 'failed';
         try {
           entry.observation = observeResult();
         } catch {
           entry.observation = null;
         }
-        throw new Error('post_replacement_stage_failed');
+        const failure = new Error('post_replacement_stage_failed');
+        failure.safeSettingsReopenDiagnostic = reopenDiagnostic(error);
+        throw failure;
       }
     };
     failureDetailStage = `${prefix}_extension_reload`;
@@ -287,6 +301,7 @@ export async function runGuestChoicesAcrossExtensionRestarts({
     }
   } catch (error) {
     choiceFailure = true;
+    choiceReopen = reopenDiagnostic(error);
     choiceFailureStage = failureStage;
     choiceFailureDetailStage = safeDetailStage(failureDetailStage);
     choiceTransportClass = safeTransportFailureClass(transportFailureClass);
@@ -305,7 +320,10 @@ export async function runGuestChoicesAcrossExtensionRestarts({
       await openSection(activePanel, section);
       failureDetailStage = 'restore_observation';
       current = await read(activePanel);
-    } catch {
+    } catch (error) {
+      firstRestorationCaptured = true;
+      firstRestorationReopenStage = safeDetailStage(failureDetailStage);
+      firstRestorationReopen = reopenDiagnostic(error);
       if (typeof acquireLivePanel !== 'function') throw new Error('restore_panel_unavailable');
       failureDetailStage = 'restore_acquire_panel';
       const recovered = await acquireLivePanel();
@@ -366,6 +384,13 @@ export async function runGuestChoicesAcrossExtensionRestarts({
     record('original preference restored after extension reload', 'pass', final);
   } catch (error) {
     restoreFailure = true;
+    if (!firstRestorationCaptured) {
+      firstRestorationCaptured = true;
+      firstRestorationReopenStage = safeDetailStage(failureDetailStage);
+      firstRestorationReopen = reopenDiagnostic(error);
+    }
+    if (failureDetailStage.startsWith('restore_recovered_'))
+      recoveryReopen = reopenDiagnostic(error);
     baselineRestoration = safePreferenceBaselineRestoration(error?.safeBaselineRestoration);
     restoreFailureStage = failureStage;
     restoreFailureDetailStage = safeDetailStage(failureDetailStage);
@@ -385,6 +410,10 @@ export async function runGuestChoicesAcrossExtensionRestarts({
         choiceFailure && restoreFailure ? 'case_and_restore' : restoreFailure ? 'restore' : 'case';
       if (safeFailureKind !== 'case_and_restore') error.safeFailureKind = safeFailureKind;
     }
+    error.safeFirstChoiceReopen = choiceReopen;
+    error.safeFirstRestorationReopen = firstRestorationReopen;
+    error.safeFirstRestorationReopenStage = firstRestorationReopenStage;
+    error.safeRecoveryReopen = recoveryReopen;
     error.safeFirstChoiceFailureStage = choiceFailure ? choiceFailureDetailStage : 'not_failed';
     error.safeRestorationFailureStage = restoreFailure ? restoreFailureDetailStage : 'not_failed';
     error.safeFirstChoiceTransportClass = choiceFailure ? choiceTransportClass : 'not_applicable';
