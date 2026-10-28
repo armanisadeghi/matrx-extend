@@ -99,7 +99,9 @@ function actualHostedChildEnv(env, acceptanceCase = 'notes-find-member') {
       ? 'tests/browser/notes-native-acceptance.mjs'
       : acceptanceCase === 'member-chat'
         ? 'tests/browser/reviewer-chat-store-acceptance.mjs'
-        : 'tests/browser/guest-chat-store-acceptance.mjs',
+        : acceptanceCase === 'settings-controls'
+          ? 'tests/browser/settings-local-controls-acceptance.mjs'
+          : 'tests/browser/guest-chat-store-acceptance.mjs',
   );
   return result.env;
 }
@@ -137,15 +139,30 @@ async function reachActualCallsite(inputs, cpuEnabled = false) {
     undefined,
     'Notes diagnostic input never reaches native harness environment',
   );
-  const env = actualHostedChildEnv({ MATRX_CDP_STARTUP_DIAGNOSTIC: mappedEnv });
+  const guardFlag = mapped(acceptance.env.MATRX_GUARD_INTERVAL_DIAGNOSTIC, inputs) ?? '0';
+  const sharedFlag = cpuEnabled
+    ? '1'
+    : (mapped(acceptance.env.MATRX_STARTUP_INTERVAL_DIAGNOSTIC, inputs) ?? '0');
+  const env = actualHostedChildEnv(
+    {
+      MATRX_CDP_STARTUP_DIAGNOSTIC: mappedEnv,
+      MATRX_GUARD_INTERVAL_DIAGNOSTIC: guardFlag,
+      MATRX_STARTUP_INTERVAL_DIAGNOSTIC: sharedFlag,
+    },
+    inputs.acceptance_case,
+  );
+  assert.equal(env.MATRX_GUARD_INTERVAL_DIAGNOSTIC, guardFlag);
+  assert.equal(env.MATRX_STARTUP_INTERVAL_DIAGNOSTIC, sharedFlag);
   const original = process.env.MATRX_CDP_STARTUP_DIAGNOSTIC;
   const cpuOriginal = process.env.MATRX_STARTUP_INTERVAL_DIAGNOSTIC;
+  const guardOriginal = process.env.MATRX_GUARD_INTERVAL_DIAGNOSTIC;
   const receipts = [];
   const boundaryError = new Error('owned_cdp_open_timeout');
   let connectorCalls = 0;
   try {
     process.env.MATRX_CDP_STARTUP_DIAGNOSTIC = env.MATRX_CDP_STARTUP_DIAGNOSTIC;
-    process.env.MATRX_STARTUP_INTERVAL_DIAGNOSTIC = cpuEnabled ? '1' : '0';
+    process.env.MATRX_GUARD_INTERVAL_DIAGNOSTIC = env.MATRX_GUARD_INTERVAL_DIAGNOSTIC;
+    process.env.MATRX_STARTUP_INTERVAL_DIAGNOSTIC = env.MATRX_STARTUP_INTERVAL_DIAGNOSTIC;
     // Activation seam owns admission, forwarding and selecting the observer.
     // Connector transport is covered with real local HTTP in the helper tests.
     const invoke = runInNewContext(`${callsite}; connectNativeStartupOwnedCdp`, {
@@ -163,6 +180,9 @@ async function reachActualCallsite(inputs, cpuEnabled = false) {
   } finally {
     if (original === undefined) Reflect.deleteProperty(process.env, 'MATRX_CDP_STARTUP_DIAGNOSTIC');
     else process.env.MATRX_CDP_STARTUP_DIAGNOSTIC = original;
+    if (guardOriginal === undefined)
+      Reflect.deleteProperty(process.env, 'MATRX_GUARD_INTERVAL_DIAGNOSTIC');
+    else process.env.MATRX_GUARD_INTERVAL_DIAGNOSTIC = guardOriginal;
     if (cpuOriginal === undefined)
       Reflect.deleteProperty(process.env, 'MATRX_STARTUP_INTERVAL_DIAGNOSTIC');
     else process.env.MATRX_STARTUP_INTERVAL_DIAGNOSTIC = cpuOriginal;
@@ -296,4 +316,50 @@ test('guest and member Chat forward both startup diagnostics; other cases retain
   };
   assert.equal(mapped(acceptance.env.MATRX_CDP_STARTUP_DIAGNOSTIC, seoResource), '0');
   assert.equal(mapped(acceptance.env.MATRX_STARTUP_INTERVAL_DIAGNOSTIC, seoResource), '1');
+});
+
+// Settings needs guard brackets without enabling child startup observers.
+test('Settings alone selects guard-only interval diagnostics', async () => {
+  for (const acceptance_case of [
+    'settings-controls',
+    'guest-chat',
+    'member-chat',
+    'guest-seo',
+    'guest-data',
+  ]) {
+    const inputs = {
+      acceptance_case,
+      acceptance_lane: 'A',
+      startup_display_mode: 'headed',
+      seo_diagnostic: acceptance_case === 'guest-seo' ? 'resource' : 'none',
+    };
+    const guard = mapped(acceptance.env.MATRX_GUARD_INTERVAL_DIAGNOSTIC, inputs);
+    assert.equal(
+      guard,
+      acceptance_case === 'settings-controls' ? '1' : '0',
+      `guard diagnostic mapping for ${acceptance_case}`,
+    );
+    if (acceptance_case === 'settings-controls') {
+      assert.equal(mapped(acceptance.env.MATRX_STARTUP_INTERVAL_DIAGNOSTIC, inputs), '0');
+      assert.equal(mapped(acceptance.env.MATRX_CDP_STARTUP_DIAGNOSTIC, inputs), '0');
+      assert.equal((await reachActualCallsite(inputs)).length, 0);
+    }
+  }
+});
+
+test('Settings route rejects removed branch and unconditional guard diagnostics', () => {
+  const expression = acceptance.env.MATRX_GUARD_INTERVAL_DIAGNOSTIC;
+  const inputs = [{ acceptance_case: 'settings-controls' }, { acceptance_case: 'guest-data' }];
+  const assertRoute = (value) => {
+    assert.equal(mapped(value, inputs[0]), '1', 'Settings must enable guard diagnostics');
+    assert.equal(mapped(value, inputs[1]), '0', 'other cases must not enable guard diagnostics');
+  };
+  assertRoute(expression);
+  const predicate = "inputs.acceptance_case == 'settings-controls'";
+  assert.ok(expression.includes(predicate), 'mutants target the real workflow branch');
+  assert.throws(() => assertRoute(expression.replace(predicate, 'false')), /Settings must enable/);
+  assert.throws(
+    () => assertRoute(expression.replace(predicate, 'true')),
+    /other cases must not enable/,
+  );
 });

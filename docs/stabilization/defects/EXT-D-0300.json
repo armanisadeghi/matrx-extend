@@ -308,6 +308,20 @@
       "last_checkpoint": "case_start EXT-F-1003-T04 sequence23; terminal:false",
       "cleanup": "Job terminal; exact guest graceful child exit, restoration and profile deletion unverified."
     },
-    "next_action": "Retained CPU attribution reviewed in settings9a-resource-20261028.json: mixed owned Chromium/external activity, exact-source wall-time transitions match; renderer role and product cause unresolved. No app/guard/policy patch or immediate retry. Before any future original-route acceptance, name a discriminator and require fresh healthy normal admission plus exact eligible artifact; original Theme and adjacent warm/full-reload Settings remain unverified. D300 stays IN-FIX."
+    "next_action": "Retained CPU attribution is bounded and renderer/product cause remains unresolved. The independently reviewed guard-only diagnostic source unit now supplies the missing interval observer without changing policy/classification or child startup observers; see guard_only_interval_diagnostic and guard-interval-source-20261028.json. Await exact-current fresh-install CI/artifact before a distinct normally admitted original Theme/adjacent warm/full-reload diagnostic; preserve raw journal/archive provenance. No blind retry, threshold/deadline/runner change or defect closure. D300 stays IN-FIX."
+  },
+  "guard_only_interval_diagnostic": {
+    "state": "SOURCE_VERIFIED_FRESH_CI_AND_NATIVE_PENDING",
+    "owner": "/root",
+    "implementation_lane": "/root/guard_interval_implementation",
+    "review_lane": "/root/guard_interval_fresh_review",
+    "report": "docs/stabilization/reports/guard-interval-source-20261028.json",
+    "independent_review": "docs/stabilization/reports/guard-interval-peer-20261028.json",
+    "workflow_sha256": "76e0578aaff6100aa51576036dea55c0028482ea250f2015951b473a98710fd2",
+    "contract": "Settings-only guard interval flag reuses existing process brackets; child startup/CDP flags and guard measurements/policy/configured timers unchanged. Additional awaited observation work affects physical timing. Normal copier omits brackets, so retain original official archive and raw journal hashes.",
+    "source_checks": "25guard tests;1274focusedpass11skip0fail; compile0; lint3509files1040warnings0errors; meaningful REDs and executed mutants independently reviewed.",
+    "product_passes": 0,
+    "native": "UNVERIFIED; earlier9a remains invalid0criteria",
+    "next_action": "After exact current-source CI/artifact, plan a distinct normally admitted original Settings diagnostic with per-watch raw owned/unowned brackets. Do not infer renderer/product cause or change thresholds/deadlines/runner. D300 remains IN-FIX."
   }
 }

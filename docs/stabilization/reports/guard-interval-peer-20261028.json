@@ -1,0 +1,256 @@
+{
+  "status": "DONE_FRESH_SOURCE_REVIEW_A_PASS_B_PASS_ZERO_NATIVE_PRODUCT_CREDIT",
+  "authorship": "Fresh independent reviewer; zero implementation authorship",
+  "review_scope": "Source-only infrastructure review; no product or native acceptance credit",
+  "phase1": {
+    "verdict": "APPROVE_FOR_NORMAL_REVIEWED_DIGEST_ADVANCEMENT",
+    "source_hashes": {
+      ".github/workflows/hosted-guest-acceptance.yml": "76e0578aaff6100aa51576036dea55c0028482ea250f2015951b473a98710fd2",
+      "scripts/stabilization-resource.mjs": "23e496cd73eda5fe95e93f5b7ae01080fb114c6bd0ba6644a7eb3ef6d2768e87",
+      ".github/ci-cost.json": "d60eb26cb53ac7ee99fffd32cd85c731b6da08246fa0927f0edb3bf6639ecf5b"
+    },
+    "reason": "Existing sample and event conditions gain guard-only OR opt-in; Settings-only workflow mapping retains shared startup/CDP behavior. Existing attribution/parser/journal implementation reused. Cost basis discloses awaited ps and journal overhead. Raw original journals remain archived while normal copier validates then omits bracket. No timer/policy/threshold/iostat/runner/child observer/application change identified.",
+    "authority_limit": "Root alone advances reviewed constant; final test review still required.",
+    "formatted_guard_reapproval": "APPROVE guard 84593d55972623a4ad4f8ff2992210f8fd21854dec6b621867ecc52bb774d78a; only formatting changed versus original phase1 guard hash."
+  },
+  "verdict_A": {
+    "result": "PASS_BOUNDED_SOURCE_CONTRACT",
+    "basis": "Settings-only workflow flag reaches actual Settings child environment and guard sample/event seams; legacy diagnostics retain activation and unrelated routes remain off. New flag does not enable child CPU snapshots or CDP observer diagnostics. Real owned/unowned bracket accounting, external telemetry failures, explicit-clock expiry and fatal journal failure behavior match plan. Operational paragraph accurately states scope and evidence limits. No missing or extra scoped behavior found.",
+    "native_product_verdict": "UNVERIFIED; zero new acceptance or closure credit"
+  },
+  "verdict_B": {
+    "result": "PASS",
+    "basis": "Existing canonical guard/parser/bracket/journal/copy primitives reused; only two guard predicates change production logic. Real sample/event/journal seams execute in isolated SUT copies. Separate sampling/emission and constant enable/disable gut checks plus actual workflow branch mutants fail named assertions. REDs were admitted assertion failures, original missing-profile refusal stays refused. Exact reviewed workflow digest gate remains intact with positive and altered-byte normal SUT tests. Required guard/focused/compile/lint/cost source gates completed.",
+    "open_implementation_findings": [],
+    "resolved_finding": "Settings driver expectation corrected before final frozen run."
+  },
+  "actions": "Read-only source/evidence review using shell reads and hashes; wrote only this private report. No GUI/build/test/dispatch/Git/auth/fixture mutations, source edits, or agents.",
+  "reviewed_at": "2026-10-28T18:09:46.502602+00:00",
+  "final_frozen_source": {
+    ".github/workflows/hosted-guest-acceptance.yml": "76e0578aaff6100aa51576036dea55c0028482ea250f2015951b473a98710fd2",
+    "scripts/stabilization-resource.mjs": "84593d55972623a4ad4f8ff2992210f8fd21854dec6b621867ecc52bb774d78a",
+    "scripts/hosted-notes-startup-diagnostic-route.test.mjs": "685f4e1a5583cea5dceb5fab8d6521093362901951bb528a34ffbfb8241def82",
+    "scripts/test-stabilization-resource-cpu-integration.mjs": "0f79867cb4416520932e09a02dc1487852e7f94e7c7526cc4a092c86b0e34ead",
+    "tests/browser/native-startup-interval-callsite.test.mjs": "d4f7ff3da580116ef5e0097189eaed1e7af98a3ebca480b66e2e89656b122143",
+    ".github/ci-cost.json": "d60eb26cb53ac7ee99fffd32cd85c731b6da08246fa0927f0edb3bf6639ecf5b",
+    "scripts/hosted-remote-admission.mjs": "50bf51ea0b5cef794db517af4c2ec695432ba67a5de3e0ec3ad12cce118c45c9"
+  },
+  "interim_finding": {
+    "finding": "Settings actual child environment helper newly selected real Settings driver but expected Chat driver",
+    "resolution": "ADDRESSED in final route685f4e1a5583cea5dceb5fab8d6521093362901951bb528a34ffbfb8241def82"
+  },
+  "source_coverage": [
+    "Actual workflow boolean expression evaluated for Settings, Chat, SEO and unrelated negative; actual childEnv+driver Settings route+actual CDP observer gets guard1/shared0/CDP0",
+    "Actual guard parser, sample, bracket and event journal run in isolated copies; ownedOther2 and otherHost3 category totals require both external ps snapshots",
+    "Neither/new/legacy/both enable cases and before/after ps error, malformed ps and calculation-error paths",
+    "Separate actual sampling and emission predicate mutants, constant enable/disable predicate gut checks in private scratch copies",
+    "Actual sample/reasons with real cpuEpisode on same injected iostat values and timestamps reaches pending/pending_watch/expired with and without bracket",
+    "Actual journal serializer malformed bracket and write failure hit guard emit catch, resourceInvalid=true and terminal invalid3",
+    "Child driver new-only flag yields no process snapshots/brackets; actual CDP observer short-circuits before diagnostic timer/probes; consumer census finds production new flag reads only in guard"
+  ],
+  "evidence_limits": [
+    "Reviewer executed no tests under source-only brief; independently read completed builder logs/journals and authenticated every8run evidence hash plus7source hashes",
+    "Guard final25/25 pass; focused1274pass11skip0fail; relevant new behavior tests explicitly pass, not skipped",
+    "Compile tsc --noEmit pass; Biome3509files1040warnings, zero errors and no fixes, exit0; all four final runs admitted/resourceInvalidfalse/valid0",
+    "Original refused attempt remains refused2/no tests; separate assertion REDs each child_failed1 without resourceInvalid",
+    "Extra awaited ps and journal I/O can alter physical observation timing; identical injected input/clock invariance does not promise identical elapsed real runtime",
+    "Fresh exact-source CI/artifact, integration commit/push and any later normal native admission are outside this review and remain root gates",
+    "No product, native acceptance, renderer identity, callback cause, current owner installation, Store, release or defect closure credit"
+  ],
+  "final_guard_evidence": {
+    "tests": 25,
+    "pass": 25,
+    "fail": 0,
+    "skipped": 0,
+    "todo": 0,
+    "log_sha256": "b31a3e41dae1aefd2beea5e15f443c8e49ecc78d32964dc6c7d2ae2a581322a9",
+    "journal_sha256": "1bd9ec153761517b096f5e715399f1f02ea40192f345811910261c9027581af5",
+    "terminal": {
+      "schema": 1,
+      "at": "2026-10-28T18:15:34.296Z",
+      "runId": "wake1755-guard-final",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "code": "RESOURCE_FINAL_DECISION"
+    },
+    "independent_validation": "Reviewer read actual completed log and journal; all six final source hashes still match frozen supplied values. Named actual flags, scratch mutants, iostat-clock expiry and journal-failure tests each passed. Reviewer did not execute tests."
+  },
+  "remaining_for_final_verdict": [],
+  "verified_runs": [
+    {
+      "run_id": "wake1755-guard-red-1",
+      "decision": "refused",
+      "summary": "exit 2; ENOENT original profile path, no tests",
+      "log": ".output/stabilization-checkpoints/wake1755/guard-red.log",
+      "log_sha256": "6a329bcaac3edfc94c25715a3e2ef20406aa690797e10e1212e4af9442b84c4b",
+      "journal": "docs/stabilization/resource-journals/wake1755-guard-red-1.jsonl",
+      "journal_sha256": "e8f1b11a0ff39af34185ae67ba377e00a3dc4e2d7898616e5ce73ff1d7277b66",
+      "terminal": {
+        "schema": 1,
+        "at": "2026-10-28T17:59:30.229Z",
+        "runId": "wake1755-guard-red-1",
+        "admitted": false,
+        "resourceInvalid": false,
+        "exitCode": 2,
+        "decision": "refused",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "run_id": "wake1755-guard-red-2",
+      "decision": "child_failed",
+      "summary": "exit 1; Settings mapping undefined vs 1; 1272 pass, 1 fail, 11 skipped",
+      "log": ".output/stabilization-checkpoints/wake1755/guard-red-2.log",
+      "log_sha256": "f2b4c210b9938c11c80d26e6b95a008979da365e211c7a8ae0d5dca9b1ce4128",
+      "journal": "docs/stabilization/resource-journals/wake1755-guard-red-2.jsonl",
+      "journal_sha256": "36b8f3a8ccc1eed36dd7e38dbc69ec24cfd9bb84370d5a13045185382974d42d",
+      "terminal": {
+        "schema": 1,
+        "at": "2026-10-28T18:05:17.486Z",
+        "runId": "wake1755-guard-red-2",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 1,
+        "decision": "child_failed",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "run_id": "wake1755-guard-sample-red",
+      "decision": "child_failed",
+      "summary": "exit 1; new-only flag omitted bracket; 21 pass, 1 fail",
+      "log": ".output/stabilization-checkpoints/wake1755/guard-sample-red.log",
+      "log_sha256": "30e30a8abe6a783a2fc3d0a16fda031ac2e56998509802fdea9ccb7a624ff5b1",
+      "journal": "docs/stabilization/resource-journals/wake1755-guard-sample-red.jsonl",
+      "journal_sha256": "3c0a73e35a0e35b740187bef3d75d3ded73e3a3b847b6b6ca83304adf1ca5840",
+      "terminal": {
+        "schema": 1,
+        "at": "2026-10-28T18:08:16.387Z",
+        "runId": "wake1755-guard-sample-red",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 1,
+        "decision": "child_failed",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "run_id": "wake1755-guard-sample-green",
+      "decision": "valid",
+      "summary": "exit 0; 22 tests pass, prior tests",
+      "log": ".output/stabilization-checkpoints/wake1755/guard-sample-green.log",
+      "log_sha256": "3b6a1820df6431d32ef0100a3a70092e82e57c7bd298551cb6d74c37c3d61f87",
+      "journal": "docs/stabilization/resource-journals/wake1755-guard-sample-green.jsonl",
+      "journal_sha256": "55a92c4076f167ee260f88a6ab702c99823ee6ac3564c1bc4b58bc868517872d",
+      "terminal": {
+        "schema": 1,
+        "at": "2026-10-28T18:11:38.774Z",
+        "runId": "wake1755-guard-sample-green",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "run_id": "wake1755-guard-final",
+      "decision": "valid",
+      "summary": "exit 0; 25 tests pass including four isolated mutants and unsafe journal paths",
+      "log": ".output/stabilization-checkpoints/wake1755/guard-final.log",
+      "log_sha256": "b31a3e41dae1aefd2beea5e15f443c8e49ecc78d32964dc6c7d2ae2a581322a9",
+      "journal": "docs/stabilization/resource-journals/wake1755-guard-final.jsonl",
+      "journal_sha256": "1bd9ec153761517b096f5e715399f1f02ea40192f345811910261c9027581af5",
+      "terminal": {
+        "schema": 1,
+        "at": "2026-10-28T18:15:34.296Z",
+        "runId": "wake1755-guard-final",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "run_id": "wake1755-focused-final",
+      "decision": "valid",
+      "summary": "exit 0; 1274 pass, 11 skipped, zero failed",
+      "log": ".output/stabilization-checkpoints/wake1755/focused-final.log",
+      "log_sha256": "655f808236c7c61d6bbcbefffea0016c1ca22610c506ed9f62bc40d452fdffbf",
+      "journal": "docs/stabilization/resource-journals/wake1755-focused-final.jsonl",
+      "journal_sha256": "91afcaa7148e63cf5d3d10fb13e93cd9fa475c271c3aeb1440a75f8fe86665bc",
+      "terminal": {
+        "schema": 1,
+        "at": "2026-10-28T18:19:20.000Z",
+        "runId": "wake1755-focused-final",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "run_id": "wake1755-compile-final",
+      "decision": "valid",
+      "summary": "exit 0",
+      "log": ".output/stabilization-checkpoints/wake1755/compile-final.log",
+      "log_sha256": "c4d54e0638dd8545beca3b87083ac0fb1d88853e77cbd90cd75cd73d3f8be0aa",
+      "journal": "docs/stabilization/resource-journals/wake1755-compile-final.jsonl",
+      "journal_sha256": "5531f5e7d044110a48db2a51893c5ea48bfee466f734b56b4dd655fcb23b980f",
+      "terminal": {
+        "schema": 1,
+        "at": "2026-10-28T18:20:36.908Z",
+        "runId": "wake1755-compile-final",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "run_id": "wake1755-lint-final",
+      "decision": "valid",
+      "summary": "exit 0; 3509 files, 1040 warnings, zero errors",
+      "log": ".output/stabilization-checkpoints/wake1755/lint-final.log",
+      "log_sha256": "f6ecb2581f24e62c444f3889e0bc67fdc4236f35dcc6c7105f30599040fec2b7",
+      "journal": "docs/stabilization/resource-journals/wake1755-lint-final.jsonl",
+      "journal_sha256": "4259247a19d36a6f1b68a9445ddf98e3873f435cae3deeeb9248edb503a5406d",
+      "terminal": {
+        "schema": 1,
+        "at": "2026-10-28T18:21:54.961Z",
+        "runId": "wake1755-lint-final",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    }
+  ],
+  "operational_paragraph": {
+    "path": "docs/stabilization/PLAN.md:116",
+    "sha256": "6abd1339cd71a0b954f935f30dca6b5ad35a12d4a2cf46efd0883841e81800d5",
+    "verdict": "APPROVE matches actual source; bounded accounting and raw retention limits explicit"
+  },
+  "cost": {
+    "checker_exit_code": 0,
+    "log_sha256": "b51f1148507e6954ddf4ab8ab92887db53ab2e8c67e44003b8cd301e478c98ca",
+    "limitation": "Checker retains135.37 aggregate hybrid forecast/fresh-saved warning and twin drift; explicitly no measured spend in this manifest. Current authenticated weekly meter unverified. No clean-spend, actually-billed135.37 or dispatch authority claim."
+  },
+  "digest_gate": {
+    "verdict": "PASS_SOURCE_CLASS_PROOF",
+    "workflow_sha256": "76e0578aaff6100aa51576036dea55c0028482ea250f2015951b473a98710fd2",
+    "admission_sha256": "50bf51ea0b5cef794db517af4c2ec695432ba67a5de3e0ec3ad12cce118c45c9",
+    "root_advance": "Root advanced constant after phase1 byte approval; reviewer did not edit constant",
+    "evidence": "Normal current-bytes positive and altered-bytes HOSTED_WORKFLOW_BLOB_UNREVIEWED/no-dispatch negatives passed in final focused suite. No literal prior-hash live plan or external admission replay was executed or claimed."
+  },
+  "completed_at": "2026-10-28T18:22:42.952334+00:00",
+  "schema": 1,
+  "review_lane": "/root/guard_interval_fresh_review",
+  "private_original_sha256": "fee787c4267fc31c1a73ec56a55cf372cd171773e6f68bb446e270d1d7ea7836"
+}

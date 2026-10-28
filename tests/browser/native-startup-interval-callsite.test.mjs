@@ -36,6 +36,7 @@ async function run({
   finishFails = false,
   enabled = true,
   cdpEnabled = false,
+  guardEnabled = false,
   endpointTimeout = false,
   observationFails = false,
   driverCode = driver,
@@ -98,6 +99,7 @@ async function run({
       env: {
         MATRX_STARTUP_INTERVAL_DIAGNOSTIC: enabled ? '1' : '0',
         MATRX_CDP_STARTUP_DIAGNOSTIC: cdpEnabled ? '1' : '0',
+        MATRX_GUARD_INTERVAL_DIAGNOSTIC: guardEnabled ? '1' : '0',
       },
       stderr: { write: (line) => output.push(line) },
     },
@@ -352,4 +354,10 @@ test('passive callback success adds no failure snapshot or startup CPU I/O', asy
     'cleanup',
     'remove-profile',
   ]);
+});
+
+test('guard-only flag does not start child CPU snapshots', async () => {
+  const { events, brackets } = await run({ enabled: false, guardEnabled: true });
+  assert.equal(events.includes('snapshot'), false);
+  assert.deepEqual(brackets, []);
 });

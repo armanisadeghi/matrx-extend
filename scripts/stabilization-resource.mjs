@@ -840,7 +840,10 @@ async function main() {
       try {
         current = await sample(
           profileDir,
-          process.env.MATRX_STARTUP_INTERVAL_DIAGNOSTIC === '1' ? groupId : undefined,
+          process.env.MATRX_STARTUP_INTERVAL_DIAGNOSTIC === '1' ||
+            process.env.MATRX_GUARD_INTERVAL_DIAGNOSTIC === '1'
+            ? groupId
+            : undefined,
         );
         bad = reasons(current, previous);
       } catch (error) {
@@ -877,7 +880,10 @@ async function main() {
           sample: current,
         },
       );
-      if (process.env.MATRX_STARTUP_INTERVAL_DIAGNOSTIC === '1')
+      if (
+        process.env.MATRX_STARTUP_INTERVAL_DIAGNOSTIC === '1' ||
+        process.env.MATRX_GUARD_INTERVAL_DIAGNOSTIC === '1'
+      )
         emit('RESOURCE_STARTUP_INTERVAL_BRACKET', {
           runId,
           bracket: startupBracket ?? { unavailable: true },

@@ -554,6 +554,7 @@ jobs:
           MATRX_HOSTED_SEO_RESOURCE_DIAGNOSTIC: ${{ inputs.seo_diagnostic == 'resource' && '1' || '0' }}
           MATRX_HOSTED_SEO_INTERRUPT_AFTER_TARGET: ${{ inputs.seo_diagnostic == 'interrupt-manual' && 'manual_button_returns_to_current_page' || 'none' }}
           MATRX_STARTUP_INTERVAL_DIAGNOSTIC: ${{ (inputs.seo_diagnostic == 'resource' || inputs.acceptance_case == 'guest-chat' || inputs.acceptance_case == 'member-chat') && '1' || '0' }}
+          MATRX_GUARD_INTERVAL_DIAGNOSTIC: ${{ inputs.acceptance_case == 'settings-controls' && '1' || '0' }}
           MATRX_CDP_STARTUP_DIAGNOSTIC: ${{ ((inputs.startup_display_mode == 'notes-cdp' && inputs.acceptance_case == 'notes-find-member' && inputs.acceptance_lane == 'A') || inputs.acceptance_case == 'guest-chat' || inputs.acceptance_case == 'member-chat') && '1' || '0' }}
           MATRX_D47_PUBLIC_RACE_PREFLIGHT: ${{ inputs.d47_public_race_preflight == true && '1' || '0' }}
           MATRX_SCRAPE_DIAGNOSTIC_CPU_RATE: ${{ inputs.scrape_diagnostic_cpu_rate }}

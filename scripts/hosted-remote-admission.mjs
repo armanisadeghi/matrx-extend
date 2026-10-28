@@ -28,7 +28,7 @@ const DISPATCH_REQUESTER = 'extend-stabilization';
 // EXT-D-0243 enables existing startup observers for guest/member Chat after independent review.
 // EXT-D-0262 adds one guest Settings admin-absence route on the existing guarded lane.
 // The existing phase, fixture, and credential guards remain mandatory.
-const REVIEWED_WORKFLOW_SHA256 = '41bda5ce8349a163c2c3707e925f4a4b50e65487ce0e93068b43d305bbdee596';
+const REVIEWED_WORKFLOW_SHA256 = '76e0578aaff6100aa51576036dea55c0028482ea250f2015951b473a98710fd2';
 const RESOURCE_POLICY = JSON.parse(
   readFileSync(new URL('../docs/stabilization/resource-policy.json', import.meta.url), 'utf8'),
 );

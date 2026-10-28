@@ -187,6 +187,9 @@ async function fixture({
   simulateChildError = false,
   simulateAttributionError = false,
   groupSignalMode = null,
+  bracketMode = null,
+  bracketMutation = null,
+  bracketFailure = null,
 } = {}) {
   const scratch = await mkdtemp(join(tmpdir(), 'resource-cpu-wrapper-'));
   const scripts = join(scratch, 'scripts');
@@ -202,6 +205,80 @@ async function fixture({
   await setHealthyHostMeasurements(scripts);
   const guardPath = join(scripts, 'stabilization-resource.mjs');
   let guardSource = await readFile(guardPath, 'utf8');
+  if (bracketMode) {
+    // Preserve the production CPU parser and bracket; replace only external telemetry.
+    guardSource = guardSource.replace('Promise.resolve(0.1),', 'cpuBusyFraction(cpuOutput),');
+    const sampleEntry = 'async function sample(profileDir, attributionRootPid) {';
+    assert.equal(guardSource.split(sampleEntry).length, 2);
+    guardSource = guardSource.replace(
+      sampleEntry,
+      `${sampleEntry}\n  syntheticRoot = attributionRootPid;`,
+    );
+    const outputStart = 'const output = async (cmd, args) =>\n';
+    assert.equal(guardSource.split(outputStart).length, 2);
+    guardSource = guardSource.replace(
+      outputStart,
+      `let psReads = 0;
+let syntheticRoot;
+const output = async (cmd, args) => {
+  if (cmd === '/usr/sbin/iostat') {
+    const busy = Number((await readFile(${JSON.stringify(cpuPhase)}, 'utf8')).trim());
+    return 'cpu load average\\n us sy id 1m 5m 15m\\n 5 5 90 0.5 0.5 0.5\\n ' + Math.round(busy * 100) + ' 0 ' + (100 - Math.round(busy * 100)) + ' 0.5 0.5 0.5';
+  }
+  if (cmd === '/bin/ps' && JSON.stringify(args) === JSON.stringify(['-A', '-o', 'pid=,ppid=,time=,ucomm='])) {
+    psReads++;
+    if (${JSON.stringify(bracketMode)} === 'before-fail' && psReads % 2 === 1) throw new Error('ps unavailable');
+    if (${JSON.stringify(bracketMode)} === 'after-fail' && psReads % 2 === 0) throw new Error('ps unavailable');
+    if (${JSON.stringify(bracketMode)} === 'malformed') return 'malformed';
+    return psReads % 2 === 1 ? syntheticRoot + ' 1 0:01.00 node\\n1 0 0:02.00 launchd' : syntheticRoot + ' 1 0:03.00 node\\n1 0 0:05.00 launchd';
+  }
+  return (
+    await run(cmd, args, { timeout: 5000, maxBuffer: policy.processSnapshotMaxBytes })
+  ).stdout.trim();
+};
+const unusedOriginalOutput = async (cmd, args) =>\n`,
+    );
+  }
+  if (bracketMode === 'calculation-fail') {
+    const calculation = 'processTimeBracket(before.processes, after.processes, attributionRootPid)';
+    assert.equal(guardSource.split(calculation).length, 2);
+    guardSource = guardSource.replace(
+      calculation,
+      "(() => { throw new Error('calculation unavailable'); })()",
+    );
+  }
+  if (bracketFailure === 'write') {
+    const write = '      journal.write(event);';
+    assert.equal(guardSource.split(write).length, 2);
+    guardSource = guardSource.replace(
+      write,
+      "      if (code === 'RESOURCE_STARTUP_INTERVAL_BRACKET') throw new Error('synthetic journal write failure');\n" +
+        write,
+    );
+  } else if (bracketFailure === 'invalid') {
+    const bracket = 'bracket: startupBracket ?? { unavailable: true },';
+    assert.equal(guardSource.split(bracket).length, 2);
+    guardSource = guardSource.replace(
+      bracket,
+      "bracket: { unavailable: true, iostatStartedAt: 'invalid' },",
+    );
+  }
+  if (bracketMutation) {
+    const condition =
+      /process\.env\.MATRX_STARTUP_INTERVAL_DIAGNOSTIC === '1' \|\|\s*process\.env\.MATRX_GUARD_INTERVAL_DIAGNOSTIC === '1'/g;
+    assert.equal(
+      [...guardSource.matchAll(condition)].length,
+      2,
+      'mutant must target both actual guard decisions',
+    );
+    let index = 0;
+    guardSource = guardSource.replace(condition, (original) => {
+      const decision = index++ === 0 ? 'sampling-off' : 'emission-off';
+      if (bracketMutation === 'always-on') return 'true';
+      if (bracketMutation === 'always-off' || bracketMutation === decision) return 'false';
+      return original;
+    });
+  }
   const groupMembersRead = "const raw = await output('/bin/ps', ['-axo', 'pid=,pgid=,stat=']);";
   assert.equal(guardSource.split(groupMembersRead).length, 2);
   guardSource = guardSource.replace(
@@ -337,17 +414,19 @@ const syntheticFailureSummary = (error) => {
   );
   // Only the external CPU measurement is controlled. The real wrapper owns
   // preflight, watch decisions, journal writes, child lifecycle and verdict.
-  assert.equal(guardSource.split('Promise.resolve(0.1),').length, 2);
-  guardSource = guardSource.replace(
-    'Promise.resolve(0.1),',
-    `readFile(${JSON.stringify(cpuPhase)}, 'utf8').then(async (raw) => {
+  if (!bracketMode) {
+    assert.equal(guardSource.split('Promise.resolve(0.1),').length, 2);
+    guardSource = guardSource.replace(
+      'Promise.resolve(0.1),',
+      `readFile(${JSON.stringify(cpuPhase)}, 'utf8').then(async (raw) => {
       if (raw.trim() === 'slow-healthy') {
         await sleep(3000);
         return 0.1;
       }
       return Number(raw);
     }),`,
-  );
+    );
+  }
   // The outer real-host guard owns admission for this test. Nested scratch
   // guards exercise watch/lifecycle behavior and must not refuse their
   // legitimate ancestor as another live host runner.
@@ -585,7 +664,14 @@ async function readWatchReadyOwner(stream, item) {
 async function runScenario(
   kind,
   groupStartedAt,
-  { pauseOwnerRewrite = false, simulateAttributionError = false } = {},
+  {
+    pauseOwnerRewrite = false,
+    simulateAttributionError = false,
+    bracketMode = null,
+    guardFlag = false,
+    oldFlag = false,
+    bracketMutation = null,
+  } = {},
 ) {
   const diagnostic = scenarioDiagnostic(kind, groupStartedAt);
   let item;
@@ -598,6 +684,8 @@ async function runScenario(
       pauseOwnerRewrite,
       simulateChildError: kind === 'pending-child-error',
       simulateAttributionError,
+      bracketMode,
+      bracketMutation,
       groupSignalMode: kind.startsWith('eperm-') ? kind.slice('eperm-'.length) : null,
     });
     const runId = `cpu-${kind}-${randomUUID()}`;
@@ -615,7 +703,15 @@ async function runScenario(
         'node',
         'scripts/prove-desktop-settings-guards.mjs',
       ],
-      { cwd: item.scratch, stdio: ['ignore', 'pipe', 'pipe'] },
+      {
+        cwd: item.scratch,
+        stdio: ['ignore', 'pipe', 'pipe'],
+        env: {
+          ...process.env,
+          MATRX_GUARD_INTERVAL_DIAGNOSTIC: guardFlag ? '1' : '0',
+          MATRX_STARTUP_INTERVAL_DIAGNOSTIC: oldFlag ? '1' : '0',
+        },
+      },
     );
     diagnostic.setChild(child);
     const observedEvents = [];
@@ -849,6 +945,30 @@ async function runScenario(
       .trim()
       .split('\n')
       .map(JSON.parse);
+    if (bracketMode) {
+      const brackets = journal.filter(
+        (entry) => entry.code === 'RESOURCE_STARTUP_INTERVAL_BRACKET',
+      );
+      assert.equal(
+        brackets.length > 0,
+        guardFlag || oldFlag,
+        'guard flag must control bracket emission',
+      );
+      if (guardFlag || oldFlag) {
+        assert.equal(
+          brackets.some((entry) => entry.bracket.unavailable === true),
+          bracketMode !== 'valid',
+          'guard must sample process brackets',
+        );
+        if (bracketMode === 'valid') {
+          assert.deepEqual(
+            brackets[0].bracket.categoryTotalsSeconds,
+            { ownedChromium: 0, ownedOther: 2, hostProvisioner: 0, otherHost: 3 },
+            'owned and host CPU deltas must use both real snapshots',
+          );
+        }
+      }
+    }
     assert.equal(journal.at(-1).decision, validRecovery ? 'valid' : 'invalid');
     assert.equal(journal.at(-1).resourceInvalid, !validRecovery);
     if (
@@ -1380,5 +1500,168 @@ test(
     await runScenarioGroup(['recovered', 'confirmed', 'pending-exit'], {
       pauseOwnerRewrite: true,
     });
+  },
+);
+
+test(
+  'actual guard flags control CPU brackets while preserving watch decisions',
+  { timeout: 120_000 },
+  async () => {
+    for (const options of [
+      { bracketMode: 'valid' },
+      { bracketMode: 'valid', guardFlag: true },
+      { bracketMode: 'valid', oldFlag: true },
+      { bracketMode: 'valid', guardFlag: true, oldFlag: true },
+      { bracketMode: 'before-fail', guardFlag: true },
+      { bracketMode: 'after-fail', guardFlag: true },
+      { bracketMode: 'malformed', guardFlag: true },
+      { bracketMode: 'calculation-fail', guardFlag: true },
+    ])
+      await runScenario('recovered', process.hrtime.bigint(), options);
+  },
+);
+
+test(
+  'scratch guard mutants cannot shortcut bracket sampling or emission',
+  { timeout: 90_000 },
+  async () => {
+    for (const bracketMutation of ['sampling-off', 'emission-off', 'always-on', 'always-off']) {
+      await assert.rejects(
+        runScenario('recovered', process.hrtime.bigint(), {
+          bracketMode: 'valid',
+          guardFlag: bracketMutation !== 'always-on',
+          bracketMutation,
+        }),
+        /guard flag must control bracket emission|guard must sample process brackets/,
+      );
+    }
+  },
+);
+
+test('identical iostat samples and timestamps classify alike with and without brackets through expiry', async () => {
+  const guard = await readFile(join(source, 'scripts/stabilization-resource.mjs'), 'utf8');
+  const from = guard.indexOf('async function sample(profileDir, attributionRootPid) {');
+  const to = guard.indexOf('\nasync function preflight(', from);
+  assert(from >= 0 && to > from);
+  const { cpuBusyFraction, diskIsLow } = await import('./stabilization-resource-safety.mjs');
+  const { parseProcessTimes, processTimeBracket } = await import(
+    './startup-interval-attribution.mjs'
+  );
+  const { cpuEpisode } = await import('./stabilization-resource-cpu.mjs');
+  const policy = JSON.parse(
+    await readFile(join(source, 'docs/stabilization/resource-policy.json')),
+  );
+  policy.watchIntervalSeconds = 0.5;
+  let idle = 12;
+  let now = 0;
+  const context = {
+    platform: () => 'darwin',
+    output: async (cmd) =>
+      cmd === '/usr/sbin/iostat'
+        ? `cpu load average\n us sy id 1m 5m 15m\n 5 5 90 0.5 0.5 0.5\n ${100 - idle} 0 ${idle} 0.5 0.5 0.5`
+        : cmd === '/bin/ps'
+          ? '1 0 0:01.00 launchd'
+          : 'System-wide memory free percentage: 80%',
+    sysctl: async (key) =>
+      ({
+        'kern.memorystatus_vm_pressure_level': '1',
+        'hw.memsize': String(16 * 1024 ** 3),
+        'hw.logicalcpu': '8',
+        'vm.loadavg': '{ 0.5 0.5 0.5 }',
+        'vm.swapusage': 'used = 0M',
+      })[key],
+    sampleDiskSpace: async () => ({
+      repoFreeGiB: 100,
+      profileFreeGiB: 100,
+      safetyFreeGiB: 100,
+      systemFreeGiB: 100,
+    }),
+    cpuBusyFraction,
+    parseProcessTimes,
+    processTimeBracket,
+    diskIsLow,
+    repo: '/repo',
+    root: '/lease',
+    policy,
+    GiB: 1024 ** 3,
+    number: (value) => Number(value),
+    startupBracket: undefined,
+    Date,
+  };
+  const actual = runInNewContext(`${guard.slice(from, to)}; ({ sample, reasons })`, context);
+  const run = async (enabled) => {
+    const episode = cpuEpisode(policy, () => now);
+    const result = [];
+    for (const [at, nextIdle] of [
+      [0, 12],
+      [500, 90],
+      [2500, 90],
+    ]) {
+      now = at;
+      idle = nextIdle;
+      const sample = await actual.sample('/profile', enabled ? 99 : undefined);
+      result.push(episode.observe(actual.reasons(sample, sample)));
+    }
+    return result;
+  };
+  assert.deepEqual(await run(false), ['pending', 'pending_watch', 'expired']);
+  assert.deepEqual(await run(true), ['pending', 'pending_watch', 'expired']);
+});
+
+test(
+  'guard invalidates unsafe bracket and bracket journal write failure',
+  { timeout: 45_000 },
+  async () => {
+    for (const bracketFailure of ['invalid', 'write']) {
+      const item = await fixture({ bracketMode: 'valid', bracketFailure });
+      const runId = `bracket-failure-${randomUUID()}`;
+      let child;
+      try {
+        child = spawn(
+          process.execPath,
+          [
+            item.guardPath,
+            'run',
+            '--run-id',
+            runId,
+            '--profile-dir',
+            item.scratch,
+            '--',
+            'node',
+            'scripts/prove-desktop-settings-guards.mjs',
+          ],
+          {
+            cwd: item.scratch,
+            stdio: ['ignore', 'pipe', 'pipe'],
+            env: {
+              ...process.env,
+              MATRX_GUARD_INTERVAL_DIAGNOSTIC: '1',
+              MATRX_STARTUP_INTERVAL_DIAGNOSTIC: '0',
+            },
+          },
+        );
+        const stream = observe(child, () => {});
+        const closed = new Promise((done) =>
+          child.once('close', (code, signal) => done({ code, signal })),
+        );
+        await stream.next((event) => event.code === 'RESOURCE_ADMITTED');
+        assert.deepEqual(
+          await closed,
+          { code: 3, signal: null },
+          `${bracketFailure} must invalidate the run`,
+        );
+        const journal = (
+          await readFile(join(item.docs, 'resource-journals', `${runId}.jsonl`), 'utf8')
+        )
+          .trim()
+          .split('\n')
+          .map(JSON.parse);
+        assert.equal(journal.at(-1).resourceInvalid, true);
+        assert.equal(journal.at(-1).decision, 'invalid');
+      } finally {
+        if (child && child.exitCode === null) child.kill('SIGTERM');
+        await rm(item.scratch, { recursive: true, force: true });
+      }
+    }
   },
 );
