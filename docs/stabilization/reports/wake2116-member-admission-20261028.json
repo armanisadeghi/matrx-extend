@@ -1,0 +1,178 @@
+{
+  "schema": 1,
+  "kind": "member Data infrastructure-only preflight checkpoint",
+  "case_id": "EXT-F-2005-T08",
+  "native_runs_created": 0,
+  "product_credit": 0,
+  "sequence": [
+    {
+      "operation": "initial plan",
+      "source_arg": "artifact SHA d190",
+      "exit": 1,
+      "code": "HOSTED_DEVELOPMENT_RUNTIME_SOURCE_DRIFT",
+      "cause": "incorrect candidate argument independently diagnosed"
+    },
+    {
+      "operation": "corrected plan",
+      "source_arg": "current candidate main5bc",
+      "exit": 0
+    },
+    {
+      "operation": "corrected dispatch",
+      "exit": 1,
+      "code": "HOSTED_MEMBER_DATA_SECRET_MISSING"
+    },
+    {
+      "operation": "canonical fixture staging and unsupported help probe",
+      "exit": 1,
+      "code": "HOSTED_MODE_INVALID",
+      "limits": "Unsupported usage, not a native resource refusal; no plan/dispatch; owned secret/fixture/auth inputs cleaned."
+    },
+    {
+      "operation": "second canonical fixture staging then parent normal plan",
+      "exit": 0
+    },
+    {
+      "operation": "parent matching normal dispatch",
+      "session": 47669,
+      "exit": 1,
+      "code": "HOSTED_DISPATCH_SOURCE_NOT_SYNCHRONIZED",
+      "cause": "Post-admission full git status included completed001/pending002 local resource journals; no hosted workflow created; no dirty-source bypass."
+    }
+  ],
+  "input_review": {
+    "schema_version": 1,
+    "observedAt": "2026-10-28T21:21:10.575Z",
+    "task": "wake2116_member_input_review",
+    "independent": true,
+    "originalResult": {
+      "path": ".output/stabilization-checkpoints/wake2116/member-data/report.json",
+      "exitCode": 1,
+      "stderr": "HOSTED_REMOTE_REFUSED HOSTED_DEVELOPMENT_RUNTIME_SOURCE_DRIFT",
+      "preserved": true,
+      "dispatchAttempted": false
+    },
+    "actualCause": {
+      "classification": "incorrect_candidate_source_sha_argument",
+      "explanation": "Generic plan memberData enables allowRuntimeEquivalent. requireDevelopmentArtifact computes sourceCompatibility(repoRoot, run.head_sha), then requires compatibility.mainSha === supplied sourceSha. Current proof succeeds and returns 5bc0d0f, so supplying artifact SHA d190 triggers the explicit line-1775 refusal, rather than indicating runtime divergence.",
+      "caller": "scripts/hosted-remote-admission.mjs:1999-2128",
+      "guard": "scripts/hosted-remote-admission.mjs:1757-1789"
+    },
+    "identities": {
+      "artifactSourceSha": "d19043d8b95c05153fec3763559dfd6f57ebb882",
+      "candidateMainSha": "5bc0d0f219dbae885919bb616aaa6d1174955ecb",
+      "workflowCheckoutSha": "not created; no dispatch; main would be selected by unchanged normal helper",
+      "developmentRunId": "40758972183",
+      "developmentArtifactId": "12847457843"
+    },
+    "A_gateEligibility": {
+      "verdict": "PASS_for_distinct_corrected_normal_plan_at_observation",
+      "liveDevelopmentRun": {
+        "status": "completed",
+        "conclusion": "success",
+        "event": "push",
+        "head_branch": "main",
+        "head_sha": "d19043d8b95c05153fec3763559dfd6f57ebb882",
+        "run_attempt": 1
+      },
+      "liveArtifact": {
+        "expired": false,
+        "name": "matrx-extend-development-test-d19043d8b95c05153fec3763559dfd6f57ebb882-40758972183-1",
+        "digest": "sha256:b66d4a93c2af58125986711d97868df207497f7ddef4549c65f1ac7f3ebf6035"
+      },
+      "sourceCompatibility": {
+        "executedReadOnly": true,
+        "result": "runtime-equivalent",
+        "mainSha": "5bc0d0f219dbae885919bb616aaa6d1174955ecb",
+        "diffPaths": [
+          "docs/stabilization/CHECKLIST.md",
+          "docs/stabilization/COORDINATOR.md",
+          "docs/stabilization/STATUS.html",
+          "docs/stabilization/STATUS.md",
+          "docs/stabilization/inventory.json",
+          "docs/stabilization/reports/wake2001-owner-disk-20261028.json",
+          "docs/stabilization/reports/wake2001-owner-stop-20261028.json",
+          "docs/stabilization/reports/wake2001-peer-20261028.json",
+          "docs/stabilization/reports/wake2001-seo-native-20261028.json",
+          "docs/stabilization/resource-journals/wake2001-owner-current-20261028-001.jsonl"
+        ],
+        "proofScope": "Normal sourceCompatibility checks ancestor, net diff, all intervening commit paths, synchronized HEAD/origin/main, and pending runtime inputs."
+      },
+      "git": {
+        "headEqualsOriginMainEqualsLiveRemote": true,
+        "ahead": 0,
+        "behind": 0,
+        "trackedDiff": "",
+        "pendingUntracked": [
+          "docs/stabilization/resource-journals/wake2116-owner-current-20261028-001.jsonl"
+        ],
+        "trackedRuntimeClean": true
+      },
+      "workflow": {
+        "requireHostedWorkflowContract": true,
+        "localAndCommittedSha256": "76e0578aaff6100aa51576036dea55c0028482ea250f2015951b473a98710fd2",
+        "matchesUnchangedReviewedHash": true
+      },
+      "existingGuardsRead": {
+        "testsRun": false,
+        "proof": "scripts/hosted-remote-admission.test.mjs:1386-1403 explicitly admits main with previous artifact, preserves artifactSourceSha, returns mainSha, rejects without runtime-equivalence. Existing lifecycle guard reads also reject script/src/workflow/lock changes."
+      }
+    },
+    "B_procedure": {
+      "verdict": "DISTINCT_corrected_normal_plan_allowed; dispatch_not_assessed_or_authorized_by_this_review",
+      "intendedCommand": "node scripts/hosted-remote-admission.mjs plan --lane A --member-data-scope auto-extract --development-run-id 40758972183 --development-artifact-id 12847457843 --source-sha 5bc0d0f219dbae885919bb616aaa6d1174955ecb",
+      "reason": "Correct candidate input matches explicit existing caller contract; artifact run/id/source/digest stay frozen. This is a separate normal plan with corrected inputs, not retrying the rejected artifact-SHA claim or suppressing refusal.",
+      "remainingGuards": "Any normal dispatch must independently satisfy remote workflow reviewed hash, source synchronization before and after admission, lane-A capacity, existing member secret presence, and final sourceCompatibility. Existing untracked owner journal can cause post-admission full git-status synchronization refusal even though compatibility permits documentation paths. Do not delete/mutate it or bypass guard.",
+      "stopIf": "If current main changes or unchanged helper refuses actual runtime/source/policy, stop and preserve that new refusal; no alternate API/workflow or forced argument."
+    },
+    "actions": {
+      "normalPlanRun": false,
+      "dispatch": false,
+      "jobs": false,
+      "tests": false,
+      "GUI": false,
+      "sourceEdits": false,
+      "gitMutations": false,
+      "secretOrFixtureMutation": false,
+      "onlyWrite": "this ignored private report"
+    },
+    "toolCalls": 15
+  },
+  "terminal_cleanup": {
+    "at": "2026-10-28T21:27:44.639673+00:00",
+    "status": "TERMINAL_CLEANUP_VERIFIED",
+    "owner": "/root/wake2116_member_fixture",
+    "reason": "Parent normal matching dispatch exit1 HOSTED_DISPATCH_SOURCE_NOT_SYNCHRONIZED; no owned hosted run created",
+    "run_id": null,
+    "owned_secret_absent": true,
+    "fixture_exact_archive_restored": true,
+    "owned_auth_files_absent": true,
+    "steps": {
+      "owned_secret_delete": {
+        "exit_code": 0
+      },
+      "secret_inventory_readback": {
+        "exit_code": 0
+      },
+      "fixture_restore": {
+        "exit_code": 0
+      },
+      "fixture_exact_readback": {
+        "exit_code": 0
+      }
+    },
+    "no_retry_or_new_staging": true,
+    "original_refusals_preserved": true,
+    "product_credit": 0
+  },
+  "private_evidence_sha256": {
+    "member-data/report.json": "7afe8de738ec42bda91968765f460f03534e9a13122e479183a4760ec1f46882",
+    "member-data/corrected-report.json": "5c8b441aa5fd6321fe69a1a9bea71b5ba6ae246165b4674eab712219fec5ff54",
+    "member-data/staged2-plan.json": "40491b5ee6fae5ff9f8a628ec52711abb9a6e20268da8f95a77e5a069812b255",
+    "member-data/staged2-dispatch.stderr": "0d1a54fbf9203a1c19946bde8ae86c85c439399a7f237e2eda4c993901a29aaa",
+    "member-fixture/native-report.json": "ed4f7a12950064b6518b3ca4c028ddef5a332fbc36de0ed3ee75ff6699715f29",
+    "member-fixture/staged2-report.json": "785b5e979eeecbd1bac0bc683ca3133789013ac61955b3e501d3fb6a82d3136a",
+    "member-fixture/staged2-cleanup.json": "45225995bdd5e06b4bcd4b9ac61de729a370cb56c347be8f8609a5d4c47e1e8e"
+  },
+  "next_action": "Finish/push completed local evidence first. Stage the canonical owned member fixture, then normal plan/dispatch on the then-current candidate main before creating any new local pending resource journal. Keep immutable artifact source separate. Never move/remove pending journals or invoke direct dispatch to bypass refusal. No unsupported --help probe."
+}

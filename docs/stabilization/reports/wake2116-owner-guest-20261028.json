@@ -1,0 +1,63 @@
+{
+  "status": "SCOPED_OBSERVATIONS_PEER_REVIEWED_WITH_LIMITS",
+  "source_sha": "d19043d8b95c05153fec3763559dfd6f57ebb882",
+  "current_main": "5bc0d0f219dbae885919bb616aaa6d1174955ecb",
+  "ci_run": 40758972183,
+  "artifact_id": 12847457843,
+  "promoted_tree_sha256": "0358e75784ed6ae8b601a04ac889180a49796fc21e84b4ceeefc7703a4c5b3d5",
+  "source_evidence": "Parent reports normal promoter session 56424 exit 0; independent adoption peer permitted existing import. Prior reimport session 34686 exit 1 cause unknown.",
+  "previous_attempt": "001 refused RESOURCE_DISK_LOW, holder exit 2; retained separately",
+  "resource_run": "wake2116-owner-current-20261028-002",
+  "holder_session": 96287,
+  "holder_exit": 0,
+  "watcher_session": 28377,
+  "watcher_exit": 0,
+  "watch_reads": 116,
+  "watch_max_gap_seconds": 2.012526,
+  "watch_risks": [],
+  "resource_final": "valid",
+  "ui_calls": 21,
+  "owner_observation": {
+    "reload": "clicked and Chrome displayed Reloaded",
+    "after_reload": "DEV 0.2.631 enabled, ID cihdmkcdjjckfhjpgoedmgfpoljebaml, unpacked path /Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev, pin on",
+    "store_alongside": "0.2.577 enabled, ID hnfolienncfklkgmdjjmhhegglimlamg; pin on"
+  },
+  "guest_observation": {
+    "profile": "Matrx Guest Test",
+    "store_sidepanel_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "account": "Guest; Settings Email — and Sign in",
+    "model": "Matrx Browser Agent · Claude Sonnet 5.5; unchanged default",
+    "messages_sent": 2,
+    "first": "What is 2 + 2? Reply briefly.",
+    "first_answer": "2 + 2 = 4.",
+    "followup_rendered": "Add. 1 tothat answer. Reply briefly.",
+    "followup_answer": "4 + 1 = 5.",
+    "terminal": "Both answers in one visible conversation, disabled Send and no Stop control",
+    "original_safe_terminal_ax": "owner/guest-terminal-ax.txt"
+  },
+  "advertised_backend_before_after": "Parent separately sampled /health/version b83819ed5b54425d6a69bb724396d87d58c74227 both times; endpoint samples do not establish per-stream SHA",
+  "limitations": "Scoped UI observation only. Account/owner originals not separately saved; exact <=4 native API group cap independently unverified. No full Chat/grounding/reload third turn/New chat reset/candidate non-admin acceptance/defect closure/release.",
+  "cleanup": "Closed owned manager tab, guest sidepanel and newly opened guest window; owner Vault focus restored. Holder and watcher exited; CUA reset. No credentials or auth callbacks used.",
+  "next_action": "Normal hosted dispatch from a clean synchronized checkout before opening local pending journals; capture decisive owner/account originals and per-batch native API counts in future UI lanes.",
+  "schema": 1,
+  "private_source_sha256": "bd737ca76733c79261bd66c76ea7da074271fe6f6349173b3866a51c6361ee43",
+  "evidence_kind": "actual browser operator observations and saved terminal AX; no API-only or unpacked public-CRX substitution",
+  "ui_calls_kind": "21 CUA tool invocation batches; individual native API counts within each batch not retained",
+  "owner_observation_provenance": "Executor observed reload toast/path/ID/version/pin in native tool outputs; decisive originals not separately retained, independent owner/account verification incomplete.",
+  "guest_terminal_evidence": {
+    "private_path": "owner/guest-terminal-ax.txt",
+    "sha256": "1f9fbe530d6bace77273cb343996155d3f7a1f4828f2c8e15d7856a98cd193b5",
+    "independent_review": "saved original supports two visible correct answers, same conversation, disabled Send/no Stop and visible Sonnet5.5; backend guest auth, wire conversation/completion events remain unverified"
+  },
+  "model_and_calls": {
+    "model": "visible Sonnet5.5; default unchanged executor-attested",
+    "ui_messages": 2,
+    "provider_call_count": "unknown",
+    "billing_or_cheapest_claim": false
+  },
+  "backend_samples": {
+    "advertised_sha": "b83819ed5b54425d6a69bb724396d87d58c74227",
+    "before_after_equal": true,
+    "per_stream_identity_proven": false
+  }
+}
