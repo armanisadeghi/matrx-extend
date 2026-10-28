@@ -1,0 +1,51 @@
+{
+  "task_id": "store_reader_plan_attack",
+  "source_head": "7071b372a1dba9829f88a7bd32f9bf25a0c84e1a",
+  "status": "FIX_FIRST_CONCRETE_CONTRACTS",
+  "scope": "Read-only source/current-generated-observation review; no UI, tests, network, edits to tracked files, CI or credentials.",
+  "A_behavior": {
+    "verdict": "PARTIAL pending plan corrections; requested result is justified",
+    "reality": "Called real current_store_release_lines without rendering/writing: it selects 2026-10-20 Pending review577 / Published205. Captured Oct27 current_private_observation explicitly says Published577 / Draft577 unpublished, correct primary; producer receipt is ignored by both existing globs. No fresh dashboard observation performed.",
+    "coverage": "Existing reader, real daily producer and direct CI invocation identified. Existing historical daily/submission semantics and all three generated views must remain covered."
+  },
+  "B_quality": {
+    "verdict": "FIX_FIRST",
+    "findings": [
+      {
+        "severity": "Important",
+        "id": "observation-time",
+        "finding": "Daily receipt top at is preflight07:15, actual authenticated current observation is at_start07:30:23 / at_end07:30:33. Ranking by top at/completed_at or filename alone can choose stale evidence. Last_authenticated_private_observation is a previous-day snapshot, never a current observation.",
+        "required": "Validate and rank current authenticated evidence by its own aware at_end (and valid at_start<=at_end), render the exact observed bracket/time. Separately render fallback last-verified time/status when current is absent/unavailable; never treat stale last as new."
+      },
+      {
+        "severity": "Important",
+        "id": "publication-boundaries",
+        "finding": "Actual daily public_listing_remote_cache explicitly marks returned205 stale; opened mail577 is Oct23 historical. Mapping either to a current public listing or rendering null pending_version as globally no pending would ship a lie.",
+        "required": "Daily output must state current public listing unverified/stale cache excluded, preserve exact unpublished draft and pending_scope only for inspected views. Mail absence never fills pending. Current unavailable status must retain last verified private state explicitly."
+      },
+      {
+        "severity": "Important",
+        "id": "contract-validation",
+        "finding": "current_private_observation is typed differently from legacy private_status. Filename date is UTC-looking while user schedule is LA; last_authenticated daily_window belongs Oct26. Naive date check against that nested field rejects valid current Oct27 or re-labels old state.",
+        "required": "Pin current schema1/COMPLETE_UI_STOPPED, exact primary item identity, version strings/types, aware current timestamps and deliberate filename-day contract. Use current actual observation fields; do not infer current day from previous daily_window or from lane. Add boundary fixture crossing UTC/LA midnight according to chosen producer contract."
+      },
+      {
+        "severity": "Important",
+        "id": "direct-test-runner",
+        "finding": "CI directly invokes test_stabilization_release_truth.py; file only defines two functions and no main. Existing green does not run assertions.",
+        "required": "Wire actual direct execution with nonzero failure and visible case count. Add subprocess regression that deliberately failing test/reader mutation exits nonzero under the exact direct python invocation. Merely importing tests, source-reading a main block, or manually invoking pytest does not prove CI path."
+      },
+      {
+        "severity": "Important",
+        "id": "guard-forcing",
+        "finding": "One new happy-path daily assertion can be satisfied by constant Published577; a failed import/fixture mismatch is not old-reader RED.",
+        "required": "Use captured full daily and old submission/legacy receipts. Prove old reader fails assertion selecting actual current observation, alternate valid differing versions/status wins, malformed/wrong-item/unauth/no-current/offset times do not overwrite valid state, same output semantics/link across STATUS/CHECKLIST/HTML. Exercise saved constant-return and omission mutants in memory/scratch, without weakening shared files."
+      }
+    ]
+  },
+  "advisory": [
+    "No workflow change, canonical Markdown parser, new Store record, browser call or dashboard poll is needed. Reuse current reader and real receipt fields; HTML link regex must include release-daily names safely.",
+    "Avoid adding a wall-clock future cutoff by habit. If needed, make deterministic clock dependency explicit and test it; otherwise malformed chronology/date mismatches are sufficient scope."
+  ],
+  "next_action": "Owner adjudicates these contract points; implementation waits until normal B dispatch so shared checkout remains clean. Fresh independent review then verifies actual generated surfaces and exact direct CI test execution. No product/Store acceptance credit from this reporting repair."
+}

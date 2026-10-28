@@ -1,6 +1,6 @@
 # Stabilization checklist
 
-Generated 2026-10-28 00:26 UTC from inventory.json, defect records, daily Store records, and the historical coverage audit. Inventory updated 2026-10-28T00:26:29.260917+00:00.
+Generated 2026-10-28 01:38 UTC from inventory.json, defect records, daily Store records, and the historical coverage audit. Inventory updated 2026-10-28T00:26:29.260917+00:00.
 
 ## Current truth
 
@@ -8,14 +8,15 @@ Generated 2026-10-28 00:26 UTC from inventory.json, defect records, daily Store 
 - Case results: pass 92, partial 99, fail 1, unverified 1137, n/a 11; 205 explicitly unverified and 932 with no result record. Missing results count as unverified, including later-wave surfaces.
 - Fully verified feature-role pairs: 0/402 under the rule that every applicable case passes and every control maps to a case.
 - Procedure gaps: 0 missing steps; 0 missing expected outcomes; 0 missing control links; 1 explicitly control-less procedures.
-- Defect states: closed 165, retest-pass 10, fixed 90, in-fix 26, open 3. A fixed or closed defect is not a feature-level UI pass.
+- Defect states: closed 165, retest-pass 10, fixed 90, in-fix 27, open 3. A fixed or closed defect is not a feature-level UI pass.
 
 ## Current Store release observations
 
-Last observed **2026-10-20T15:26:38Z**; [Store submission receipt](reports/store577-submission-20261020.json).
-**Public listing:** no public listing observation in this receipt; publication remains unverified.
-**Authenticated dashboard:** Pending review; This draft is pending review; Draft package 0.2.577; Published package 0.2.205.
-These observations are bounded to their recorded times; submission does not establish Store publication, installation, or product acceptance.
+Last observed **2026-10-27T07:30:23.392Z — 2026-10-27T07:30:33.363Z**; [daily Store record](reports/release-daily-20261027.json).
+**Public listing:** current rendered listing unverified; stale cached listing and historical review mail are not a current listing observation.
+**Authenticated dashboard:** Published - public; Published package 0.2.577; Draft package 0.2.577. Published view: This draft is published and available to the public. Draft view: This draft is unpublished.
+**Private review scope:** No pending/review version displayed in inspected exact-primary status Draft/Published and Package views. No global inference from mail absence/public listing.
+These observations are bounded to their recorded times and inspected dashboard views; mail absence does not establish pending state, and neither publication nor installation certifies product acceptance.
 
 ## Historical audit checkpoint (coverage-audit-20261001.json)
 
@@ -26,7 +27,7 @@ These observations are bounded to their recorded times; submission does not esta
 
 ## Inventory freshness review
 
-Since inventory source `e4b5e32b5e6936e302905ec327b3ab60f858c792`, **167 `src/` paths changed** through `6e4fe25557903be5af9f5ac883368721c65b03eb`. A direct path-anchor comparison matched 25 and left 142 without an exact inventory anchor.
+Since inventory source `e4b5e32b5e6936e302905ec327b3ab60f858c792`, **167 `src/` paths changed** through `7f1744da34bcce57ba83d91bfcf79d563fb34190`. A direct path-anchor comparison matched 25 and left 142 without an exact inventory anchor.
 A direct anchor miss is only a census-review hint. Feature inventory anchors are not an exhaustive dependency graph, so it does not prove an omitted feature or behavior.
 
 ## Next test priorities

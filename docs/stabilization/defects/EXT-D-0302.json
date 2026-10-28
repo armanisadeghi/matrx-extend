@@ -1,0 +1,46 @@
+{
+  "id": "EXT-D-0302",
+  "feature_id": "EXT-F-0003",
+  "case_ids": [],
+  "case_mapping": "Supporting generated release-status reader and direct CI truth guard only; no existing extension product cell asserted or fabricated.",
+  "title": "Generated release status omits completed authenticated daily observations and direct CI truth tests never execute",
+  "surface": "stabilization STATUS/CHECKLIST/HTML reporting and existing docs CI Python entry point",
+  "auth_mode": "captured primary-item authenticated observation; no new UI/auth operation",
+  "severity": "S3",
+  "priority": "P2",
+  "state": "in-fix",
+  "owner": "root",
+  "source_sha": "7f1744da34bcce57ba83d91bfcf79d563fb34190",
+  "preconditions": [
+    "Current captured release-daily-20261027 reports exact-primary Published577 and Draft577 explicitly unpublished after older Oct20 submission.",
+    "Existing docs workflow invokes python3 scripts/test_stabilization_release_truth.py directly."
+  ],
+  "reproduction": [
+    "Call the existing release selector; it selects Oct20 pending577/published205 while ignoring newer completed daily record.",
+    "Inspect the direct Python file: functions are defined but no runner invokes them."
+  ],
+  "expected": "The single shared reader selects latest valid actual authenticated observation by its own aware time, keeps public/private/last-verified limits explicit and exposes structured pending versions; exact direct CI invocation executes and propagates guard failures.",
+  "actual": "New receipt schema/discovery was omitted; direct Python command could exit0 with zero assertions.",
+  "cause": "Discovery/schema omission plus absent direct execution entry point; no Store dashboard, extension Chat or product-cause claim.",
+  "evidence": [
+    "docs/stabilization/reports/store-reader-diagnosis-20261028.json",
+    "docs/stabilization/reports/reader-plan-attack-20261028.json",
+    "docs/stabilization/reports/store-reader-implementation-20261028.json",
+    "docs/stabilization/reports/reader-source-peer-20261028.json",
+    "docs/stabilization/reports/reader-final-source-peer-20261028.json"
+  ],
+  "verification": "Fresh final independent source B PASS; A PARTIAL solely hosted direct test execution pending. Structured pending value and Published/Draft view context corrections accepted; root light regeneration0 and all3 saved outputs independently read/hash-checked. No local suite run or product credit.",
+  "next_action": "Finish fresh final source review, push exact source unit to automatic fullCI, then existing evidence-only docs CI must actually execute updated direct Python suite and mutants. No supporting closure or product acceptance before verified completion.",
+  "transition_history": [
+    {
+      "at": "2026-10-28T01:36:27.494669+00:00",
+      "from": "open",
+      "to": "in-fix",
+      "reason": "Original reader assertion RED and non-executing direct test runner confirmed; source repair pending hosted execution and independent verification."
+    }
+  ],
+  "source_hashes": {
+    "scripts/generate-stabilization-tracker.py": "da69fd75e55fae14569f2bf46be90909d00e3154ae07c24fdc462356d82194ce",
+    "scripts/test_stabilization_release_truth.py": "83110234ced2b76e193d4266f0c9190ef6dc4ac5de3b8c188f7df407a4f71633"
+  }
+}

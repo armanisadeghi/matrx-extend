@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-28 00:26 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-28T00:26:29.260917+00:00. 207 features · 833 cases · 1422 controls · 300 linked defect records.
+Generated 2026-10-28 01:38 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-28T00:26:29.260917+00:00. 207 features · 833 cases · 1422 controls · 301 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -17,7 +17,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | --- | ---: | --- | --- | --- | --- | ---: |
 | [Development installation](#development-installation) | 1 | 2 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 1 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 6, partial 1, fail 0, unverified 14, n/a 0 | 15 |
 | [Testing infrastructure](#testing-infrastructure) | 1 | 3 pass · 1 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 3 pass · 1 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 2 pass · 1 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 8, partial 3, fail 0, unverified 23, n/a 0 | 11 |
-| [Release infrastructure](#release-infrastructure) | 1 | 10 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 28, partial 0, fail 0, unverified 13, n/a 0 | 3 |
+| [Release infrastructure](#release-infrastructure) | 1 | 10 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 28, partial 0, fail 0, unverified 13, n/a 0 | 4 |
 | [Generated API request, credential and result transport](#generated-api-request,-credential-and-result-transport) | 1 | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 12, n/a 0 | 1 |
 | [Navigation / shell](#navigation--shell) | 1 | 4 pass · 4 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 3 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 7, partial 7, fail 0, unverified 21, n/a 0 | 0 |
 | [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 24, n/a 0 | 0 |
@@ -59,10 +59,11 @@ Role counts include only case-role combinations listed in each case. The all-rol
 
 ## Current Store release observations
 
-Last observed **2026-10-20T15:26:38Z**; [Store submission receipt](reports/store577-submission-20261020.json).
-**Public listing:** no public listing observation in this receipt; publication remains unverified.
-**Authenticated dashboard:** Pending review; This draft is pending review; Draft package 0.2.577; Published package 0.2.205.
-These observations are bounded to their recorded times; submission does not establish Store publication, installation, or product acceptance.
+Last observed **2026-10-27T07:30:23.392Z — 2026-10-27T07:30:33.363Z**; [daily Store record](reports/release-daily-20261027.json).
+**Public listing:** current rendered listing unverified; stale cached listing and historical review mail are not a current listing observation.
+**Authenticated dashboard:** Published - public; Published package 0.2.577; Draft package 0.2.577. Published view: This draft is published and available to the public. Draft view: This draft is unpublished.
+**Private review scope:** No pending/review version displayed in inspected exact-primary status Draft/Published and Package views. No global inference from mail absence/public listing.
+These observations are bounded to their recorded times and inspected dashboard views; mail absence does not establish pending state, and neither publication nor installation certifies product acceptance.
 
 ## Historical audit checkpoint (coverage-audit-20261001.json)
 
@@ -204,9 +205,9 @@ These historical checks retain their original artifact boundary; they do not est
 
 **Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 15. **Controls:** 13.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0204, EXT-D-0210, EXT-D-0253
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0204, EXT-D-0210, EXT-D-0253, EXT-D-0302
 
-**Linked defects:** [EXT-D-0002](defects/EXT-D-0002.json) (closed), [EXT-D-0003](defects/EXT-D-0003.json) (closed), [EXT-D-0004](defects/EXT-D-0004.json) (closed), [EXT-D-0005](defects/EXT-D-0005.json) (closed), [EXT-D-0013](defects/EXT-D-0013.json) (closed), [EXT-D-0016](defects/EXT-D-0016.json) (closed), [EXT-D-0017](defects/EXT-D-0017.json) (closed), [EXT-D-0019](defects/EXT-D-0019.json) (closed), [EXT-D-0020](defects/EXT-D-0020.json) (closed), [EXT-D-0085](defects/EXT-D-0085.json) (closed), [EXT-D-0092](defects/EXT-D-0092.json) (closed), [EXT-D-0116](defects/EXT-D-0116.json) (closed), [EXT-D-0140](defects/EXT-D-0140.json) (closed), [EXT-D-0188](defects/EXT-D-0188.json) (closed), [EXT-D-0200](defects/EXT-D-0200.json) (closed), [EXT-D-0204](defects/EXT-D-0204.json) (fixed), [EXT-D-0206](defects/EXT-D-0206.json) (closed), [EXT-D-0208](defects/EXT-D-0208.json) (closed), [EXT-D-0209](defects/EXT-D-0209.json) (closed), [EXT-D-0210](defects/EXT-D-0210.json) (fixed), [EXT-D-0212](defects/EXT-D-0212.json) (closed), [EXT-D-0214](defects/EXT-D-0214.json) (closed), [EXT-D-0215](defects/EXT-D-0215.json) (closed), [EXT-D-0253](defects/EXT-D-0253.json) (fixed), [EXT-D-0258](defects/EXT-D-0258.json) (closed), [EXT-D-0262](defects/EXT-D-0262.json) (closed)
+**Linked defects:** [EXT-D-0002](defects/EXT-D-0002.json) (closed), [EXT-D-0003](defects/EXT-D-0003.json) (closed), [EXT-D-0004](defects/EXT-D-0004.json) (closed), [EXT-D-0005](defects/EXT-D-0005.json) (closed), [EXT-D-0013](defects/EXT-D-0013.json) (closed), [EXT-D-0016](defects/EXT-D-0016.json) (closed), [EXT-D-0017](defects/EXT-D-0017.json) (closed), [EXT-D-0019](defects/EXT-D-0019.json) (closed), [EXT-D-0020](defects/EXT-D-0020.json) (closed), [EXT-D-0085](defects/EXT-D-0085.json) (closed), [EXT-D-0092](defects/EXT-D-0092.json) (closed), [EXT-D-0116](defects/EXT-D-0116.json) (closed), [EXT-D-0140](defects/EXT-D-0140.json) (closed), [EXT-D-0188](defects/EXT-D-0188.json) (closed), [EXT-D-0200](defects/EXT-D-0200.json) (closed), [EXT-D-0204](defects/EXT-D-0204.json) (fixed), [EXT-D-0206](defects/EXT-D-0206.json) (closed), [EXT-D-0208](defects/EXT-D-0208.json) (closed), [EXT-D-0209](defects/EXT-D-0209.json) (closed), [EXT-D-0210](defects/EXT-D-0210.json) (fixed), [EXT-D-0212](defects/EXT-D-0212.json) (closed), [EXT-D-0214](defects/EXT-D-0214.json) (closed), [EXT-D-0215](defects/EXT-D-0215.json) (closed), [EXT-D-0253](defects/EXT-D-0253.json) (fixed), [EXT-D-0258](defects/EXT-D-0258.json) (closed), [EXT-D-0262](defects/EXT-D-0262.json) (closed), [EXT-D-0302](defects/EXT-D-0302.json) (in-fix)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |

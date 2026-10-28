@@ -9,6 +9,7 @@ import html
 import json
 import re
 from pathlib import Path
+from zoneinfo import ZoneInfo
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -70,9 +71,47 @@ def current_store_release_lines():
             records.append((observed, path.name, "submission", data))
         except (ValueError, KeyError, TypeError, AttributeError):
             continue
+    for path in (BASE / "reports").glob("release-daily-????????.json"):
+        try:
+            data = json.loads(path.read_text())
+            dashboard = data["current_private_observation"]
+            started = datetime.datetime.fromisoformat(dashboard["at_start"].replace("Z", "+00:00"))
+            observed = datetime.datetime.fromisoformat(dashboard["at_end"].replace("Z", "+00:00"))
+            day = datetime.datetime.strptime(path.stem[-8:], "%Y%m%d").date()
+            if (type(data.get("schema")) is not int or data["schema"] != 1
+                    or data.get("status") != "COMPLETE_UI_STOPPED"
+                    or not isinstance(dashboard, dict)
+                    or dashboard.get("item_id") != "hnfolienncfklkgmdjjmhhegglimlamg"
+                    or started.tzinfo is None or observed.tzinfo is None
+                    or started > observed
+                    or observed.astimezone(ZoneInfo("America/Los_Angeles")).date() != day
+                    or any(not isinstance(dashboard.get(key), str)
+                           or re.fullmatch(r"\d+\.\d+\.\d+", dashboard[key]) is None
+                           for key in ("published_version", "draft_version"))
+                    or any(not isinstance(dashboard.get(key), str) or not dashboard[key].strip()
+                           for key in ("overall_status", "draft_status", "published_status", "pending_scope"))
+                    or "pending_version" not in dashboard
+                    or (dashboard.get("pending_version") is not None
+                        and (not isinstance(dashboard["pending_version"], str)
+                             or re.fullmatch(r"\d+\.\d+\.\d+", dashboard["pending_version"]) is None))):
+                continue
+            records.append((observed, path.name, "authenticated_daily", data))
+        except (ValueError, KeyError, TypeError, AttributeError):
+            continue
     if not records:
         return ["No valid dated daily Store record or submission receipt; current public version and private review state are unverified."]
     _, name, kind, data = max(records, key=lambda record: (record[0], record[1]))
+    if kind == "authenticated_daily":
+        dashboard = data["current_private_observation"]
+        pending = (f"Pending package {dashboard['pending_version']}. "
+                   if dashboard["pending_version"] is not None else "")
+        return [
+            f"Last observed **{dashboard['at_start']} — {dashboard['at_end']}**; [daily Store record](reports/{name}).",
+            "**Public listing:** current rendered listing unverified; stale cached listing and historical review mail are not a current listing observation.",
+            f"**Authenticated dashboard:** {dashboard['overall_status']}; Published package {dashboard['published_version']}; Draft package {dashboard['draft_version']}. Published view: {dashboard['published_status']} Draft view: {dashboard['draft_status']}",
+            f"**Private review scope:** {pending}{dashboard['pending_scope']}",
+            "These observations are bounded to their recorded times and inspected dashboard views; mail absence does not establish pending state, and neither publication nor installation certifies product acceptance.",
+        ]
     if kind == "submission":
         dashboard = data["dashboard_submission"]
         return [
@@ -101,7 +140,7 @@ def current_store_release_html():
     for line in current_store_release_lines():
         value = esc(line)
         value = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", value)
-        value = re.sub(r"\[(daily Store record|Store submission receipt)\]\((reports/(?:store-release-followthrough|store[0-9]+-submission)-[0-9]{8}\.json)\)",
+        value = re.sub(r"\[(daily Store record|Store submission receipt)\]\((reports/(?:store-release-followthrough|store[0-9]+-submission|release-daily)-[0-9]{8}\.json)\)",
                        r'<a href="\2">\1</a>', value)
         paragraphs.append(f"<p>{value}</p>")
     return '<section aria-labelledby="store-release"><h2 id="store-release">Current Store release observations</h2>' + ''.join(paragraphs) + '</section>'

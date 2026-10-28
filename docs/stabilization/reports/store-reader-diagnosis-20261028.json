@@ -1,0 +1,52 @@
+{
+  "task_id": "store-reader-diagnosis",
+  "lane": "read-only implementation diagnosis",
+  "at": "2026-10-28T01:11:09.730362+00:00",
+  "status": "CAUSE_REPRODUCED_SOURCE_UNCHANGED_AWAIT_ROOT_AUTHORIZATION",
+  "skills": ["diagnose", "forcing-function-tests"],
+  "reproduction": {
+    "command": "Import generate-stabilization-tracker.py; assert reports/release-daily-20261027.json in joined current_store_release_lines()",
+    "actual_exit": 1,
+    "error": "Newer authenticated Oct27 daily observation discarded; old Oct20 submission wins",
+    "actual_output": "Last observed 2026-10-20T15:26:38Z, Pending review Draft0.2.577 Published0.2.205, no public listing observation"
+  },
+  "confirmed_causes": [
+    {
+      "file": "scripts/generate-stabilization-tracker.py:32",
+      "cause": "Only two globs (store-release-followthrough-????????.json and store*-submission-????????.json) feed chronological max. Current completed release-daily-20261027 schema1/current_private_observation is never a candidate. This is discovery/schema omission, not sorting error."
+    },
+    {
+      "file": "scripts/test_stabilization_release_truth.py",
+      "cause": "Two top-level test_* functions are never invoked by __main__; CI docs invokes python3 script directly, so existing production checks do not run. AST has no runner/main block; file tail ends second function."
+    }
+  ],
+  "existing_reuse": [
+    "Keep current_store_release_lines as sole selection and bounded-text primitive used by STATUS.md/CHECKLIST.md/STATUS.html. Extend candidate discovery with exact release-daily-????????.json, not a duplicate renderer or free-text canonical Markdown parser.",
+    "Reuse existing aware datetime parsing/max selection and conservative invalid-record skip. Preserve legacy daily/submission branches and captured receipt strictness.",
+    "Use existing scripts/test_stabilization_release_truth.py captured repo receipt fixtures plus tempfile BASE. Add executable test entry point (or unittest wrapper) so existing direct CI command actually exercises tests; no workflow/policy change necessary."
+  ],
+  "smallest_proposed_extension": {
+    "discovery": "Recognize schema=1 status=COMPLETE_UI_STOPPED current_private_observation dict with exact primary item, nonempty aware at_start/at_end, valid semver published/draft and string overall/draft/published statuses; select observation at_end, never report/peer at or completed_at as dashboard observation.",
+    "scope": "Render authenticated Published/Draft/status plus pending_scope and reviewer-action scope exactly as bounded inspected-view evidence. pending_version null alone is not no-pending proof. Public cached listing205 is explicitly stale, never used as new public577 evidence; official mail publication is a separate bounded observation and never proof of pending absence.",
+    "date": "New release-daily filename denotes LA schedule window. Validate aware at_end converted with ZoneInfo America/Los_Angeles equals filename date, or require explicit daily-window field in future receipt schema. Preserve legacy UTC filename/date constraints for old receipt kinds; do not silently shift all existing types.",
+    "unavailable": "Never substitute last_authenticated_private_observation for current authenticated evidence. A future current-unavailable receipt may say current unavailable plus separately dated/referenced last verified status only if schema actually provides that evidence. Existing legacy unavailable-current branch stays tested. Invalid/missing current observation must not infer pending null/none from cached listing or mail absence.",
+    "html": "Extend existing link replacement pattern/label handling for release-daily exact paths so HTML links are actual anchors; no second selection implementation."
+  },
+  "meaningful_guard_plan": [
+    "Capture current actual release-daily fixture plus old Oct20 submission in temporary reports; call real render and assert all3views select exact current dashboard timestamp/receipt,577Published/577Draft explicitunpublished, bounded pending_scope, no Pending-review status from old receipt and no claim of live rendered public listing577. This fails current implementation with actual exit1 reproduction above.",
+    "An alternate captured/derived semver payload must reach all3views, defeating hardcoded577. Newer valid pending submission must win; still newer authenticated observation must win by aware observation timestamp.",
+    "At LA23:30 on UTCnextday accept LA daily filename; reject wrong-window, naive/invalid time, reversed at_start/end, foreign primary item, wrong schema, partial/malformed statuses/version. Malformed record must leave previous valid evidence selected.",
+    "Keep existing unavailable-current legacy fixture asserting explicit current unavailable and separately last verified timestamp/version. Do not turn absent/null pending into no-pending.",
+    "CI direct python command must actually invoke tests and print executed count; in-memory/scratch mutation dropping new reader branch or normalizing unavailable to no-pending must fail appropriate guard. Never mutate shared production file on disk."
+  ],
+  "actions": {
+    "tracked_source_edits": 0,
+    "UI_calls": 0,
+    "AI_calls": 0,
+    "CI_dispatches": 0,
+    "builds_or_installs": 0,
+    "credentials_or_DB": 0,
+    "commits": 0
+  },
+  "next_action": "Root may authorize bounded implementer after B dispatch/checkout clean gate. Source repair requires independent review plus guarded focused checks; this diagnosis alone does not fix or certify generated status."
+}
