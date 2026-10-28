@@ -1,0 +1,77 @@
+{
+  "task_id": "wake0109_hosted_truth_peer",
+  "at": "2026-10-28T01:57:24.117726+00:00",
+  "status": "PASS_SUPPORTING_READER_EXECUTION_AND_DISK_PROOF_ONLY",
+  "verdict_A": "PASS for D302 supporting reader original-repro and surrounding captured/alternate/malformed/time/status/output/direct-invocation guards: actual hosted direct Python invocation executed all8 functions and passed. Native Settings full-case and Store/product acceptance remain PARTIAL/FAILED/unverified as previously recorded.",
+  "verdict_B": "PASS: exact unchanged reviewed source hashes, official CI/job/step authority and immutable original disk receipts/current stable tree agree; no test/workflow/guard bypass or broader acceptance claim.",
+  "hosted": {
+    "run_id": 40617846804,
+    "head_sha": "e8db77127ea227b30c8f731e28bebf82169e64cf",
+    "status": "completed",
+    "conclusion": "success",
+    "job_id": 122584566687,
+    "job_name": "docs",
+    "job_conclusion": "success",
+    "step": {
+      "completedAt": "2026-10-28T01:56:12Z",
+      "conclusion": "success",
+      "name": "Validate stabilization inventory and report truth",
+      "number": 8,
+      "startedAt": "2026-10-28T01:56:06Z",
+      "status": "completed"
+    },
+    "actual_command": "python3 scripts/test_stabilization_release_truth.py",
+    "observed_summary": "Ran 8 tests in 5.635s; OK",
+    "actual_script_exit_scope": "Official completed step/job success establishes exit0; raw log names all8 FunctionTestCase functions with ...ok.",
+    "tests": [
+      "test_actual_observation_order_and_la_day_preserve_submission_utc_contract",
+      "test_authenticated_daily_uses_observed_bracket_and_variable_dashboard_values",
+      "test_authenticated_submission_supersedes_older_daily_without_inventing_public_listing",
+      "test_completed_authenticated_daily_supersedes_captured_pending_submission",
+      "test_daily_guards_catch_in_memory_omission_and_constant_result_mutants",
+      "test_direct_ci_python_invocation_propagates_seeded_assertion_failure",
+      "test_generated_release_uses_latest_valid_daily_observation",
+      "test_incomplete_or_foreign_daily_never_overwrites_valid_private_evidence"
+    ],
+    "negative_guard_scope": "Official outer cases for in-memory omission/constant mutants and exact-direct seeded child assertion passed. Reviewed unchanged code asserts child return1/Ran1test/FAILEDfailures1 and catches only expected AssertionError from mutants; captured child output is not separately printed in official log, so no independent raw-child-transcript claim."
+  },
+  "source_hashes": {
+    "scripts/generate-stabilization-tracker.py": "da69fd75e55fae14569f2bf46be90909d00e3154ae07c24fdc462356d82194ce",
+    "scripts/test_stabilization_release_truth.py": "83110234ced2b76e193d4266f0c9190ef6dc4ac5de3b8c188f7df407a4f71633"
+  },
+  "disk": {
+    "private_original_refs_checked": 11,
+    "hash_or_size_mismatches": 0,
+    "official_artifact_id": 12786150932,
+    "official_artifact_digest": "sha256:0c677c0e630977fa6edc3c63913fd1c8a9d3fde85cf9d53cac770bf5babc94c6",
+    "source_sha_at_adoption": "d6282d509b6bd31c66e3a3aeac9c68b75086ce01",
+    "promotion_receipt_compatibility": "exact-source",
+    "main_sha_at_adoption": "d6282d509b6bd31c66e3a3aeac9c68b75086ce01",
+    "version": "0.2.630",
+    "observed_current_stable_tree": "dfc77ee51e9bd29bf617d227e0345f13c3d97dd86bd7ae1b4120158549bf7e91",
+    "file_count_from_immutable_receipt": 2821,
+    "receipt_matches_current_stable_receipt": true,
+    "compatibility_scope": "Exact-source at adoption despite pending runtime-equivalent metadata; import correctly exact_pushed_commit_only/trackedDirtytrue. Later e8db changes only stabilization documentation/records; do not relabel exact-source at adoption as current HEAD equality or uninterrupted directory proof.",
+    "exit_scope": "Actor reports import/promotion/standalone/posthash actual0; saved immutable receipts/logs consistent. Reviewer did not independently retrieve original provider process-exit records.",
+    "loaded_browser": "UNVERIFIED; no CUA/UI/reload/Loaded-from/version/pin operation by reviewer. Last actual loaded6e4 remains historical."
+  },
+  "records": "Corrected COORD reports source fullCI success/docs skipped and direct suite pending at that checkpoint; D300 old no-native observation explicitly historical and new current receipt retained. D302 still IN-FIX pending this executed guard proof. Canonical Store record preserves last authenticated Published577/Draft577 explicitly unpublished and separately bounded guest/disk/native limits. No new Store observation/upload/submission/release or full-case product closure.",
+  "originals": [
+    {
+      "path": ".output/stabilization-checkpoints/wake0109/docs40617846804-status-original.json",
+      "bytes": 4878,
+      "sha256": "a20e70c257a3d27a6a5b7b8edfc74ffa095d0a06465c4c6efbe9fc8bff8141cc"
+    },
+    {
+      "path": ".output/stabilization-checkpoints/wake0109/docs40617846804-job-original.log",
+      "bytes": 111676,
+      "sha256": "dc3016a6fea59cefad3269c2401abd914d3a904776c570aaf133683b6e9d29e6"
+    }
+  ],
+  "actions": "Official GitHub read/log download, lightweight local hash/JSON/source/diff reads only. No suites/heavy/UI/CI dispatch/build/install/auth/source edits or commit.",
+  "limits": [
+    "This is saved evidence and actual hosted direct-suite verification, not independent native browser replay.",
+    "No remote profile/process deletion, current loaded extension, backend stream identity, Store candidate or broader product health proof.",
+    "Supporting D302 may close on this bounded original-reader/guard evidence; D299/D300 and broader Settings acceptance remain open."
+  ]
+}

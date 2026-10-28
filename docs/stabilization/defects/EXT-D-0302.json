@@ -8,7 +8,7 @@
   "auth_mode": "captured primary-item authenticated observation; no new UI/auth operation",
   "severity": "S3",
   "priority": "P2",
-  "state": "in-fix",
+  "state": "closed",
   "owner": "root",
   "source_sha": "7f1744da34bcce57ba83d91bfcf79d563fb34190",
   "preconditions": [
@@ -27,16 +27,35 @@
     "docs/stabilization/reports/reader-plan-attack-20261028.json",
     "docs/stabilization/reports/store-reader-implementation-20261028.json",
     "docs/stabilization/reports/reader-source-peer-20261028.json",
-    "docs/stabilization/reports/reader-final-source-peer-20261028.json"
+    "docs/stabilization/reports/reader-final-source-peer-20261028.json",
+    "docs/stabilization/reports/hosted-truth-peer-20261028.json"
   ],
-  "verification": "Fresh final independent source B PASS; A PARTIAL solely hosted direct test execution pending. Structured pending value and Published/Draft view context corrections accepted; root light regeneration0 and all3 saved outputs independently read/hash-checked. No local suite run or product credit.",
-  "next_action": "Finish fresh final source review, push exact source unit to automatic fullCI, then existing evidence-only docs CI must actually execute updated direct Python suite and mutants. No supporting closure or product acceptance before verified completion.",
+  "verification": "Actual official docsCI40617846804/job122584566687 executed python3 scripts/test_stabilization_release_truth.py: all8 named tests passed in5.635s. Original captured-receipt reproduction, legacy/unavailable/submission/alternate/pending/time/malformed/all3surface guards and omission/constant/seeded-child guards passed; fresh independent A/B PASS authenticates official logs/sourcehashes/generated outputs. No separately printed raw child transcript claim.",
+  "next_action": "D302 complete. Continue separate D300 exact fixture-lifecycle repair plan and original/adjacent native retest; owner Chrome latest loaded source remains unverified.",
   "transition_history": [
     {
       "at": "2026-10-28T01:36:27.494669+00:00",
       "from": "open",
       "to": "in-fix",
       "reason": "Original reader assertion RED and non-executing direct test runner confirmed; source repair pending hosted execution and independent verification."
+    },
+    {
+      "at": "2026-10-28T01:58:59.147387+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Reviewed source d628 passed full sourceCI and corrected current generated output."
+    },
+    {
+      "at": "2026-10-28T01:58:59.147387+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Actual unchanged source executed8 direct hosted guards with original reproduction/surrounding/mutant/seeded-failure checks; independent A/B PASS."
+    },
+    {
+      "at": "2026-10-28T01:58:59.147387+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Supporting reader/CI-runner closure only; no extension product/Store acceptance claim."
     }
   ],
   "source_hashes": {
@@ -48,6 +67,17 @@
     "full_run_id": 40616270771,
     "focused_run_id": 40616270765,
     "conclusion": "success",
-    "direct_python_suite": "UNRUN: docs job skipped in full sourceCI; exact direct docs-job gate still required"
+    "direct_python_suite": "Docs job skipped at source fullCI; later hosted_direct_verification passed all8."
+  },
+  "fix_sha": "d6282d509b6bd31c66e3a3aeac9c68b75086ce01",
+  "closure_scope": "Supporting generated release-status reader and direct CI entry point ONLY; zero extension product case/defect or Store/release acceptance credit.",
+  "hosted_direct_verification": {
+    "run_id": 40617846804,
+    "head_sha": "e8db77127ea227b30c8f731e28bebf82169e64cf",
+    "job_id": 122584566687,
+    "actual_command": "python3 scripts/test_stabilization_release_truth.py",
+    "executed_tests": 8,
+    "result": "OK, actual step/job success",
+    "independent_peer": "docs/stabilization/reports/hosted-truth-peer-20261028.json"
   }
 }
