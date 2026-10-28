@@ -78,19 +78,9 @@
   "bounded_source_verification": "docs/stabilization/reports/d300-owner-source-verification-20261027.json",
   "independent_source_review": "docs/stabilization/reports/d300-final-source-peer-20261027.json",
   "verification": {
-    "focused": {
-      "tests": 1181,
-      "pass": 1170,
-      "fail": 0,
-      "skip": 11
-    },
+    "focused": { "tests": 1181, "pass": 1170, "fail": 0, "skip": 11 },
     "compile_exit": 0,
-    "lint": {
-      "files": 3506,
-      "errors": 0,
-      "warnings": 1037,
-      "fixes_applied": false
-    },
+    "lint": { "files": 3506, "errors": 0, "warnings": 1037, "fixes_applied": false },
     "all_three_resource_finals": "valid0/admitted/resourceInvalidfalse",
     "behavior_A": "PARTIAL executed seams only; late source placement inspection",
     "integrity_B": "PASS bounded source/gates",
@@ -318,6 +308,6 @@
       "last_checkpoint": "case_start EXT-F-1003-T04 sequence23; terminal:false",
       "cleanup": "Job terminal; exact guest graceful child exit, restoration and profile deletion unverified."
     },
-    "next_action": "Inspect retained owned/unowned host CPU attribution before future healthy normal admission; do not infer product cause, repeat/relocate invalid job or change thresholds/deadlines. Retest original Theme and adjacent Settings warm/full-reload cases on a freshly eligible exact-source artifact. D300 stays IN-FIX."
+    "next_action": "Retained CPU attribution reviewed in settings9a-resource-20261028.json: mixed owned Chromium/external activity, exact-source wall-time transitions match; renderer role and product cause unresolved. No app/guard/policy patch or immediate retry. Before any future original-route acceptance, name a discriminator and require fresh healthy normal admission plus exact eligible artifact; original Theme and adjacent warm/full-reload Settings remain unverified. D300 stays IN-FIX."
   }
 }
