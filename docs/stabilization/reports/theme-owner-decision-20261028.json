@@ -1,0 +1,41 @@
+{
+  "decision": "ACCEPT_BOUNDED_DESIGN_PROBE_CONFIRMED",
+  "plan": "repair-plan.md",
+  "attack": "plan-attack.json",
+  "rulings": [
+    {
+      "id": "A1",
+      "decision": "FIX",
+      "scope": "Use exact raw-sample equality with only per-store storagePresent/parseStatus canonicalization when both mode fields absent and forms valid/consistent. Keep all unknown/extra properties in comparison; no new projection/recapture."
+    },
+    {
+      "id": "A2",
+      "decision": "FIX",
+      "scope": "Remove only retired Settings field/setter through existing versioned migration plus prevention of re-emission; preserve unrelated data. Keep Chat/Pilot carry-over unchanged."
+    },
+    {
+      "id": "A3",
+      "decision": "FIX",
+      "scope": "Reuse guestModeShadowMatches for finite permissionComparison receipt predicate/category, retain rawserialization informational. No parallel authoritative comparator."
+    },
+    {
+      "id": "A4",
+      "decision": "FIX",
+      "scope": "Durable real store initialization/hydration tests, variableTheme/subsequent writes, unrelated preservation. Demonstrate executed oldwriter/skippedmigration/no-op-or-constantwriter/comparatorconstant mutants at correct seams with original restored."
+    }
+  ],
+  "limits": "Source-causal experiment is required before edit. Native first writer remains unproven. No existingnativepass/closure, no modepolicy/ChatPilotcarry-over deletion, no resource/source/admission bypass. ExactCI and original+surrounding native retest remain required.",
+  "probe": "causal-probe.json",
+  "probe_limit": "Actual source first tested Theme write, singleton already initialized; no native first-writer proof. Durable repair tests must initialize/hydrate isolated actual stores.",
+  "implementation_boundary_clarifications": [
+    "Preserve v6 defaultAgentId null/absent/current/custom: retire Settings mode without re-entering old pre-v6 agent migration.",
+    "Use canonical ActMode for existing worker reader type; no retired Settings type export dependency.",
+    "Do not leave old-data test titles after deleting their only old-data stimulus; retain meaningful equivalent coverage."
+  ],
+  "source_review_round1": {
+    "report": "source-peer.json",
+    "R1": "CONFIRMED_FIX; new positive materialization test used manufactured footprint instead of actual generated observer. Complete real observer/class matrix and executed realistic observer mutant; no production/comparator broadening.",
+    "remaining_acceptance": "Fresh source re-review, exact-main fresh-install CI, original+surrounding native full reload."
+  },
+  "private_original_sha256": "8e2de202fc1455a62af126cf6281d90189a969964087d00c18b60a8b027ffc6f"
+}

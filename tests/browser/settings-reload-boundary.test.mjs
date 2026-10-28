@@ -823,6 +823,8 @@ async function runWarmSettingsScenario(scenario, mutation = null) {
         const stores = observed.shadowFootprint.stores.map((entry) => ({ ...entry }));
         stores[0].storagePresent = true;
         stores[0].parseStatus = 'valid';
+        stores[0].fieldPresent = true;
+        stores[0].mode = 'ask';
         return { ...observed, shadowFootprint: { status: 'observed', stores } };
       }
       if (scenario === 'residual')
@@ -875,7 +877,7 @@ async function runWarmSettingsScenario(scenario, mutation = null) {
     assert.equal(diagnostic.modeComparison.serialization, 'equal');
   }
   if (['store', 'final_store', 'residual'].includes(scenario)) {
-    assert.equal(diagnostic.modeComparison.firstFalse, 'serialization');
+    assert.equal(diagnostic.modeComparison.firstFalse, 'permissionComparison');
     assert.equal(diagnostic.modeComparison.serialization, 'unequal');
     assert.equal(diagnostic.modeComparison.residual, scenario === 'residual');
     assert.equal(diagnostic.modeComparison.stage, scenario === 'final_store' ? 'final' : 'initial');
@@ -1335,11 +1337,11 @@ test('malformed samples retain comparator exceptions or intentionally omit best-
           onStage: (stage) => calls.push(stage),
         }),
       (error) => {
-        // Null stores are malformed: the unchanged comparator can throw before attaching a receipt.
-        // With an earlier false UI predicate, only best-effort receipt generation throws and is omitted.
+        // Null stores fail closed; best-effort receipt generation is omitted for malformed data.
         if (kind === 'early_ui_null_store')
           assert.equal(error.message, 'T10_shadow_baseline_mismatch_before_capture');
-        else if (kind === 'comparator_null_store') assert.ok(error instanceof TypeError);
+        else if (kind === 'comparator_null_store')
+          assert.equal(error.message, 'T10_shadow_baseline_mismatch_before_capture');
         else assert.equal(error, failure, 'original comparator exception identity must survive');
         const projected = fullRechecks.safeUnexpectedError(error);
         assert.equal(

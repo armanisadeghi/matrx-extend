@@ -1,0 +1,153 @@
+{
+  "schema": 1,
+  "status": "R1_ADDRESSED_SOURCE_REVIEW_COMPLETE_NATIVE_PENDING",
+  "review_lane": "fresh R1 recheck by zero-authorship original source reviewer",
+  "observed_at": "2026-10-28T13:51:50.220910+00:00",
+  "base_head": "a90fddc32",
+  "source_sha256": {
+    "src/features/settings/SettingsView.about.test.tsx": "43e83f80b20d1b16ae298e87fb82224ced79557cf2ae1c11b0dc1886038b3482",
+    "src/lib/settings/act-without-asking.test.ts": "39c5aca6e81d6ebfc813887365fd082948b24e4852884ce7a03d26e04318bb97",
+    "src/lib/settings/migrate.ts": "555270c744faacd4485997a1322eac64268b7ab12789ece17a8ebc5f43afa449",
+    "src/lib/settings/persisted.ts": "f841bcb6c74cf118992a7e410724a0838993c77e6e61c3dde0e0d0258ad0f661",
+    "src/state/settings.ts": "5999cf598a89727d8bb0de4ca4bc245597dc8c1fbd542cd9d04c9ce7acd6fb28",
+    "src/state/settings.shadow.test.ts": "9a887530a2ea5a9c1c65fa7eed15d07d4247e6ec3263d600f15772e198089a91",
+    "tests/browser/settings-full-extension-rechecks.mjs": "91166e1c4540f688dfa831d597713e2a448f363c49992197cb406e0d39dba528",
+    "tests/browser/settings-full-extension-rechecks.test.mjs": "5e79963c2394c8d9bb337a20c868098df05c60ccea8c9aca4165012b524c2a88",
+    "tests/browser/settings-guest-preference-batch.mjs": "d965dffdb7f3b86e8571eeb3c8f902c53d53dd9011abd852147ed49d01d47c03",
+    "tests/browser/settings-guest-preference-batch.test.mjs": "9a3fd10d1c96e7ae206d24a2ef2528b28102a3f5eac4bf568413c31b57024654",
+    "tests/browser/settings-reload-boundary.test.mjs": "6f70838d87d26fe85436d9ab349af7382391ac6012cf9f1bcb29908a08c89d01",
+    "tests/unit/browser-dom-permission-mode.test.ts": "fdb19a1e24333b0131f8bd641921b529a8a487beba0fe6a50c8ac31a60ed9b16",
+    "tests/unit/permission-mode-resolver.test.ts": "a57670ed5e828a1dde043152e30a0288e39f97a95e3c315a90f535309554e498",
+    "tests/unit/settings-migration.test.ts": "07694805d1383ad41b12557e001f88ed7292df65627924551ea272b38c280531",
+    "docs/feature-tests.md": "d63139f008f6d3b8579542053add44d14ad3d085dbff05f4521d3f54accc0df9"
+  },
+  "all_15_hashes_match": true,
+  "changes_since_round1": [
+    "tests/browser/settings-guest-preference-batch.test.mjs"
+  ],
+  "round1_preserved": {
+    "path": ".output/stabilization-checkpoints/wake1308/source-peer-round1.json",
+    "sha256": "4a17d17d896ba63ae9c2a5ac40f0c58a734e23e3258662ba7d9745ba3597edb4",
+    "matches_original_source_peer_bytes": true
+  },
+  "verdict_A": {
+    "source_behavior": "PASS_BOUNDED",
+    "source_acceptance_targets": "PASS_BOUNDED",
+    "native_acceptance": "PARTIAL_PENDING",
+    "reason": "R1 now exercises actual generated observer and authoritative comparator for all approved class cases. Unchanged production source retains initial bounded source verdict. No fresh-install exact-main CI or native original/surrounding full reload acceptance is supplied."
+  },
+  "verdict_B": {
+    "quality_contract": "PASS_BOUNDED_SOURCE_REVIEW",
+    "no_overbroad_equivalence": "PASS",
+    "carry_over_preservation": "PASS",
+    "findings": [],
+    "R1": "ADDRESSED"
+  },
+  "R1_evidence": {
+    "file": "tests/browser/settings-guest-preference-batch.test.mjs",
+    "line": 1609,
+    "sha256": "9a3fd10d1c96e7ae206d24a2ef2528b28102a3f5eac4bf568413c31b57024654",
+    "seam": "modeStorageFixture runs real observeGuestPreference generated expression through VM, then actual guestModeShadowMatches compares captured raw samples; only external Chrome storage/DOM I/O controlled.",
+    "matrix": [
+      "Each Settings/Chat/Pilot store: absent to valid non-mode creation accepts",
+      "Each store: Ask and Act addition/removal/value transition rejects",
+      "Chat/Pilot: present empty map, key-only same-count rename, count increase reject",
+      "Each store: malformed JSON, state and permission rejects",
+      "Simultaneous valid Settings materialization and forbidden Chat permission addition rejects"
+    ],
+    "baseline": "Fresh shallow storage copy holds serialized string blobs per case. Baseline entries,array,root frozen after capture; serialized baseline invariance asserted. Caller-owned source dictionaries reused by later cases are not mutated.",
+    "mutants": [
+      {
+        "name": "fingerprint",
+        "break": "Generated observer digest replaced by constant valid fingerprint; same-count key rename becomes spuriously equal and named compare assertion fails."
+      },
+      {
+        "name": "count",
+        "break": "Fingerprint held constant and count zeroed; count increase becomes spuriously equal and named compare assertion fails. Separate positive control keeps count real under constant fingerprint and still rejects change, proving count significance."
+      },
+      {
+        "name": "field presence",
+        "break": "Generated observer field presence forced false; added Chat map becomes spuriously equivalent to absence and named compare assertion fails."
+      }
+    ],
+    "mutant_failure_filter": "Requires AssertionError message containing exact mutant label. Source replacement-not-reached assertions omit that prefix and cannot satisfy rejection filter; mutation rewrites only VM expression and never production files.",
+    "constant_comparator": "Round1 direct comparator callback constant true/false gut remains intact; R1 adds actual observer mutation seam rather than replacing it."
+  },
+  "gate_authentication": {
+    "logs": {
+      "r1-focused": {
+        "log": ".output/stabilization-checkpoints/wake1308/r1-focused.log",
+        "sha256": "a1bbc1976d7435bb13e8f2e5f5f44dfe1b142c51ecaf0b96baa8e118fd3a8892",
+        "journal": "docs/stabilization/resource-journals/wake1308-r1-focused.jsonl",
+        "final": {
+          "schema": 1,
+          "at": "2026-10-28T13:40:40.203Z",
+          "runId": "wake1308-r1-focused",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      },
+      "r1-final": {
+        "log": ".output/stabilization-checkpoints/wake1308/r1-final.log",
+        "sha256": "5038131ae12f1a970be3283a6df1c8d326039914c5e032512162cca08b7e9f23",
+        "journal": "docs/stabilization/resource-journals/wake1308-r1-final.jsonl",
+        "final": {
+          "schema": 1,
+          "at": "2026-10-28T13:45:32.765Z",
+          "runId": "wake1308-r1-final",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 1,
+          "decision": "child_failed",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      },
+      "r1-final2": {
+        "log": ".output/stabilization-checkpoints/wake1308/r1-final2.log",
+        "sha256": "8ac19ad9d5d2460ba68ab620a53a7fcb5b41fdc0dcaa71044392b5141babdfa4",
+        "journal": "docs/stabilization/resource-journals/wake1308-r1-final2.jsonl",
+        "final": {
+          "schema": 1,
+          "at": "2026-10-28T13:49:25.530Z",
+          "runId": "wake1308-r1-final2",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      },
+      "r1-lint-final": {
+        "log": ".output/stabilization-checkpoints/wake1308/r1-lint-final.log",
+        "sha256": "3e38431498e62f333bff110e164991a4f0a22343b5da695bf868484486c2e675",
+        "journal": "docs/stabilization/resource-journals/wake1308-r1-lint-final.jsonl",
+        "final": {
+          "schema": 1,
+          "at": "2026-10-28T13:50:39.370Z",
+          "runId": "wake1308-r1-lint-final",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      }
+    },
+    "first_green": "1282 total,1271 pass,11 skip,0 fail before count-control refinement; retained separately",
+    "intermediate_failure": "r1-final has 1270 pass,1 fail,11 skip due missing expected fingerprint-mutant rejection. This historical run remains failed, not acceptance. Source per-case storage copies remove alias contamination; final2 includes count-control and named-assertion failure filter.",
+    "final_focused": "1282 total,1271 pass,11 skip,0 fail, new actual-observer matrix explicitly logged PASS; job exit0/resource valid",
+    "final_lint": "3509 files,1039 warnings,exit0/resource valid",
+    "production_gates": "Round1 58 Vitest/compile and production migration/writer mutant proofs retained; 14 of15 file hashes unchanged. R1 full focused and lint authenticated against final matrix.",
+    "independent_test_execution": "None in this recheck. Prior normal guard refusal remains honored, no new test attempt or alternate route."
+  },
+  "remaining": [
+    "Fresh-install exact synchronized-main CI with updated lock remains pending.",
+    "Native original and surrounding full-extension reload retest remains mandatory.",
+    "No native first-writer proof, product full-case pass, defect closure, Store or release credit."
+  ],
+  "processes": "All owned read/report shell commands terminal; no test/build/UI/dispatch/auth/secret/source mutation/commit/subagent or background process in recheck.",
+  "private_original_sha256": "9a25d502fe0227874ebcf71d7185c253f384ba42b3ebede00d53db02149f29bb"
+}

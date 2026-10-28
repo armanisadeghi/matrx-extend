@@ -35,7 +35,12 @@ vi.mock('@/state/auth', () => ({
 }));
 
 import { extensionKnobs } from '@/features/package-chat/knobs';
-import { readActMode, readActModeInWorker, writeActMode } from './act-without-asking';
+import {
+  carryOverExplicitAsk,
+  readActMode,
+  readActModeInWorker,
+  writeActMode,
+} from './act-without-asking';
 
 beforeEach(() => {
   knob.value = undefined;
@@ -121,3 +126,21 @@ describe('act without asking — one setting', () => {
     expect(rpc).toHaveBeenCalledOnce();
   });
 });
+
+it.each(['matrx.chat.v1', 'matrx.pilot-chat.v1'])(
+  'retains explicit Ask in %s when guest carry-over is refused',
+  async (key) => {
+    await chrome.storage.local.remove([
+      'matrx.chat.v1',
+      'matrx.pilot-chat.v1',
+      'matrx.act-without-asking.carried-over.v1',
+    ]);
+    const value = JSON.stringify({ state: { permissionMode: { browserAgent: 'ask' } } });
+    await chrome.storage.local.set({ [key]: value });
+    identity.userId = null;
+    expect(await carryOverExplicitAsk()).toBe(false);
+    const saved = await chrome.storage.local.get([key, 'matrx.act-without-asking.carried-over.v1']);
+    expect(saved[key]).toBe(value);
+    expect(saved).not.toHaveProperty('matrx.act-without-asking.carried-over.v1');
+  },
+);

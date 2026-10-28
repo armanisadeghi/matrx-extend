@@ -1,7 +1,6 @@
 import { buildBrowserDomState } from '@/lib/chat/build-browser-dom-state';
 import { useChatStore } from '@/state/chat';
 import { usePilotChatStore } from '@/state/pilot-chat';
-import { useSettingsStore } from '@/state/settings';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const knob = vi.hoisted(() => ({ mode: 'ask' as 'ask' | 'act' }));
@@ -30,7 +29,6 @@ describe('browser DOM shared permission mode', () => {
     knob.mode = 'ask';
     useChatStore.setState({ selectedAgentId: null, permissionMode: {} });
     usePilotChatStore.setState({ selectedAgentId: null, permissionMode: {} });
-    useSettingsStore.setState({ defaultPermissionMode: 'ask' });
   });
 
   it.each(['ask', 'act'] as const)(
@@ -61,19 +59,6 @@ describe('browser DOM shared permission mode', () => {
       expect(pilot.permission_mode).toBe(mode);
     },
   );
-
-  it('ignores the old Settings default when advertising the platform setting', async () => {
-    knob.mode = 'act';
-    useSettingsStore.setState({ defaultPermissionMode: 'ask' });
-    const assistant = await buildBrowserDomState({
-      surface: 'assistant',
-      activeTab: null,
-      pageLang: null,
-    });
-    const pilot = await buildBrowserDomState({ surface: 'pilot', activeTab: null, pageLang: null });
-    expect(assistant.permission_mode).toBe('act');
-    expect(pilot.permission_mode).toBe('act');
-  });
 });
 
 it('advertises held required and optional permissions without inventing absent grants', async () => {

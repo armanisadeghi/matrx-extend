@@ -47,3 +47,21 @@ describe('v4 → v5: the retired agentScopes key', () => {
     expect(migrated.defaultAgentId).toBe('user-agent-id');
   });
 });
+
+it.each([
+  {
+    state: { defaultAgentId: null, defaultPermissionMode: 'ask' },
+    expected: { defaultAgentId: null },
+  },
+  { state: { defaultPermissionMode: 'act' }, expected: {} },
+  {
+    state: { defaultAgentId: DEFAULT_CHAT_MANDATE_REF, defaultPermissionMode: 'ask' },
+    expected: { defaultAgentId: DEFAULT_CHAT_MANDATE_REF },
+  },
+  {
+    state: { defaultAgentId: 'chosen-agent', defaultPermissionMode: 'act' },
+    expected: { defaultAgentId: 'chosen-agent' },
+  },
+])('v6 retirement preserves the existing agent choice', ({ state, expected }) => {
+  expect(migrateDefaultBrowserAgent(state, 6)).toEqual(expected);
+});

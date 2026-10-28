@@ -1,7 +1,7 @@
 import { DEFAULT_CHAT_MANDATE_REF } from '@/lib/mandates';
 import { MANDATE_KEYS } from '@ai-matrx/agents/mandates';
 
-export const SETTINGS_PERSIST_VERSION = 6;
+export const SETTINGS_PERSIST_VERSION = 7;
 /**
  * What this extension's default chat pointed at BEFORE it got its own mandate.
  * Still a real, declared platform key (it is the web app's new-chat mandate) —
@@ -20,6 +20,7 @@ type MigratableSettings = {
    * retired key left in chrome.storage is dead data that outlives its reader.
    */
   agentScopes?: string[] | undefined;
+  defaultPermissionMode?: unknown;
 };
 
 /**
@@ -36,7 +37,10 @@ export function migrateDefaultBrowserAgent<T extends MigratableSettings>(
 ): T {
   if (fromVersion >= SETTINGS_PERSIST_VERSION) return persisted;
 
-  const { agentScopes: _retired, ...rest } = persisted;
+  const { defaultPermissionMode: _retiredMode, ...withoutMode } = persisted;
+  // Version 6 already completed the browser-agent migration; v7 only retires mode.
+  if (fromVersion >= 6) return withoutMode as T;
+  const { agentScopes: _retired, ...rest } = withoutMode;
   const next = rest as T;
 
   const hasUnmodifiedDefault =

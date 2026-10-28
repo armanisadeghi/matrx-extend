@@ -1,0 +1,92 @@
+{
+  "schema": 1,
+  "lane": "fresh independent read-only contract attack",
+  "verdict": "COMMIT",
+  "plan_snapshot": ".output/stabilization-checkpoints/wake1308/repair-plan.md",
+  "plan_sha256": "42e5cdbb8aade369f78b2d00cd57639584b144cb0acfdf23b9b424d1143807db",
+  "meaning": "Commit to this bounded repair design after the separately owned causal experiment confirms its production-writer condition; not implementation or native acceptance.",
+  "coverage": {
+    "mapped": 8,
+    "total": 8,
+    "unmapped": [],
+    "map": [
+      [
+        "confirm source writer",
+        "ranked hypotheses 1-3 and real store/persist probe; source supports candidate, native does not establish origin"
+      ],
+      [
+        "remove retired Settings mode",
+        "A; actual consumers resolve chat.act_without_asking through readActMode/readActModeInWorker; Settings field is currently a full-persist default"
+      ],
+      [
+        "preserve explicit historical Ask",
+        "A; carryOverExplicitAsk reads Chat/Pilot dictionaries only; legacy Settings Ask excluded by explicit contract"
+      ],
+      [
+        "allow unrelated storage materialization",
+        "B; existing raw JSON equality rejects absent-to-valid even when permission field remains absent"
+      ],
+      [
+        "detect unauthorized permission mutations",
+        "B/C; field presence, scalar mode, dictionary fingerprint/count stay exact"
+      ],
+      [
+        "reject malformed/unavailable/identity/shape data",
+        "B/C; raw observer must remain unchanged and comparator fail-closed"
+      ],
+      [
+        "forcing production regression coverage",
+        "C; real store/persist seam plus actual observer and comparator; no fake driver persist as substitute"
+      ],
+      [
+        "release/native closure",
+        "D; independent source review, checks, exact synchronized CI, native original and surrounding full reload acceptance"
+      ]
+    ]
+  },
+  "blocking": [],
+  "advisory": [
+    {
+      "id": "A1",
+      "finding": "Specify equality as a narrow metadata exception, not a fresh projection that silently drops unknown footprint properties.",
+      "exact_fix": "Keep unchanged raw samples. Validate both operands. When the same store has fieldPresent=false in both and the only allowed absent/present forms are consistent, compare copies with only storagePresent/parseStatus canonicalized; preserve exact comparison for every other field, extra property, store identity/order and permission payload. A present empty permission dictionary is field-present and must still fail against absent."
+    },
+    {
+      "id": "A2",
+      "finding": "Migration and old-data preservation need separate forcing inputs; deleting TypeScript defaults alone leaves hydrated extra fields that Zustand spreads and serializes.",
+      "exact_fix": "Use existing versioned migration mechanism to remove only retired Settings defaultPermissionMode while preserving defaultAgentId and every unrelated setting; ensure new writes cannot re-emit it. Explicitly cover an old persisted blob, its first hydrated write, a second reload/write, and Chat/Pilot Ask carry-over that refuses as guest without marking DONE. Do not remove Chat/Pilot dictionaries or their partialize/merge paths."
+    },
+    {
+      "id": "A3",
+      "finding": "modeComparisonReceipt is invoked only on authoritative failure and retains real unequal permission fields, so this is diagnostic alignment, not an acceptance blocker. Its current firstFalse serialization also includes newly permitted container metadata.",
+      "exact_fix": "Smallest alignment: reuse guestModeShadowMatches directly for one authoritative permissionComparison predicate/category in the existing receipt; retain raw serialization and existing per-field categories as informational evidence. Extend only finite receipt/projection allowlists if needed. Do not implement another validator or decision path; preserve the current valid() structural categories as diagnostics. No Chat/Pilot field deletion.",
+      "severity": "advisory; no present false-green or suppressed permission evidence demonstrated"
+    },
+    {
+      "id": "A4",
+      "finding": "Existing settings.persistence.test.ts imports a singleton real store; clearing Chrome storage alone does not create a fresh in-memory store or test hydration.",
+      "exact_fix": "For durable tests, await pending writes/hydration and isolate real store initialization for absent and legacy persisted inputs. Include different Theme outputs and check the actual saved Theme and unrelated settings as well as absent permission field. A no-op writer, constant serialized snapshot, skipped migration, dropped dictionary, constant true/false comparator must each be killed by an executed guard mutation."
+    }
+  ],
+  "exact_proposed_fix": {
+    "production": "Remove only retired Settings field/setter; filter it through existing persistence/migration boundary while preserving all unrelated persisted data and untouched canonical mode writes/readers. Leave explicit Chat/Pilot carry-over intact.",
+    "comparator": "On valid raw operands, both fields absent permits only the corresponding absent/valid container metadata difference; all actual permission additions/removals/values/dictionary fingerprints remain exact failures. Keep malformed, unavailable, identity and unsupported-shape failures. Retain immutable original sample and raw observer.",
+    "tests": "Real first Settings write + hydrated legacy rewrite, varied Theme/subsequent writes, observer/comparator non-mode materialization matrix for each store, Ask/Act addition/removal/change and dictionary key/value/count changes including empty-map presence; invalid JSON/state/storage/API and mixed allowed+forbidden changes; executed gut and mutation checks."
+  },
+  "wrong_writer_inference": "No native first-writer assertion is justified. Native 5f lacks a footprint sample immediately after first real Theme write before reload. Source full-persist contains Settings Ask, a sufficient candidate pending the owned experiment; source proof must not be relabeled native cause.",
+  "native_evidence_checked": {
+    "source": "docs/stabilization/reports/source5f-native-20261028.json",
+    "peer": "docs/stabilization/reports/settings5f-peer-20261028.json",
+    "retained_original": "wake1142/settings5f-native-originals/extracted/.../settings-local-controls-acceptance.json via retained projections",
+    "first_failure": "T04 choice_settings_reopen, mode_compare, settings absent to valid+field-present; Chat/Pilot absent/equal; all visible/count/selection/baselineValue/valid predicates true; raw serialization unequal",
+    "not_proven": [
+      "actual stored scalar value by categorical receipt",
+      "pre-reload native first writer",
+      "Store installation acceptance",
+      "full surrounding cases acceptance"
+    ]
+  },
+  "source_limits": "Read-only source and original-report inspection. No tests, builds, UI, resource lease, dispatch, auth, fixture/secret mutations, source edits, commits or subagents. Temporary diagnostic changes observed belong to separately owned experiment, not this reviewer.",
+  "processes": "Every owned shell returned terminal; no background process launched.",
+  "private_original_sha256": "426a57ce10ef7d20ae04e3f423e64f0f32f45a7ad665f5b833e9eb944896673e"
+}

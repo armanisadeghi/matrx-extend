@@ -14,3 +14,12 @@ A fresh install persists the UI reference
 `mandate:extend.browser_chat`, never an Agent UUID. Execution routes the
 corresponding Mandate key to aidream for principal-aware Holder resolution.
 An existing user's explicit saved Agent selection remains valid.
+
+## Chat permission mode
+
+The shared platform setting `chat.act_without_asking` is the sole default
+permission-mode source across extension contexts. The extension settings store
+must not persist a parallel `defaultPermissionMode`; its v7 migration removes
+that retired field while retaining the saved default-agent selection. A
+previously explicit Ask choice is not overwritten when guest preference
+carry-over is refused.

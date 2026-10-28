@@ -1,6 +1,5 @@
 import { useChatStore } from '@/state/chat';
 import { usePilotChatStore } from '@/state/pilot-chat';
-import { useSettingsStore } from '@/state/settings';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 const knob = vi.hoisted(() => ({ mode: 'ask' as 'ask' | 'act' }));
@@ -17,7 +16,6 @@ describe('permission mode resolver', () => {
     knob.mode = 'ask';
     useChatStore.setState({ selectedAgentId: null, permissionMode: {} });
     usePilotChatStore.setState({ selectedAgentId: null, permissionMode: {} });
-    useSettingsStore.setState({ defaultPermissionMode: 'ask' });
   });
 
   it('an Act choice is shared across surfaces and continuations', () => {
@@ -30,7 +28,6 @@ describe('permission mode resolver', () => {
 
   it('an Ask choice is shared across surfaces despite old per-agent values', () => {
     knob.mode = 'ask';
-    useSettingsStore.setState({ defaultPermissionMode: 'act' });
     useChatStore.setState({ selectedAgentId: 'agent-1', permissionMode: { 'agent-1': 'act' } });
     usePilotChatStore.setState({ selectedAgentId: 'p-1', permissionMode: { 'p-1': 'act' } });
     expect(useChatStore.getState().getPermissionMode('agent-1')).toBe('ask');

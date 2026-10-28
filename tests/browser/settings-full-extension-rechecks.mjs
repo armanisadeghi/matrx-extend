@@ -6,6 +6,7 @@ import {
   runGuestChoicesAcrossExtensionRestarts,
 } from './settings-guest-extension-rechecks.mjs';
 import {
+  guestModeShadowMatches,
   preferenceBaselineMatches,
   restoreGuestPreferenceBaseline,
   runGuestModeRefusalCase,
@@ -80,6 +81,7 @@ function modeComparisonReceipt(observed, baseline, stage) {
     baselineValue: baseline?.value === 'act',
     observedValid,
     baselineValid,
+    permissionComparison: guestModeShadowMatches(footprint, original),
   };
   let serialization = 'unavailable';
   try {
@@ -109,13 +111,7 @@ function modeComparisonReceipt(observed, baseline, stage) {
       ...fields,
     };
   });
-  const firstFalse =
-    Object.keys(predicates).find((key) => !predicates[key]) ??
-    (serialization === 'unequal'
-      ? 'serialization'
-      : serialization === 'unavailable'
-        ? 'unavailable'
-        : 'none');
+  const firstFalse = Object.keys(predicates).find((key) => !predicates[key]) ?? 'none';
   const residual =
     serialization === 'unequal' &&
     stores.every(
@@ -138,6 +134,7 @@ function safeModeComparison(error) {
       'baselineValue',
       'observedValid',
       'baselineValid',
+      'permissionComparison',
     ];
     const sourcePredicates = value.predicates;
     const predicates = Object.fromEntries(
