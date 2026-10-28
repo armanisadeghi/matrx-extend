@@ -1,0 +1,262 @@
+{
+  "schema": 1,
+  "status": "DONE_WITH_CONCERNS",
+  "observed_at": "2026-10-28T19:27:57.641120+00:00",
+  "evidence_kind": "typed privacy-limited independent original packet review",
+  "private_original_sha256": "cfa8f71684dc3bcde6185de31e0213582078530dc00dd61dc695493b5c429fb9",
+  "review_lane": "/root/settings223_native_peer",
+  "authorship": "Fresh seat; zero app/harness authorship; independent archive/API/source-reader review; no independent browser replay",
+  "run": {
+    "id": 40751540105,
+    "attempt": 1,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/40751540105",
+    "api_verified": "completed/success",
+    "head_sha": "223d16d4fe6f28eafc67faf3bd563d79060c68eb",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "job_id": 123039250396,
+    "runner_id": 1000117580,
+    "runner_label": "macos-15-intel"
+  },
+  "provenance": {
+    "ci_api_verified": "40748709173 completed/success attempt1; scope/checks/resource-guard-integration success, docs skipped",
+    "development_artifact": 12841914971,
+    "development_digest_api_verified": "ca93c54cd80d6803f8bbedcb4dc5b48c98ce51a0d5a05551a5d6e3c21f4199f7",
+    "output_artifact": 12845191262,
+    "archive_sha256": "d5136e0fe7fb0406e35d1c40292f9bf782ad6e6a4560c2d08ec8185e044baba1",
+    "archive_digest_matches_official_api": true,
+    "log_sha256": "c4d747f02b1108e3cfba7c4e4f7da2ea1fd8932517095578419607c76288c6b7",
+    "official_member_manifest": [
+      {
+        "path": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-40751540105-1.jsonl",
+        "bytes": 992,
+        "sha256": "21e4b9b888d07f68af577afba7d3c95d5d299996d229d1667e0fa7370489a129"
+      },
+      {
+        "path": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-40751540105-1.jsonl",
+        "bytes": 48169,
+        "sha256": "7792afa37ddec47e6e63a0d3ab7c9242c589a2cab01ca1ba083b1fed934e48ed"
+      },
+      {
+        "path": "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-lmkTog/native-side-panel.png",
+        "bytes": 8598,
+        "sha256": "86426d0be4776150d8df5a88f6c751b20c8b26f7f31b350bcdda6849f0f5bf6c"
+      },
+      {
+        "path": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-40751540105-1.jsonl",
+        "bytes": 988,
+        "sha256": "036b0a6f5d7a5c522bcd2740e95c7ece52d47b991ddbe62d22060144f6674ea1"
+      },
+      {
+        "path": "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-lmkTog/normal-target-after-open.png",
+        "bytes": 27046,
+        "sha256": "b40fd4bba1a54c1403ccecf49f36bc9de1cb5f67ef081a74294abfef37e8ef5c"
+      },
+      {
+        "path": "matrx-extend/matrx-extend/test-results/settings-local-controls-acceptance.json",
+        "bytes": 436806,
+        "sha256": "bf556bbe3207d9118d84b74e607f94a8caf8578af7001088143a55889537e6ac"
+      }
+    ],
+    "member_hashes_match_lane": true,
+    "build": {
+      "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+      "kind": "local_dev_unpacked",
+      "publishState": "not_published",
+      "version": "0.2.631",
+      "treeSha256": "4700c9463f3a493f708cffa39b5d0a701758e1f7758be76894122b8d2d26bb28",
+      "verified": true
+    },
+    "log_binding": "Original log line1305 PREPARED_DEVELOPMENT binds exact223 to tree4700c946; workflow inputs exact CI40748709173/artifact12841914971. Structured normal plan/dispatch both actual exit0.",
+    "current_main_api": "0620b1fdff394e297c9721624908f6343e485157",
+    "official_compare": "One commit ahead; pnpm-lock.yaml only. Material dependency lock change; current-main acceptance unverified."
+  },
+  "verdict_A": {
+    "result": "PARTIAL_BOUNDED_FROZEN_NATIVE_OBSERVATIONS",
+    "report_status": "unverified",
+    "terminal": true,
+    "case_counts": {
+      "pass": 12,
+      "unverified": 7
+    },
+    "criterion_counts": {
+      "pass": 199,
+      "unverified": 11
+    },
+    "original_targets": {
+      "T04": "21 criteria pass. Dark/Light/System warm+panel reload and full extension reload replacement booleans; matching rendered background token/body; original absent System baseline restored. No native first-writer sample proves causal isolation.",
+      "T10": "7 criteria pass. Ask refused/sign-in guidance/Act restored; all3 shadow permission fields absent; new Chat Act consumer count1 warm and after replacement. Comparator validates shapes and relaxes only container presence when both permission fields absent, preserving actual fields/fingerprints. No new permission store writes observed in these samples; not continuous all-write census.",
+      "T28": "89 criteria pass; 88 section observations across 11 headings open/close and warm/panel/full-extension reload phases. count1 all88, expandedControlCount15 including nonSection4 all88; one unchanged settingsDigest.",
+      "T40": "13 criteria pass, background-capture criterion UNVERIFIED; persisted on/off and restoration observed before/after extension reload. Does not prove page-load capture.",
+      "T67": "15 criteria pass; Scroll & capture/Capture persist and replacement checked. Pre-T67 exact container restoration verified by fixture routine. Downstream capture explicitly unverified; do not expand selector pass to capture correctness."
+    },
+    "role_evidence": {
+      "result": "BOUNDED_SIGNED_OUT_CONTEXT_SUPPORTED",
+      "original_T73_steps": [
+        {
+          "phase": "warm",
+          "action": "Inspect native guest Settings Account and Organization",
+          "observation": {
+            "active": true,
+            "accessTokenPresent": false,
+            "profilePresent": false,
+            "organizationChoicePresent": false,
+            "accountSectionCount": 1,
+            "accountOpen": true,
+            "emailRowCount": 1,
+            "emailUnavailable": true,
+            "nameRowCount": 0,
+            "roleRowCount": 0,
+            "footerSignInCount": 1,
+            "footerSignOutCount": 0,
+            "organizationSectionCount": 1,
+            "organizationOpen": true,
+            "signInToChooseCount": 1,
+            "organizationOnlyGuestRow": true,
+            "archiveFilterCount": 0,
+            "actingAsRowCount": 0,
+            "archivedMarkerCount": 0,
+            "restorationActionCount": 0,
+            "archivedCopyPresent": false,
+            "organizationRequests": 0
+          }
+        },
+        {
+          "phase": "reload",
+          "action": "Inspect native guest Settings Account and Organization",
+          "observation": {
+            "active": true,
+            "accessTokenPresent": false,
+            "profilePresent": false,
+            "organizationChoicePresent": false,
+            "accountSectionCount": 1,
+            "accountOpen": true,
+            "emailRowCount": 1,
+            "emailUnavailable": true,
+            "nameRowCount": 0,
+            "roleRowCount": 0,
+            "footerSignInCount": 1,
+            "footerSignOutCount": 0,
+            "organizationSectionCount": 1,
+            "organizationOpen": true,
+            "signInToChooseCount": 1,
+            "organizationOnlyGuestRow": true,
+            "archiveFilterCount": 0,
+            "actingAsRowCount": 0,
+            "archivedMarkerCount": 0,
+            "restorationActionCount": 0,
+            "archivedCopyPresent": false,
+            "organizationRequests": 0
+          }
+        }
+      ],
+      "source": "settings-panel-driver.mjs guestSettingsState reads canonical OAuth bearer/profile/active-org and actual active Settings DOM; guestSettingsChecks requires absent token/profile/org plus visible Email dash/Sign in, no Sign out. Warm+reload original observations satisfy it. Native harness creates fresh mkdtemp profile; guest route does not enter credential staging.",
+      "correction_to_lane": "Not merely report role/precondition strings. Explicit session-presence and visible sign-in/email observations exist. Independent browser replay/full auth census absent; no signed-in nonadmin or admin proof."
+    },
+    "visual_corroboration": {
+      "private_originals_viewed": 2,
+      "native-side-panel.png": "360x373 initial toolbar/G and loading skeleton; no Settings controls",
+      "normal-target-after-open.png": "377x481 controlled research-brief fixture/open-panel result",
+      "decisive_settings_visuals": false,
+      "limit": "Original structured native observations are the decisive control evidence; screenshots do not corroborate those states."
+    },
+    "missing": [
+      "Normal guest Settings certificate",
+      "Decisive Settings state screenshots",
+      "T40 background capture",
+      "Seven raw unverified cases and eleven unverified criteria",
+      "Signed-in member/admin and Store-installed acceptance",
+      "Current0620 acceptance"
+    ],
+    "closure": "No product defect closure or release supported"
+  },
+  "verdict_B": {
+    "result": "PARTIAL_PROVENANCE_VALID_CERTIFICATION_AND_VISUAL_GAPS",
+    "official_bytes": "All six original ZIP members hashed independently; official output digest matches. CI and native source agree223; workflow and log bind imported tree.",
+    "resources": [
+      {
+        "path": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-40751540105-1.jsonl",
+        "codes": {
+          "RESOURCE_JOURNAL_OPENED": 1,
+          "RESOURCE_ADMITTED": 1,
+          "RESOURCE_JOB_EXIT": 1,
+          "RESOURCE_FINAL_DECISION": 1
+        },
+        "final": {
+          "schema": 1,
+          "at": "2026-10-28T19:11:27.379Z",
+          "runId": "hosted-package-40751540105-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        },
+        "all_run_ids_match": true
+      },
+      {
+        "path": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-40751540105-1.jsonl",
+        "codes": {
+          "RESOURCE_JOURNAL_OPENED": 1,
+          "RESOURCE_ADMITTED": 1,
+          "RESOURCE_WATCH_HEALTHY": 13,
+          "RESOURCE_STARTUP_INTERVAL_BRACKET": 17,
+          "RESOURCE_CPU_PENDING": 3,
+          "RESOURCE_PROCESS_ATTRIBUTION": 1,
+          "RESOURCE_CPU_RECOVERED": 1,
+          "RESOURCE_JOB_EXIT": 1,
+          "RESOURCE_FINAL_DECISION": 1
+        },
+        "final": {
+          "schema": 1,
+          "at": "2026-10-28T19:19:49.919Z",
+          "runId": "hosted-guest-40751540105-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        },
+        "all_run_ids_match": true
+      },
+      {
+        "path": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-40751540105-1.jsonl",
+        "codes": {
+          "RESOURCE_JOURNAL_OPENED": 1,
+          "RESOURCE_ADMITTED": 1,
+          "RESOURCE_JOB_EXIT": 1,
+          "RESOURCE_FINAL_DECISION": 1
+        },
+        "final": {
+          "schema": 1,
+          "at": "2026-10-28T19:13:19.294Z",
+          "runId": "hosted-browser-40751540105-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        },
+        "all_run_ids_match": true
+      }
+    ],
+    "unsafe": "No unsafe/invalid/kill event found in original journal codes; all admitted and final valid exit0; transient3 CPU_PENDING then1 RECOVERED. No claim that absence of a dedicated sourceUnsafe field proves continuous clean source.",
+    "bracket_integrity": {
+      "count": 17,
+      "category_sum_mismatches": [],
+      "sampled_cpu_seconds": {
+        "ownedChromium": 9.01,
+        "ownedOther": 1.25,
+        "hostProvisioner": 0.47,
+        "otherHost": 3.31
+      },
+      "limitation": "17 separate bracketed windows, centisecond ps resolution. Totals exclude unmatched/exited/new/reparented/PID-reused work and do not equal whole-run CPU. Ownership categories do not identify renderer roles or product cause."
+    },
+    "mocks_and_flags": "OS --use-mock-keychain explicitly present in harness launch; headed real Chrome-for-Testing with disposable profile and owned controlled fixture. Driver source read uses real CDP actions/DOM/storage; no service response interception or injected auth identified in this route. Do not claim blanket no mocks. Open/sender diagnostic report flags false acceptance_eligible; guard interval observation adds awaited measurement work.",
+    "normal_certificate": "Source scripts/hosted-remote-admission.mjs only exposes verify-settings-member and other specific verifier modes; Settings member path expects Native A account-popover-member/report. No verify-settings-guest controls mode or normal certificate provided. Did not fabricate a mode/certificate or run an unrelated verifier.",
+    "source_quality_scope": "Reviewed relevant existing driver/comparator/baseline paths; this is evidence review, not a new source-unit acceptance or test rerun. Immutable saved T67 fixture seal/readback and original baseline restoration maintained; permission comparator does not accept invalid/missing shapes.",
+    "prior9a": "40714335249 remains resource-invalid exit3/terminalfalse/all19 unverified/no criteria; later223 valid run cannot retrocertify it. Different frozen source and guard observation timing; no CPU-cause or reliability proof.",
+    "followup_refusal": "Original SEO read-only plan refusal exit1 HOSTED_DEVELOPMENT_RUNTIME_SOURCE_DRIFT retained; no dispatch. No budget, threshold, deadline or runner relocation authorized by this review."
+  },
+  "cleanup_limit": "Workflow completed; actual remote profile deletion not independently read back; no local browser launched.",
+  "publication_limits": "No raw AX, images, auth/provider data or private session values published. References and hashes identify originals retained privately."
+}

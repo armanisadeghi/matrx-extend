@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "status": "EXACT_SOURCE_DISK_PROMOTED_PHYSICAL_RELOAD_HELD",
+  "evidence_kind": "typed privacy-limited normal import/promotion receipt",
+  "private_receipt_sha256": "02df40e84fba2ce82aac6e2dbe856577727c2c76bf4c77b41348f4d32771081d",
+  "import_exit": 0,
+  "promotion_exit": 0,
+  "exit_provenance": "Parent retained actual tool process receipts session92099/import0620.log and session97758/promote0620.log; this evidence lane independently read resulting receipt only.",
+  "promotion": {
+    "schema_version": 1,
+    "kind": "ci_development_test_promotion",
+    "eligibleStore": false,
+    "publish_state": "not_published",
+    "observedAt": "2026-10-28T19:35:52.884Z",
+    "sourceSha": "0620b1fdff394e297c9721624908f6343e485157",
+    "mainSha": "0620b1fdff394e297c9721624908f6343e485157",
+    "compatibility": "exact-source",
+    "allowedDiffPaths": [],
+    "version": "0.2.631",
+    "runId": 40753044584,
+    "runAttempt": 1,
+    "artifactId": 12843884362,
+    "treeSha256": "6bd46834ae0bd704560fe3b0b3996059353b14f787d4539bad12e60c595a9b32",
+    "fileCount": 3256
+  },
+  "artifact_digest": "sha256:a64bff1532fcbb9284dfdd47018a6bdaf9a983c7fd2b619daa658329723a608b",
+  "destination": "stable .output/chrome-mv3-dev",
+  "actual_chrome_loaded": "Last actual owner79e4/DEV631; no new observation",
+  "reload": "held due external Chrome activity",
+  "limitations": "Disk promotion only; no physical reload, product acceptance, Store eligibility, publication or release."
+}

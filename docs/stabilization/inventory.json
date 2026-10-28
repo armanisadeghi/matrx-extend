@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-28T15:55:00Z",
+  "updated_at": "2026-10-28T19:36:36.400968+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -7548,25 +7548,47 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": 40631696825,
-              "source_sha": "28a5187d42b8e5688f3b18f8b10c8f2eac171c70",
-              "development_ci_run_id": 40630629761,
-              "development_artifact_id": 12791319277,
-              "build_version": "0.2.630",
-              "resource_invalid": false,
-              "acceptance_run_successful": false,
+              "run_id": 40751540105,
+              "source_sha": "223d16d4fe6f28eafc67faf3bd563d79060c68eb",
+              "development_ci_run_id": 40748709173,
+              "development_artifact_id": 12841914971,
+              "build_version": "0.2.631",
+              "tree_sha256": "4700c9463f3a493f708cffa39b5d0a701758e1f7758be76894122b8d2d26bb28",
+              "resource_valid": true,
+              "acceptance_run_successful": true,
+              "raw_case_status": "pass",
               "full_case_pass": false,
-              "new_product_credit": false,
-              "raw_case_status": "fail",
-              "scope": "Actual Dark selection and worker/panel replacement passed; Settings reopen and recovery failed; cause unknown.",
-              "evidence": [
-                "docs/stabilization/reports/source28a-native-20261028.json",
-                "docs/stabilization/reports/source28a-native-peer-20261028.json"
+              "scope": "Bounded frozen223 signed-out native control observations only; normal certificate and decisive Settings screenshots absent.",
+              "passed_subtargets": [
+                "Dark changes UI, persisted preference, and applied appearance",
+                "Dark survives panel reload",
+                "Light changes UI, persisted preference, and applied appearance",
+                "Light survives panel reload",
+                "System changes UI, persisted preference, and applied appearance",
+                "System survives panel reload",
+                "Original theme baseline restored after panel reload",
+                "before first extension reload: original Theme preference restored",
+                "full extension reload: pre-run Theme matches saved baseline",
+                "full extension reload: initial: original preference matches",
+                "full extension reload: Dark changes visible and stored preference",
+                "full extension reload: Dark extension worker and panel were replaced",
+                "full extension reload: Dark survives full extension reload",
+                "full extension reload: Light changes visible and stored preference",
+                "full extension reload: Light extension worker and panel were replaced",
+                "full extension reload: Light survives full extension reload",
+                "full extension reload: original Theme preference restored",
+                "full extension reload: original preference restored before extension reload",
+                "full extension reload: System extension worker and panel were replaced",
+                "full extension reload: System survives full extension reload",
+                "full extension reload: original preference restored after extension reload"
               ],
               "unverified": [
-                "Full case and other role/feature coverage",
-                "Exact browser/profile/backend identity; owner Chrome; Store/candidate acceptance",
-                "Final remote profile deletion and fixture backup inspection"
+                "Full inventory case acceptance; normal guest Settings certificate and decisive Settings-state visual corroboration",
+                "Current0620, member/admin, Store-installed and release acceptance"
+              ],
+              "evidence": [
+                "docs/stabilization/reports/wake1858-settings223-native-20261028.json",
+                "docs/stabilization/reports/wake1858-settings223-peer-20261028.json"
               ]
             }
           },
@@ -8110,6 +8132,34 @@
               },
               "superseded_at": "2026-10-28T04:34:06.586578+00:00",
               "reason": "Exact28a native scoped evidence; previous frozen result retained. No fullcase promotion."
+            },
+            {
+              "at": "2026-10-28T19:36:36.400968+00:00",
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": 40631696825,
+                "source_sha": "28a5187d42b8e5688f3b18f8b10c8f2eac171c70",
+                "development_ci_run_id": 40630629761,
+                "development_artifact_id": 12791319277,
+                "build_version": "0.2.630",
+                "resource_invalid": false,
+                "acceptance_run_successful": false,
+                "full_case_pass": false,
+                "new_product_credit": false,
+                "raw_case_status": "fail",
+                "scope": "Actual Dark selection and worker/panel replacement passed; Settings reopen and recovery failed; cause unknown.",
+                "evidence": [
+                  "docs/stabilization/reports/source28a-native-20261028.json",
+                  "docs/stabilization/reports/source28a-native-peer-20261028.json"
+                ],
+                "unverified": [
+                  "Full case and other role/feature coverage",
+                  "Exact browser/profile/backend identity; owner Chrome; Store/candidate acceptance",
+                  "Final remote profile deletion and fixture backup inspection"
+                ]
+              },
+              "reason": "Preserve prior frozen result while recording bounded223 native observations; no full-case promotion."
             }
           ],
           "attempt_history": [
@@ -8683,25 +8733,33 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": 40631696825,
-              "source_sha": "28a5187d42b8e5688f3b18f8b10c8f2eac171c70",
-              "development_ci_run_id": 40630629761,
-              "development_artifact_id": 12791319277,
-              "build_version": "0.2.630",
-              "resource_invalid": false,
-              "acceptance_run_successful": false,
+              "run_id": 40751540105,
+              "source_sha": "223d16d4fe6f28eafc67faf3bd563d79060c68eb",
+              "development_ci_run_id": 40748709173,
+              "development_artifact_id": 12841914971,
+              "build_version": "0.2.631",
+              "tree_sha256": "4700c9463f3a493f708cffa39b5d0a701758e1f7758be76894122b8d2d26bb28",
+              "resource_valid": true,
+              "acceptance_run_successful": true,
+              "raw_case_status": "pass",
               "full_case_pass": false,
-              "new_product_credit": false,
-              "raw_case_status": "fail",
-              "scope": "Original early/late mismatch did not recur; comparisons passed by control-flow reachability, without separately retained successful operands. Warm pointer admission and later full-recheck initial observation failed, after preceding Theme recovery failure. No own post-choice consumer pass.",
-              "evidence": [
-                "docs/stabilization/reports/source28a-native-20261028.json",
-                "docs/stabilization/reports/source28a-native-peer-20261028.json"
+              "scope": "Bounded frozen223 signed-out native control observations only; normal certificate and decisive Settings screenshots absent.",
+              "passed_subtargets": [
+                "Guest Ask choice is refused and Act restored with sign-in guidance",
+                "Guest mode remains Act after panel reload",
+                "new chat inherits Act without asking",
+                "full extension reload: Extension worker and panel replaced before guest mode check",
+                "full extension reload: Guest Ask choice is refused and Act restored with sign-in guidance",
+                "full extension reload: Guest mode remains Act after panel reload",
+                "full extension reload: New guest chat retains Act after extension reload"
               ],
               "unverified": [
-                "Full case and other role/feature coverage",
-                "Exact browser/profile/backend identity; owner Chrome; Store/candidate acceptance",
-                "Final remote profile deletion and fixture backup inspection"
+                "Full inventory case acceptance; normal guest Settings certificate and decisive Settings-state visual corroboration",
+                "Current0620, member/admin, Store-installed and release acceptance"
+              ],
+              "evidence": [
+                "docs/stabilization/reports/wake1858-settings223-native-20261028.json",
+                "docs/stabilization/reports/wake1858-settings223-peer-20261028.json"
               ]
             }
           },
@@ -9211,6 +9269,34 @@
               },
               "superseded_at": "2026-10-28T04:34:06.586578+00:00",
               "reason": "Exact28a native scoped evidence; previous frozen result retained. No fullcase promotion."
+            },
+            {
+              "at": "2026-10-28T19:36:36.400968+00:00",
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": 40631696825,
+                "source_sha": "28a5187d42b8e5688f3b18f8b10c8f2eac171c70",
+                "development_ci_run_id": 40630629761,
+                "development_artifact_id": 12791319277,
+                "build_version": "0.2.630",
+                "resource_invalid": false,
+                "acceptance_run_successful": false,
+                "full_case_pass": false,
+                "new_product_credit": false,
+                "raw_case_status": "fail",
+                "scope": "Original early/late mismatch did not recur; comparisons passed by control-flow reachability, without separately retained successful operands. Warm pointer admission and later full-recheck initial observation failed, after preceding Theme recovery failure. No own post-choice consumer pass.",
+                "evidence": [
+                  "docs/stabilization/reports/source28a-native-20261028.json",
+                  "docs/stabilization/reports/source28a-native-peer-20261028.json"
+                ],
+                "unverified": [
+                  "Full case and other role/feature coverage",
+                  "Exact browser/profile/backend identity; owner Chrome; Store/candidate acceptance",
+                  "Final remote profile deletion and fixture backup inspection"
+                ]
+              },
+              "reason": "Preserve prior frozen result while recording bounded223 native observations; no full-case promotion."
             }
           ],
           "attempt_history": [
@@ -9551,19 +9637,34 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
-              "run_id": "settings-6f86-40195311320",
-              "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
-              "development_ci_run_id": 40194412591,
-              "development_artifact_id": 12599612108,
-              "build_version": "0.2.621",
-              "resource_valid": false,
-              "runner_reported_status": "invalid",
-              "evidence": [
-                "docs/stabilization/reports/settings-native-b-1247.json",
-                "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
+              "status": "partial",
+              "run_id": 40751540105,
+              "source_sha": "223d16d4fe6f28eafc67faf3bd563d79060c68eb",
+              "development_ci_run_id": 40748709173,
+              "development_artifact_id": 12841914971,
+              "build_version": "0.2.631",
+              "tree_sha256": "4700c9463f3a493f708cffa39b5d0a701758e1f7758be76894122b8d2d26bb28",
+              "resource_valid": true,
+              "acceptance_run_successful": true,
+              "raw_case_status": "pass",
+              "full_case_pass": false,
+              "scope": "Bounded frozen223 signed-out native control observations only; normal certificate and decisive Settings screenshots absent.",
+              "passed_subtargets": [
+                "Thinking changes UI, persisted preference",
+                "Thinking survives panel reload",
+                "Fast changes UI, persisted preference",
+                "Fast survives panel reload",
+                "original Default speed preference restored",
+                "Original Default speed baseline restored after panel reload"
               ],
-              "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
+              "unverified": [
+                "Full inventory case acceptance; normal guest Settings certificate and decisive Settings-state visual corroboration",
+                "Current0620, member/admin, Store-installed and release acceptance"
+              ],
+              "evidence": [
+                "docs/stabilization/reports/wake1858-settings223-native-20261028.json",
+                "docs/stabilization/reports/wake1858-settings223-peer-20261028.json"
+              ]
             }
           },
           "linked_defects": [
@@ -9630,6 +9731,26 @@
               },
               "superseded_at": "2026-10-25T13:32:33.560076+00:00",
               "reason": "New6f86 attempt resource-invalid; previous valid scopes remain historical, no new case credit."
+            },
+            {
+              "at": "2026-10-28T19:36:36.400968+00:00",
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "settings-6f86-40195311320",
+                "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+                "development_ci_run_id": 40194412591,
+                "development_artifact_id": 12599612108,
+                "build_version": "0.2.621",
+                "resource_valid": false,
+                "runner_reported_status": "invalid",
+                "evidence": [
+                  "docs/stabilization/reports/settings-native-b-1247.json",
+                  "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
+                ],
+                "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
+              },
+              "reason": "Preserve prior frozen result while recording bounded223 native observations; no full-case promotion."
             }
           ],
           "attempt_history": [
@@ -9841,19 +9962,33 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
-              "run_id": "settings-6f86-40195311320",
-              "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
-              "development_ci_run_id": 40194412591,
-              "development_artifact_id": 12599612108,
-              "build_version": "0.2.621",
-              "resource_valid": false,
-              "runner_reported_status": "invalid",
-              "evidence": [
-                "docs/stabilization/reports/settings-native-b-1247.json",
-                "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
+              "status": "partial",
+              "run_id": 40751540105,
+              "source_sha": "223d16d4fe6f28eafc67faf3bd563d79060c68eb",
+              "development_ci_run_id": 40748709173,
+              "development_artifact_id": 12841914971,
+              "build_version": "0.2.631",
+              "tree_sha256": "4700c9463f3a493f708cffa39b5d0a701758e1f7758be76894122b8d2d26bb28",
+              "resource_valid": true,
+              "acceptance_run_successful": true,
+              "raw_case_status": "unverified",
+              "full_case_pass": false,
+              "scope": "Bounded frozen223 signed-out native control observations only; normal certificate and decisive Settings screenshots absent.",
+              "passed_subtargets": [
+                "Switch off changes visible and stored values",
+                "Switch off survives panel reload",
+                "Switch on changes visible and stored values",
+                "Switch on survives panel reload"
               ],
-              "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
+              "unverified": [
+                "preference changes its downstream browser behavior",
+                "Full inventory case acceptance; normal guest Settings certificate and decisive Settings-state visual corroboration",
+                "Current0620, member/admin, Store-installed and release acceptance"
+              ],
+              "evidence": [
+                "docs/stabilization/reports/wake1858-settings223-native-20261028.json",
+                "docs/stabilization/reports/wake1858-settings223-peer-20261028.json"
+              ]
             }
           },
           "linked_defects": [
@@ -10086,6 +10221,26 @@
               },
               "superseded_at": "2026-10-25T13:32:33.560076+00:00",
               "reason": "New6f86 attempt resource-invalid; previous valid scopes remain historical, no new case credit."
+            },
+            {
+              "at": "2026-10-28T19:36:36.400968+00:00",
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "settings-6f86-40195311320",
+                "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+                "development_ci_run_id": 40194412591,
+                "development_artifact_id": 12599612108,
+                "build_version": "0.2.621",
+                "resource_valid": false,
+                "runner_reported_status": "invalid",
+                "evidence": [
+                  "docs/stabilization/reports/settings-native-b-1247.json",
+                  "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
+                ],
+                "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
+              },
+              "reason": "Preserve prior frozen result while recording bounded223 native observations; no full-case promotion."
             }
           ],
           "attempt_history": [
@@ -10286,19 +10441,33 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
-              "run_id": "settings-6f86-40195311320",
-              "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
-              "development_ci_run_id": 40194412591,
-              "development_artifact_id": 12599612108,
-              "build_version": "0.2.621",
-              "resource_valid": false,
-              "runner_reported_status": "invalid",
-              "evidence": [
-                "docs/stabilization/reports/settings-native-b-1247.json",
-                "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
+              "status": "partial",
+              "run_id": 40751540105,
+              "source_sha": "223d16d4fe6f28eafc67faf3bd563d79060c68eb",
+              "development_ci_run_id": 40748709173,
+              "development_artifact_id": 12841914971,
+              "build_version": "0.2.631",
+              "tree_sha256": "4700c9463f3a493f708cffa39b5d0a701758e1f7758be76894122b8d2d26bb28",
+              "resource_valid": true,
+              "acceptance_run_successful": true,
+              "raw_case_status": "unverified",
+              "full_case_pass": false,
+              "scope": "Bounded frozen223 signed-out native control observations only; normal certificate and decisive Settings screenshots absent.",
+              "passed_subtargets": [
+                "Switch off changes visible and stored values",
+                "Switch off survives panel reload",
+                "Switch on changes visible and stored values",
+                "Switch on survives panel reload"
               ],
-              "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
+              "unverified": [
+                "preference changes its downstream browser behavior",
+                "Full inventory case acceptance; normal guest Settings certificate and decisive Settings-state visual corroboration",
+                "Current0620, member/admin, Store-installed and release acceptance"
+              ],
+              "evidence": [
+                "docs/stabilization/reports/wake1858-settings223-native-20261028.json",
+                "docs/stabilization/reports/wake1858-settings223-peer-20261028.json"
+              ]
             }
           },
           "attempt_history": [
@@ -10407,6 +10576,26 @@
               },
               "superseded_at": "2026-10-25T13:32:33.560076+00:00",
               "reason": "New6f86 attempt resource-invalid; previous valid scopes remain historical, no new case credit."
+            },
+            {
+              "at": "2026-10-28T19:36:36.400968+00:00",
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "settings-6f86-40195311320",
+                "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+                "development_ci_run_id": 40194412591,
+                "development_artifact_id": 12599612108,
+                "build_version": "0.2.621",
+                "resource_valid": false,
+                "runner_reported_status": "invalid",
+                "evidence": [
+                  "docs/stabilization/reports/settings-native-b-1247.json",
+                  "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
+                ],
+                "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
+              },
+              "reason": "Preserve prior frozen result while recording bounded223 native observations; no full-case promotion."
             }
           ],
           "revalidation_history": [
@@ -10547,19 +10736,30 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
-              "run_id": "settings-6f86-40195311320",
-              "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
-              "development_ci_run_id": 40194412591,
-              "development_artifact_id": 12599612108,
-              "build_version": "0.2.621",
-              "resource_valid": false,
-              "runner_reported_status": "invalid",
-              "evidence": [
-                "docs/stabilization/reports/settings-native-b-1247.json",
-                "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
+              "status": "partial",
+              "run_id": 40751540105,
+              "source_sha": "223d16d4fe6f28eafc67faf3bd563d79060c68eb",
+              "development_ci_run_id": 40748709173,
+              "development_artifact_id": 12841914971,
+              "build_version": "0.2.631",
+              "tree_sha256": "4700c9463f3a493f708cffa39b5d0a701758e1f7758be76894122b8d2d26bb28",
+              "resource_valid": true,
+              "acceptance_run_successful": true,
+              "raw_case_status": "pass",
+              "full_case_pass": false,
+              "scope": "Bounded frozen223 signed-out native control observations only; normal certificate and decisive Settings screenshots absent.",
+              "passed_subtargets": [
+                "warm admin section and controls absent",
+                "reload admin section and controls absent"
               ],
-              "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
+              "unverified": [
+                "Full inventory case acceptance; normal guest Settings certificate and decisive Settings-state visual corroboration",
+                "Current0620, member/admin, Store-installed and release acceptance"
+              ],
+              "evidence": [
+                "docs/stabilization/reports/wake1858-settings223-native-20261028.json",
+                "docs/stabilization/reports/wake1858-settings223-peer-20261028.json"
+              ]
             }
           },
           "result_history": [
@@ -10739,6 +10939,26 @@
               },
               "superseded_at": "2026-10-25T13:32:33.560076+00:00",
               "reason": "New6f86 attempt resource-invalid; previous valid scopes remain historical, no new case credit."
+            },
+            {
+              "at": "2026-10-28T19:36:36.400968+00:00",
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "settings-6f86-40195311320",
+                "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+                "development_ci_run_id": 40194412591,
+                "development_artifact_id": 12599612108,
+                "build_version": "0.2.621",
+                "resource_valid": false,
+                "runner_reported_status": "invalid",
+                "evidence": [
+                  "docs/stabilization/reports/settings-native-b-1247.json",
+                  "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
+                ],
+                "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
+              },
+              "reason": "Preserve prior frozen result while recording bounded223 native observations; no full-case promotion."
             }
           ],
           "attempt_history": [
@@ -11042,19 +11262,117 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
-              "run_id": "settings-6f86-40195311320",
-              "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
-              "development_ci_run_id": 40194412591,
-              "development_artifact_id": 12599612108,
-              "build_version": "0.2.621",
-              "resource_valid": false,
-              "runner_reported_status": "invalid",
-              "evidence": [
-                "docs/stabilization/reports/settings-native-b-1247.json",
-                "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
+              "status": "partial",
+              "run_id": 40751540105,
+              "source_sha": "223d16d4fe6f28eafc67faf3bd563d79060c68eb",
+              "development_ci_run_id": 40748709173,
+              "development_artifact_id": 12841914971,
+              "build_version": "0.2.631",
+              "tree_sha256": "4700c9463f3a493f708cffa39b5d0a701758e1f7758be76894122b8d2d26bb28",
+              "resource_valid": true,
+              "acceptance_run_successful": true,
+              "raw_case_status": "pass",
+              "full_case_pass": false,
+              "scope": "Bounded frozen223 signed-out native control observations only; normal certificate and decisive Settings screenshots absent.",
+              "passed_subtargets": [
+                "Account opens with honest content",
+                "Account closes without changing preferences",
+                "Organization opens with honest content",
+                "Organization closes without changing preferences",
+                "Appearance opens with honest content",
+                "Appearance closes without changing preferences",
+                "Chat opens with honest content",
+                "Chat closes without changing preferences",
+                "Privacy opens with honest content",
+                "Privacy closes without changing preferences",
+                "Scrape opens with honest content",
+                "Scrape closes without changing preferences",
+                "Data opens with honest content",
+                "Data closes without changing preferences",
+                "SEO opens with honest content",
+                "SEO closes without changing preferences",
+                "Desktop bridge opens with honest content",
+                "Desktop bridge closes without changing preferences",
+                "Data & reset opens with honest content",
+                "Data & reset closes without changing preferences",
+                "About opens with honest content",
+                "About closes without changing preferences",
+                "Account opens after reload",
+                "Account closes after reload",
+                "Organization opens after reload",
+                "Organization closes after reload",
+                "Appearance opens after reload",
+                "Appearance closes after reload",
+                "Chat opens after reload",
+                "Chat closes after reload",
+                "Privacy opens after reload",
+                "Privacy closes after reload",
+                "Scrape opens after reload",
+                "Scrape closes after reload",
+                "Data opens after reload",
+                "Data closes after reload",
+                "SEO opens after reload",
+                "SEO closes after reload",
+                "Desktop bridge opens after reload",
+                "Desktop bridge closes after reload",
+                "Data & reset opens after reload",
+                "Data & reset closes after reload",
+                "About opens after reload",
+                "About closes after reload",
+                "full extension reload: Settings tab reopened for this recheck",
+                "full extension reload: warm: Account opens with honest content",
+                "full extension reload: warm: Account closes without changing preferences",
+                "full extension reload: warm: Organization opens with honest content",
+                "full extension reload: warm: Organization closes without changing preferences",
+                "full extension reload: warm: Appearance opens with honest content",
+                "full extension reload: warm: Appearance closes without changing preferences",
+                "full extension reload: warm: Chat opens with honest content",
+                "full extension reload: warm: Chat closes without changing preferences",
+                "full extension reload: warm: Privacy opens with honest content",
+                "full extension reload: warm: Privacy closes without changing preferences",
+                "full extension reload: warm: Scrape opens with honest content",
+                "full extension reload: warm: Scrape closes without changing preferences",
+                "full extension reload: warm: Data opens with honest content",
+                "full extension reload: warm: Data closes without changing preferences",
+                "full extension reload: warm: SEO opens with honest content",
+                "full extension reload: warm: SEO closes without changing preferences",
+                "full extension reload: warm: Desktop bridge opens with honest content",
+                "full extension reload: warm: Desktop bridge closes without changing preferences",
+                "full extension reload: warm: Data & reset opens with honest content",
+                "full extension reload: warm: Data & reset closes without changing preferences",
+                "full extension reload: warm: About opens with honest content",
+                "full extension reload: warm: About closes without changing preferences",
+                "full extension reload: reload: Account opens after reload",
+                "full extension reload: reload: Account closes after reload",
+                "full extension reload: reload: Organization opens after reload",
+                "full extension reload: reload: Organization closes after reload",
+                "full extension reload: reload: Appearance opens after reload",
+                "full extension reload: reload: Appearance closes after reload",
+                "full extension reload: reload: Chat opens after reload",
+                "full extension reload: reload: Chat closes after reload",
+                "full extension reload: reload: Privacy opens after reload",
+                "full extension reload: reload: Privacy closes after reload",
+                "full extension reload: reload: Scrape opens after reload",
+                "full extension reload: reload: Scrape closes after reload",
+                "full extension reload: reload: Data opens after reload",
+                "full extension reload: reload: Data closes after reload",
+                "full extension reload: reload: SEO opens after reload",
+                "full extension reload: reload: SEO closes after reload",
+                "full extension reload: reload: Desktop bridge opens after reload",
+                "full extension reload: reload: Desktop bridge closes after reload",
+                "full extension reload: reload: Data & reset opens after reload",
+                "full extension reload: reload: Data & reset closes after reload",
+                "full extension reload: reload: About opens after reload",
+                "full extension reload: reload: About closes after reload"
               ],
-              "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
+              "unverified": [
+                "Full inventory case acceptance; normal guest Settings certificate and decisive Settings-state visual corroboration",
+                "Current0620, member/admin, Store-installed and release acceptance"
+              ],
+              "evidence": [
+                "docs/stabilization/reports/wake1858-settings223-native-20261028.json",
+                "docs/stabilization/reports/wake1858-settings223-peer-20261028.json"
+              ]
             }
           },
           "preparation_history": [
@@ -11222,6 +11540,26 @@
               },
               "superseded_at": "2026-10-25T13:32:33.560076+00:00",
               "reason": "New6f86 attempt resource-invalid; previous valid scopes remain historical, no new case credit."
+            },
+            {
+              "at": "2026-10-28T19:36:36.400968+00:00",
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "settings-6f86-40195311320",
+                "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+                "development_ci_run_id": 40194412591,
+                "development_artifact_id": 12599612108,
+                "build_version": "0.2.621",
+                "resource_valid": false,
+                "runner_reported_status": "invalid",
+                "evidence": [
+                  "docs/stabilization/reports/settings-native-b-1247.json",
+                  "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
+                ],
+                "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
+              },
+              "reason": "Preserve prior frozen result while recording bounded223 native observations; no full-case promotion."
             }
           ],
           "attempt_history": [
@@ -11344,19 +11682,33 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
-              "run_id": "settings-6f86-40195311320",
-              "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
-              "development_ci_run_id": 40194412591,
-              "development_artifact_id": 12599612108,
-              "build_version": "0.2.621",
-              "resource_valid": false,
-              "runner_reported_status": "invalid",
-              "evidence": [
-                "docs/stabilization/reports/settings-native-b-1247.json",
-                "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
+              "status": "partial",
+              "run_id": 40751540105,
+              "source_sha": "223d16d4fe6f28eafc67faf3bd563d79060c68eb",
+              "development_ci_run_id": 40748709173,
+              "development_artifact_id": 12841914971,
+              "build_version": "0.2.631",
+              "tree_sha256": "4700c9463f3a493f708cffa39b5d0a701758e1f7758be76894122b8d2d26bb28",
+              "resource_valid": true,
+              "acceptance_run_successful": true,
+              "raw_case_status": "unverified",
+              "full_case_pass": false,
+              "scope": "Bounded frozen223 signed-out native control observations only; normal certificate and decisive Settings screenshots absent.",
+              "passed_subtargets": [
+                "Switch off changes visible and stored values",
+                "Switch off survives panel reload",
+                "Switch on changes visible and stored values",
+                "Switch on survives panel reload"
               ],
-              "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
+              "unverified": [
+                "preference changes its downstream browser behavior",
+                "Full inventory case acceptance; normal guest Settings certificate and decisive Settings-state visual corroboration",
+                "Current0620, member/admin, Store-installed and release acceptance"
+              ],
+              "evidence": [
+                "docs/stabilization/reports/wake1858-settings223-native-20261028.json",
+                "docs/stabilization/reports/wake1858-settings223-peer-20261028.json"
+              ]
             }
           },
           "linked_defects": [
@@ -11439,6 +11791,26 @@
               },
               "superseded_at": "2026-10-25T13:32:33.560076+00:00",
               "reason": "New6f86 attempt resource-invalid; previous valid scopes remain historical, no new case credit."
+            },
+            {
+              "at": "2026-10-28T19:36:36.400968+00:00",
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "settings-6f86-40195311320",
+                "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+                "development_ci_run_id": 40194412591,
+                "development_artifact_id": 12599612108,
+                "build_version": "0.2.621",
+                "resource_valid": false,
+                "runner_reported_status": "invalid",
+                "evidence": [
+                  "docs/stabilization/reports/settings-native-b-1247.json",
+                  "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
+                ],
+                "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
+              },
+              "reason": "Preserve prior frozen result while recording bounded223 native observations; no full-case promotion."
             }
           ],
           "attempt_history": [
@@ -11624,19 +11996,33 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
-              "run_id": "settings-6f86-40195311320",
-              "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
-              "development_ci_run_id": 40194412591,
-              "development_artifact_id": 12599612108,
-              "build_version": "0.2.621",
-              "resource_valid": false,
-              "runner_reported_status": "invalid",
-              "evidence": [
-                "docs/stabilization/reports/settings-native-b-1247.json",
-                "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
+              "status": "partial",
+              "run_id": 40751540105,
+              "source_sha": "223d16d4fe6f28eafc67faf3bd563d79060c68eb",
+              "development_ci_run_id": 40748709173,
+              "development_artifact_id": 12841914971,
+              "build_version": "0.2.631",
+              "tree_sha256": "4700c9463f3a493f708cffa39b5d0a701758e1f7758be76894122b8d2d26bb28",
+              "resource_valid": true,
+              "acceptance_run_successful": true,
+              "raw_case_status": "unverified",
+              "full_case_pass": false,
+              "scope": "Bounded frozen223 signed-out native control observations only; normal certificate and decisive Settings screenshots absent.",
+              "passed_subtargets": [
+                "Switch on changes visible and stored values",
+                "Switch on survives panel reload",
+                "Switch off changes visible and stored values",
+                "Switch off survives panel reload"
               ],
-              "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
+              "unverified": [
+                "preference changes its downstream browser behavior",
+                "Full inventory case acceptance; normal guest Settings certificate and decisive Settings-state visual corroboration",
+                "Current0620, member/admin, Store-installed and release acceptance"
+              ],
+              "evidence": [
+                "docs/stabilization/reports/wake1858-settings223-native-20261028.json",
+                "docs/stabilization/reports/wake1858-settings223-peer-20261028.json"
+              ]
             }
           },
           "linked_defects": [
@@ -11732,6 +12118,26 @@
               },
               "superseded_at": "2026-10-25T13:32:33.560076+00:00",
               "reason": "New6f86 attempt resource-invalid; previous valid scopes remain historical, no new case credit."
+            },
+            {
+              "at": "2026-10-28T19:36:36.400968+00:00",
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "settings-6f86-40195311320",
+                "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+                "development_ci_run_id": 40194412591,
+                "development_artifact_id": 12599612108,
+                "build_version": "0.2.621",
+                "resource_valid": false,
+                "runner_reported_status": "invalid",
+                "evidence": [
+                  "docs/stabilization/reports/settings-native-b-1247.json",
+                  "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
+                ],
+                "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
+              },
+              "reason": "Preserve prior frozen result while recording bounded223 native observations; no full-case promotion."
             }
           ],
           "attempt_history": [
@@ -11920,25 +12326,30 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": 40631696825,
-              "source_sha": "28a5187d42b8e5688f3b18f8b10c8f2eac171c70",
-              "development_ci_run_id": 40630629761,
-              "development_artifact_id": 12791319277,
-              "build_version": "0.2.630",
-              "resource_invalid": false,
-              "acceptance_run_successful": false,
-              "full_case_pass": false,
-              "new_product_credit": false,
+              "run_id": 40751540105,
+              "source_sha": "223d16d4fe6f28eafc67faf3bd563d79060c68eb",
+              "development_ci_run_id": 40748709173,
+              "development_artifact_id": 12841914971,
+              "build_version": "0.2.631",
+              "tree_sha256": "4700c9463f3a493f708cffa39b5d0a701758e1f7758be76894122b8d2d26bb28",
+              "resource_valid": true,
+              "acceptance_run_successful": true,
               "raw_case_status": "pass",
-              "scope": "Warm and panel-reload criteria passed; coming-soon deep-clean toggle and restoration",
-              "evidence": [
-                "docs/stabilization/reports/source28a-native-20261028.json",
-                "docs/stabilization/reports/source28a-native-peer-20261028.json"
+              "full_case_pass": false,
+              "scope": "Bounded frozen223 signed-out native control observations only; normal certificate and decisive Settings screenshots absent.",
+              "passed_subtargets": [
+                "visible coming-soon hint",
+                "toggle changes state",
+                "state and coming-soon hint persist after reload",
+                "Restore original preference"
               ],
               "unverified": [
-                "Full case and other role/feature coverage",
-                "Exact browser/profile/backend identity; owner Chrome; Store/candidate acceptance",
-                "Final remote profile deletion and fixture backup inspection"
+                "Full inventory case acceptance; normal guest Settings certificate and decisive Settings-state visual corroboration",
+                "Current0620, member/admin, Store-installed and release acceptance"
+              ],
+              "evidence": [
+                "docs/stabilization/reports/wake1858-settings223-native-20261028.json",
+                "docs/stabilization/reports/wake1858-settings223-peer-20261028.json"
               ]
             }
           },
@@ -12085,6 +12496,34 @@
               },
               "superseded_at": "2026-10-28T04:34:06.586578+00:00",
               "reason": "Exact28a native scoped evidence; previous frozen result retained. No fullcase promotion."
+            },
+            {
+              "at": "2026-10-28T19:36:36.400968+00:00",
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": 40631696825,
+                "source_sha": "28a5187d42b8e5688f3b18f8b10c8f2eac171c70",
+                "development_ci_run_id": 40630629761,
+                "development_artifact_id": 12791319277,
+                "build_version": "0.2.630",
+                "resource_invalid": false,
+                "acceptance_run_successful": false,
+                "full_case_pass": false,
+                "new_product_credit": false,
+                "raw_case_status": "pass",
+                "scope": "Warm and panel-reload criteria passed; coming-soon deep-clean toggle and restoration",
+                "evidence": [
+                  "docs/stabilization/reports/source28a-native-20261028.json",
+                  "docs/stabilization/reports/source28a-native-peer-20261028.json"
+                ],
+                "unverified": [
+                  "Full case and other role/feature coverage",
+                  "Exact browser/profile/backend identity; owner Chrome; Store/candidate acceptance",
+                  "Final remote profile deletion and fixture backup inspection"
+                ]
+              },
+              "reason": "Preserve prior frozen result while recording bounded223 native observations; no full-case promotion."
             }
           ],
           "attempt_history": [
@@ -12283,33 +12722,41 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "40570683530",
-              "source_sha": "944d1f612f52ebe89ed57cec8733bfdc449a69c1",
-              "development_ci_run_id": 40567597724,
-              "development_artifact_id": 12765221050,
-              "build_version": "0.2.630",
+              "run_id": 40751540105,
+              "source_sha": "223d16d4fe6f28eafc67faf3bd563d79060c68eb",
+              "development_ci_run_id": 40748709173,
+              "development_artifact_id": 12841914971,
+              "build_version": "0.2.631",
+              "tree_sha256": "4700c9463f3a493f708cffa39b5d0a701758e1f7758be76894122b8d2d26bb28",
               "resource_valid": true,
-              "resource_invalid": false,
+              "acceptance_run_successful": true,
+              "raw_case_status": "unverified",
               "full_case_pass": false,
-              "formal_guest_auth_precondition_verified": false,
-              "observed_native_assertions_passed": 13,
-              "observed_subtargets": [
-                "warm_ON_real_article_marker_and_OFF_zero_calls_in_bounded3s",
-                "full_management_reload_ON_marker_and_OFF_zero_with_worker_panel_replacement",
-                "stored_baseline_restored"
+              "scope": "Bounded frozen223 signed-out native control observations only; normal certificate and decisive Settings screenshots absent.",
+              "passed_subtargets": [
+                "Auto-scrape initial UI and storage observed",
+                "Auto-scrape on appears and persists",
+                "Auto-scrape on survives reload",
+                "Auto-scrape off appears and persists",
+                "Auto-scrape off survives reload",
+                "Original Auto-scrape value restored in UI and storage",
+                "full extension reload: Settings tab reopened for this recheck",
+                "full extension reload: initial: Auto-scrape initial UI and storage observed",
+                "full extension reload: warm: Auto-scrape on appears and persists",
+                "full extension reload: reload: Auto-scrape on survives reload",
+                "full extension reload: warm: Auto-scrape off appears and persists",
+                "full extension reload: reload: Auto-scrape off survives reload",
+                "full extension reload: cleanup: Original Auto-scrape value restored in UI and storage"
               ],
               "unverified": [
-                "SettingsSignInVisible_and_accountEmailUnavailable",
-                "actual_runtime_browser_extensionID_profilepath_permissions_device_org_backendSHA",
-                "fullT40_guest_acceptance",
-                "manualCapture_downstreamChat_context_Store_currentmain"
+                "background capture follows the persisted switch",
+                "Full inventory case acceptance; normal guest Settings certificate and decisive Settings-state visual corroboration",
+                "Current0620, member/admin, Store-installed and release acceptance"
               ],
               "evidence": [
-                "docs/stabilization/reports/settings-capture-944-20261027.json",
-                "docs/stabilization/reports/settings-guest-capture-944-peer-20261027.json",
-                "docs/stabilization/reports/settings944-publication-manifest-20261027.json"
-              ],
-              "scope": "Frozen944 bounded13nativeassertions reviewed; not13casepasses. All3resourcefinalvalid0 after two guestCPU_PENDING recoveries19:44:03→19:44:52 and19:45:08→19:45:56; not allintervalhealthy. OriginalsendMessage observer calls real function; captures match exact owned fixtureURL/articlemarker. OFFzero only bounded3s. Formal Settings signed-out precondition notasserted; fullT40partial. Imagesstartup/demo only/no targetmarker corroboration. No supported normalguest verifier; independent historical evidence review only/no freshnative replay. Remote profile deletion notobserved. No D299/D300/globalSettings/Store closure."
+                "docs/stabilization/reports/wake1858-settings223-native-20261028.json",
+                "docs/stabilization/reports/wake1858-settings223-peer-20261028.json"
+              ]
             }
           },
           "result_history": [
@@ -12560,6 +13007,41 @@
               },
               "superseded_at": "2026-10-25T13:32:33.560076+00:00",
               "reason": "New6f86 attempt resource-invalid; previous valid scopes remain historical, no new case credit."
+            },
+            {
+              "at": "2026-10-28T19:36:36.400968+00:00",
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "40570683530",
+                "source_sha": "944d1f612f52ebe89ed57cec8733bfdc449a69c1",
+                "development_ci_run_id": 40567597724,
+                "development_artifact_id": 12765221050,
+                "build_version": "0.2.630",
+                "resource_valid": true,
+                "resource_invalid": false,
+                "full_case_pass": false,
+                "formal_guest_auth_precondition_verified": false,
+                "observed_native_assertions_passed": 13,
+                "observed_subtargets": [
+                  "warm_ON_real_article_marker_and_OFF_zero_calls_in_bounded3s",
+                  "full_management_reload_ON_marker_and_OFF_zero_with_worker_panel_replacement",
+                  "stored_baseline_restored"
+                ],
+                "unverified": [
+                  "SettingsSignInVisible_and_accountEmailUnavailable",
+                  "actual_runtime_browser_extensionID_profilepath_permissions_device_org_backendSHA",
+                  "fullT40_guest_acceptance",
+                  "manualCapture_downstreamChat_context_Store_currentmain"
+                ],
+                "evidence": [
+                  "docs/stabilization/reports/settings-capture-944-20261027.json",
+                  "docs/stabilization/reports/settings-guest-capture-944-peer-20261027.json",
+                  "docs/stabilization/reports/settings944-publication-manifest-20261027.json"
+                ],
+                "scope": "Frozen944 bounded13nativeassertions reviewed; not13casepasses. All3resourcefinalvalid0 after two guestCPU_PENDING recoveries19:44:03→19:44:52 and19:45:08→19:45:56; not allintervalhealthy. OriginalsendMessage observer calls real function; captures match exact owned fixtureURL/articlemarker. OFFzero only bounded3s. Formal Settings signed-out precondition notasserted; fullT40partial. Imagesstartup/demo only/no targetmarker corroboration. No supported normalguest verifier; independent historical evidence review only/no freshnative replay. Remote profile deletion notobserved. No D299/D300/globalSettings/Store closure."
+              },
+              "reason": "Preserve prior frozen result while recording bounded223 native observations; no full-case promotion."
             }
           ],
           "linked_defects": [
@@ -13097,25 +13579,34 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": 40631696825,
-              "source_sha": "28a5187d42b8e5688f3b18f8b10c8f2eac171c70",
-              "development_ci_run_id": 40630629761,
-              "development_artifact_id": 12791319277,
-              "build_version": "0.2.630",
-              "resource_invalid": false,
-              "acceptance_run_successful": false,
-              "full_case_pass": false,
-              "new_product_credit": false,
+              "run_id": 40751540105,
+              "source_sha": "223d16d4fe6f28eafc67faf3bd563d79060c68eb",
+              "development_ci_run_id": 40748709173,
+              "development_artifact_id": 12841914971,
+              "build_version": "0.2.631",
+              "tree_sha256": "4700c9463f3a493f708cffa39b5d0a701758e1f7758be76894122b8d2d26bb28",
+              "resource_valid": true,
+              "acceptance_run_successful": true,
               "raw_case_status": "pass",
-              "scope": "Warm and panel-reload criteria passed; desktop-engine port input boundaries and restoration",
-              "evidence": [
-                "docs/stabilization/reports/source28a-native-20261028.json",
-                "docs/stabilization/reports/source28a-native-peer-20261028.json"
+              "full_case_pass": false,
+              "scope": "Bounded frozen223 signed-out native control observations only; normal certificate and decisive Settings screenshots absent.",
+              "passed_subtargets": [
+                "valid port saved",
+                "saved port triggers desktop worker rediscovery",
+                "valid override persists after reload",
+                "boundary port 1 saves and persists after reload",
+                "boundary port 65535 saves and persists after reload",
+                "invalid range shows error and retains saved port",
+                "blank clears override and stale error",
+                "cleared override persists after reload"
               ],
               "unverified": [
-                "Full case and other role/feature coverage",
-                "Exact browser/profile/backend identity; owner Chrome; Store/candidate acceptance",
-                "Final remote profile deletion and fixture backup inspection"
+                "Full inventory case acceptance; normal guest Settings certificate and decisive Settings-state visual corroboration",
+                "Current0620, member/admin, Store-installed and release acceptance"
+              ],
+              "evidence": [
+                "docs/stabilization/reports/wake1858-settings223-native-20261028.json",
+                "docs/stabilization/reports/wake1858-settings223-peer-20261028.json"
               ]
             }
           },
@@ -13343,6 +13834,34 @@
               },
               "superseded_at": "2026-10-28T04:34:06.586578+00:00",
               "reason": "Exact28a native scoped evidence; previous frozen result retained. No fullcase promotion."
+            },
+            {
+              "at": "2026-10-28T19:36:36.400968+00:00",
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": 40631696825,
+                "source_sha": "28a5187d42b8e5688f3b18f8b10c8f2eac171c70",
+                "development_ci_run_id": 40630629761,
+                "development_artifact_id": 12791319277,
+                "build_version": "0.2.630",
+                "resource_invalid": false,
+                "acceptance_run_successful": false,
+                "full_case_pass": false,
+                "new_product_credit": false,
+                "raw_case_status": "pass",
+                "scope": "Warm and panel-reload criteria passed; desktop-engine port input boundaries and restoration",
+                "evidence": [
+                  "docs/stabilization/reports/source28a-native-20261028.json",
+                  "docs/stabilization/reports/source28a-native-peer-20261028.json"
+                ],
+                "unverified": [
+                  "Full case and other role/feature coverage",
+                  "Exact browser/profile/backend identity; owner Chrome; Store/candidate acceptance",
+                  "Final remote profile deletion and fixture backup inspection"
+                ]
+              },
+              "reason": "Preserve prior frozen result while recording bounded223 native observations; no full-case promotion."
             }
           ],
           "attempt_history": [
@@ -14513,19 +15032,31 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
-              "run_id": "settings-6f86-40195311320",
-              "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
-              "development_ci_run_id": 40194412591,
-              "development_artifact_id": 12599612108,
-              "build_version": "0.2.621",
-              "resource_valid": false,
-              "runner_reported_status": "invalid",
-              "evidence": [
-                "docs/stabilization/reports/settings-native-b-1247.json",
-                "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
+              "status": "partial",
+              "run_id": 40751540105,
+              "source_sha": "223d16d4fe6f28eafc67faf3bd563d79060c68eb",
+              "development_ci_run_id": 40748709173,
+              "development_artifact_id": 12841914971,
+              "build_version": "0.2.631",
+              "tree_sha256": "4700c9463f3a493f708cffa39b5d0a701758e1f7758be76894122b8d2d26bb28",
+              "resource_valid": true,
+              "acceptance_run_successful": true,
+              "raw_case_status": "unverified",
+              "full_case_pass": false,
+              "scope": "Bounded frozen223 signed-out native control observations only; normal certificate and decisive Settings screenshots absent.",
+              "passed_subtargets": [
+                "warm: guest admin section, optional controls and audit actions absent",
+                "reload: guest admin section, optional controls and audit actions absent"
               ],
-              "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
+              "unverified": [
+                "ordinary member denial",
+                "Full inventory case acceptance; normal guest Settings certificate and decisive Settings-state visual corroboration",
+                "Current0620, member/admin, Store-installed and release acceptance"
+              ],
+              "evidence": [
+                "docs/stabilization/reports/wake1858-settings223-native-20261028.json",
+                "docs/stabilization/reports/wake1858-settings223-peer-20261028.json"
+              ]
             }
           },
           "result_history": [
@@ -14656,6 +15187,26 @@
               },
               "superseded_at": "2026-10-25T13:32:33.560076+00:00",
               "reason": "New6f86 attempt resource-invalid; previous valid scopes remain historical, no new case credit."
+            },
+            {
+              "at": "2026-10-28T19:36:36.400968+00:00",
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "settings-6f86-40195311320",
+                "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+                "development_ci_run_id": 40194412591,
+                "development_artifact_id": 12599612108,
+                "build_version": "0.2.621",
+                "resource_valid": false,
+                "runner_reported_status": "invalid",
+                "evidence": [
+                  "docs/stabilization/reports/settings-native-b-1247.json",
+                  "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
+                ],
+                "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
+              },
+              "reason": "Preserve prior frozen result while recording bounded223 native observations; no full-case promotion."
             }
           ],
           "attempt_history": [
@@ -14774,19 +15325,33 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
-              "run_id": "settings-6f86-40195311320",
-              "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
-              "development_ci_run_id": 40194412591,
-              "development_artifact_id": 12599612108,
-              "build_version": "0.2.621",
-              "resource_valid": false,
-              "runner_reported_status": "invalid",
-              "evidence": [
-                "docs/stabilization/reports/settings-native-b-1247.json",
-                "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
+              "status": "partial",
+              "run_id": 40751540105,
+              "source_sha": "223d16d4fe6f28eafc67faf3bd563d79060c68eb",
+              "development_ci_run_id": 40748709173,
+              "development_artifact_id": 12841914971,
+              "build_version": "0.2.631",
+              "tree_sha256": "4700c9463f3a493f708cffa39b5d0a701758e1f7758be76894122b8d2d26bb28",
+              "resource_valid": true,
+              "acceptance_run_successful": true,
+              "raw_case_status": "pass",
+              "full_case_pass": false,
+              "scope": "Bounded frozen223 signed-out native control observations only; normal certificate and decisive Settings screenshots absent.",
+              "passed_subtargets": [
+                "Two disposable loopback origins are visible and stored",
+                "First Ask again removes only selected origin",
+                "Unrelated origin remains after panel reload",
+                "Last Ask again hides the empty list",
+                "Empty list remains hidden after panel reload"
               ],
-              "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
+              "unverified": [
+                "Full inventory case acceptance; normal guest Settings certificate and decisive Settings-state visual corroboration",
+                "Current0620, member/admin, Store-installed and release acceptance"
+              ],
+              "evidence": [
+                "docs/stabilization/reports/wake1858-settings223-native-20261028.json",
+                "docs/stabilization/reports/wake1858-settings223-peer-20261028.json"
+              ]
             }
           },
           "result_history": [
@@ -14870,6 +15435,26 @@
               },
               "superseded_at": "2026-10-25T13:32:33.560076+00:00",
               "reason": "New6f86 attempt resource-invalid; previous valid scopes remain historical, no new case credit."
+            },
+            {
+              "at": "2026-10-28T19:36:36.400968+00:00",
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "settings-6f86-40195311320",
+                "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+                "development_ci_run_id": 40194412591,
+                "development_artifact_id": 12599612108,
+                "build_version": "0.2.621",
+                "resource_valid": false,
+                "runner_reported_status": "invalid",
+                "evidence": [
+                  "docs/stabilization/reports/settings-native-b-1247.json",
+                  "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
+                ],
+                "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
+              },
+              "reason": "Preserve prior frozen result while recording bounded223 native observations; no full-case promotion."
             }
           ],
           "attempt_history": [
@@ -15044,19 +15629,43 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
-              "run_id": "settings-6f86-40195311320",
-              "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
-              "development_ci_run_id": 40194412591,
-              "development_artifact_id": 12599612108,
-              "build_version": "0.2.621",
-              "resource_valid": false,
-              "runner_reported_status": "invalid",
-              "evidence": [
-                "docs/stabilization/reports/settings-native-b-1247.json",
-                "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
+              "status": "partial",
+              "run_id": 40751540105,
+              "source_sha": "223d16d4fe6f28eafc67faf3bd563d79060c68eb",
+              "development_ci_run_id": 40748709173,
+              "development_artifact_id": 12841914971,
+              "build_version": "0.2.631",
+              "tree_sha256": "4700c9463f3a493f708cffa39b5d0a701758e1f7758be76894122b8d2d26bb28",
+              "resource_valid": true,
+              "acceptance_run_successful": true,
+              "raw_case_status": "pass",
+              "full_case_pass": false,
+              "scope": "Bounded frozen223 signed-out native control observations only; normal certificate and decisive Settings screenshots absent.",
+              "passed_subtargets": [
+                "Scroll & capture appears and persists",
+                "Scroll & capture survives reload",
+                "Capture appears and persists",
+                "Capture survives reload",
+                "Original Auto-scrape mode restored in UI and storage",
+                "full extension reload: initial absent Settings container observed",
+                "full extension reload: initial: original preference matches",
+                "full extension reload: Scroll & capture changes visible and stored preference",
+                "full extension reload: Scroll & capture extension worker and panel were replaced",
+                "full extension reload: Scroll & capture survives full extension reload",
+                "full extension reload: original preference restored before extension reload",
+                "full extension reload: Capture extension worker and panel were replaced",
+                "full extension reload: Capture survives full extension reload",
+                "full extension reload: original preference restored after extension reload",
+                "full extension reload: pre-T67 Settings container restored after panel reload"
               ],
-              "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
+              "unverified": [
+                "Full inventory case acceptance; normal guest Settings certificate and decisive Settings-state visual corroboration",
+                "Current0620, member/admin, Store-installed and release acceptance"
+              ],
+              "evidence": [
+                "docs/stabilization/reports/wake1858-settings223-native-20261028.json",
+                "docs/stabilization/reports/wake1858-settings223-peer-20261028.json"
+              ]
             }
           },
           "linked_defects": [
@@ -15272,6 +15881,26 @@
               },
               "superseded_at": "2026-10-25T13:32:33.560076+00:00",
               "reason": "New6f86 attempt resource-invalid; previous valid scopes remain historical, no new case credit."
+            },
+            {
+              "at": "2026-10-28T19:36:36.400968+00:00",
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "settings-6f86-40195311320",
+                "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+                "development_ci_run_id": 40194412591,
+                "development_artifact_id": 12599612108,
+                "build_version": "0.2.621",
+                "resource_valid": false,
+                "runner_reported_status": "invalid",
+                "evidence": [
+                  "docs/stabilization/reports/settings-native-b-1247.json",
+                  "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
+                ],
+                "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
+              },
+              "reason": "Preserve prior frozen result while recording bounded223 native observations; no full-case promotion."
             }
           ],
           "attempt_history": [
@@ -15462,19 +16091,38 @@
           },
           "results": {
             "guest": {
-              "status": "unverified",
-              "run_id": "settings-6f86-40195311320",
-              "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
-              "development_ci_run_id": 40194412591,
-              "development_artifact_id": 12599612108,
-              "build_version": "0.2.621",
-              "resource_valid": false,
-              "runner_reported_status": "invalid",
-              "evidence": [
-                "docs/stabilization/reports/settings-native-b-1247.json",
-                "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
+              "status": "partial",
+              "run_id": 40751540105,
+              "source_sha": "223d16d4fe6f28eafc67faf3bd563d79060c68eb",
+              "development_ci_run_id": 40748709173,
+              "development_artifact_id": 12841914971,
+              "build_version": "0.2.631",
+              "tree_sha256": "4700c9463f3a493f708cffa39b5d0a701758e1f7758be76894122b8d2d26bb28",
+              "resource_valid": true,
+              "acceptance_run_successful": true,
+              "raw_case_status": "unverified",
+              "full_case_pass": false,
+              "scope": "Bounded frozen223 signed-out native control observations only; normal certificate and decisive Settings screenshots absent.",
+              "passed_subtargets": [
+                "identity matches running browser, manifest, receipt and runtime ID",
+                "password-flow API readiness label and remedy",
+                "observed browser update result shown accurately",
+                "no-update outcome",
+                "identity and API readiness remain current after reload"
               ],
-              "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
+              "unverified": [
+                "password-flow API unavailable branch",
+                "update available branch",
+                "throttled branch",
+                "update error branch",
+                "update API unavailable branch",
+                "Full inventory case acceptance; normal guest Settings certificate and decisive Settings-state visual corroboration",
+                "Current0620, member/admin, Store-installed and release acceptance"
+              ],
+              "evidence": [
+                "docs/stabilization/reports/wake1858-settings223-native-20261028.json",
+                "docs/stabilization/reports/wake1858-settings223-peer-20261028.json"
+              ]
             }
           },
           "result_history": [
@@ -15588,6 +16236,26 @@
               },
               "superseded_at": "2026-10-25T13:32:33.560076+00:00",
               "reason": "New6f86 attempt resource-invalid; previous valid scopes remain historical, no new case credit."
+            },
+            {
+              "at": "2026-10-28T19:36:36.400968+00:00",
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "settings-6f86-40195311320",
+                "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+                "development_ci_run_id": 40194412591,
+                "development_artifact_id": 12599612108,
+                "build_version": "0.2.621",
+                "resource_valid": false,
+                "runner_reported_status": "invalid",
+                "evidence": [
+                  "docs/stabilization/reports/settings-native-b-1247.json",
+                  "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
+                ],
+                "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
+              },
+              "reason": "Preserve prior frozen result while recording bounded223 native observations; no full-case promotion."
             }
           ],
           "attempt_history": [
@@ -15850,25 +16518,28 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": 40631696825,
-              "source_sha": "28a5187d42b8e5688f3b18f8b10c8f2eac171c70",
-              "development_ci_run_id": 40630629761,
-              "development_artifact_id": 12791319277,
-              "build_version": "0.2.630",
-              "resource_invalid": false,
-              "acceptance_run_successful": false,
-              "full_case_pass": false,
-              "new_product_credit": false,
+              "run_id": 40751540105,
+              "source_sha": "223d16d4fe6f28eafc67faf3bd563d79060c68eb",
+              "development_ci_run_id": 40748709173,
+              "development_artifact_id": 12841914971,
+              "build_version": "0.2.631",
+              "tree_sha256": "4700c9463f3a493f708cffa39b5d0a701758e1f7758be76894122b8d2d26bb28",
+              "resource_valid": true,
+              "acceptance_run_successful": true,
               "raw_case_status": "pass",
-              "scope": "Warm plus first full-management-reload guest-negative visibility criteria passed.",
-              "evidence": [
-                "docs/stabilization/reports/source28a-native-20261028.json",
-                "docs/stabilization/reports/source28a-native-peer-20261028.json"
+              "full_case_pass": false,
+              "scope": "Bounded frozen223 signed-out native control observations only; normal certificate and decisive Settings screenshots absent.",
+              "passed_subtargets": [
+                "warm: Account unavailable, no Name/role, Sign in footer",
+                "reload: Account unavailable, no Name/role, Sign in footer"
               ],
               "unverified": [
-                "Full case and other role/feature coverage",
-                "Exact browser/profile/backend identity; owner Chrome; Store/candidate acceptance",
-                "Final remote profile deletion and fixture backup inspection"
+                "Full inventory case acceptance; normal guest Settings certificate and decisive Settings-state visual corroboration",
+                "Current0620, member/admin, Store-installed and release acceptance"
+              ],
+              "evidence": [
+                "docs/stabilization/reports/wake1858-settings223-native-20261028.json",
+                "docs/stabilization/reports/wake1858-settings223-peer-20261028.json"
               ]
             }
           },
@@ -15963,6 +16634,34 @@
               },
               "superseded_at": "2026-10-28T04:34:06.586578+00:00",
               "reason": "Exact28a native scoped evidence; previous frozen result retained. No fullcase promotion."
+            },
+            {
+              "at": "2026-10-28T19:36:36.400968+00:00",
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": 40631696825,
+                "source_sha": "28a5187d42b8e5688f3b18f8b10c8f2eac171c70",
+                "development_ci_run_id": 40630629761,
+                "development_artifact_id": 12791319277,
+                "build_version": "0.2.630",
+                "resource_invalid": false,
+                "acceptance_run_successful": false,
+                "full_case_pass": false,
+                "new_product_credit": false,
+                "raw_case_status": "pass",
+                "scope": "Warm plus first full-management-reload guest-negative visibility criteria passed.",
+                "evidence": [
+                  "docs/stabilization/reports/source28a-native-20261028.json",
+                  "docs/stabilization/reports/source28a-native-peer-20261028.json"
+                ],
+                "unverified": [
+                  "Full case and other role/feature coverage",
+                  "Exact browser/profile/backend identity; owner Chrome; Store/candidate acceptance",
+                  "Final remote profile deletion and fixture backup inspection"
+                ]
+              },
+              "reason": "Preserve prior frozen result while recording bounded223 native observations; no full-case promotion."
             }
           ],
           "attempt_history": [
@@ -16149,25 +16848,28 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": 40631696825,
-              "source_sha": "28a5187d42b8e5688f3b18f8b10c8f2eac171c70",
-              "development_ci_run_id": 40630629761,
-              "development_artifact_id": 12791319277,
-              "build_version": "0.2.630",
-              "resource_invalid": false,
-              "acceptance_run_successful": false,
-              "full_case_pass": false,
-              "new_product_credit": false,
+              "run_id": 40751540105,
+              "source_sha": "223d16d4fe6f28eafc67faf3bd563d79060c68eb",
+              "development_ci_run_id": 40748709173,
+              "development_artifact_id": 12841914971,
+              "build_version": "0.2.631",
+              "tree_sha256": "4700c9463f3a493f708cffa39b5d0a701758e1f7758be76894122b8d2d26bb28",
+              "resource_valid": true,
+              "acceptance_run_successful": true,
               "raw_case_status": "pass",
-              "scope": "Warm plus first full-management-reload guest-negative visibility criteria passed.",
-              "evidence": [
-                "docs/stabilization/reports/source28a-native-20261028.json",
-                "docs/stabilization/reports/source28a-native-peer-20261028.json"
+              "full_case_pass": false,
+              "scope": "Bounded frozen223 signed-out native control observations only; normal certificate and decisive Settings screenshots absent.",
+              "passed_subtargets": [
+                "warm: archive filter absent and no organization read or choice",
+                "reload: archive filter absent and no organization read or choice"
               ],
               "unverified": [
-                "Full case and other role/feature coverage",
-                "Exact browser/profile/backend identity; owner Chrome; Store/candidate acceptance",
-                "Final remote profile deletion and fixture backup inspection"
+                "Full inventory case acceptance; normal guest Settings certificate and decisive Settings-state visual corroboration",
+                "Current0620, member/admin, Store-installed and release acceptance"
+              ],
+              "evidence": [
+                "docs/stabilization/reports/wake1858-settings223-native-20261028.json",
+                "docs/stabilization/reports/wake1858-settings223-peer-20261028.json"
               ]
             }
           },
@@ -16262,6 +16964,34 @@
               },
               "superseded_at": "2026-10-28T04:34:06.586578+00:00",
               "reason": "Exact28a native scoped evidence; previous frozen result retained. No fullcase promotion."
+            },
+            {
+              "at": "2026-10-28T19:36:36.400968+00:00",
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": 40631696825,
+                "source_sha": "28a5187d42b8e5688f3b18f8b10c8f2eac171c70",
+                "development_ci_run_id": 40630629761,
+                "development_artifact_id": 12791319277,
+                "build_version": "0.2.630",
+                "resource_invalid": false,
+                "acceptance_run_successful": false,
+                "full_case_pass": false,
+                "new_product_credit": false,
+                "raw_case_status": "pass",
+                "scope": "Warm plus first full-management-reload guest-negative visibility criteria passed.",
+                "evidence": [
+                  "docs/stabilization/reports/source28a-native-20261028.json",
+                  "docs/stabilization/reports/source28a-native-peer-20261028.json"
+                ],
+                "unverified": [
+                  "Full case and other role/feature coverage",
+                  "Exact browser/profile/backend identity; owner Chrome; Store/candidate acceptance",
+                  "Final remote profile deletion and fixture backup inspection"
+                ]
+              },
+              "reason": "Preserve prior frozen result while recording bounded223 native observations; no full-case promotion."
             }
           ],
           "attempt_history": [
@@ -17136,25 +17866,28 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": 40631696825,
-              "source_sha": "28a5187d42b8e5688f3b18f8b10c8f2eac171c70",
-              "development_ci_run_id": 40630629761,
-              "development_artifact_id": 12791319277,
-              "build_version": "0.2.630",
-              "resource_invalid": false,
-              "acceptance_run_successful": false,
-              "full_case_pass": false,
-              "new_product_credit": false,
+              "run_id": 40751540105,
+              "source_sha": "223d16d4fe6f28eafc67faf3bd563d79060c68eb",
+              "development_ci_run_id": 40748709173,
+              "development_artifact_id": 12841914971,
+              "build_version": "0.2.631",
+              "tree_sha256": "4700c9463f3a493f708cffa39b5d0a701758e1f7758be76894122b8d2d26bb28",
+              "resource_valid": true,
+              "acceptance_run_successful": true,
               "raw_case_status": "pass",
-              "scope": "Warm plus first full-management-reload guest-negative visibility criteria passed.",
-              "evidence": [
-                "docs/stabilization/reports/source28a-native-20261028.json",
-                "docs/stabilization/reports/source28a-native-peer-20261028.json"
+              "full_case_pass": false,
+              "scope": "Bounded frozen223 signed-out native control observations only; normal certificate and decisive Settings screenshots absent.",
+              "passed_subtargets": [
+                "warm: no archived membership or restoration action",
+                "reload: no archived membership or restoration action"
               ],
               "unverified": [
-                "Full case and other role/feature coverage",
-                "Exact browser/profile/backend identity; owner Chrome; Store/candidate acceptance",
-                "Final remote profile deletion and fixture backup inspection"
+                "Full inventory case acceptance; normal guest Settings certificate and decisive Settings-state visual corroboration",
+                "Current0620, member/admin, Store-installed and release acceptance"
+              ],
+              "evidence": [
+                "docs/stabilization/reports/wake1858-settings223-native-20261028.json",
+                "docs/stabilization/reports/wake1858-settings223-peer-20261028.json"
               ]
             },
             "member": {
@@ -17262,6 +17995,34 @@
               },
               "superseded_at": "2026-10-28T04:34:06.586578+00:00",
               "reason": "Exact28a native scoped evidence; previous frozen result retained. No fullcase promotion."
+            },
+            {
+              "at": "2026-10-28T19:36:36.400968+00:00",
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": 40631696825,
+                "source_sha": "28a5187d42b8e5688f3b18f8b10c8f2eac171c70",
+                "development_ci_run_id": 40630629761,
+                "development_artifact_id": 12791319277,
+                "build_version": "0.2.630",
+                "resource_invalid": false,
+                "acceptance_run_successful": false,
+                "full_case_pass": false,
+                "new_product_credit": false,
+                "raw_case_status": "pass",
+                "scope": "Warm plus first full-management-reload guest-negative visibility criteria passed.",
+                "evidence": [
+                  "docs/stabilization/reports/source28a-native-20261028.json",
+                  "docs/stabilization/reports/source28a-native-peer-20261028.json"
+                ],
+                "unverified": [
+                  "Full case and other role/feature coverage",
+                  "Exact browser/profile/backend identity; owner Chrome; Store/candidate acceptance",
+                  "Final remote profile deletion and fixture backup inspection"
+                ]
+              },
+              "reason": "Preserve prior frozen result while recording bounded223 native observations; no full-case promotion."
             }
           ],
           "linked_defects": [

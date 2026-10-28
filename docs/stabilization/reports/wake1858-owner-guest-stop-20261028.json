@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "observed_at": "2026-10-28T19:36:36.400968+00:00",
+  "status": "STOPPED_USER_CHANGED_CHROME",
+  "evidence_kind": "typed privacy-limited operator stop receipt",
+  "private_original_sha256": "5021ea3c25671012678bb2181c47090302350f21e2b0a1e96653abc0c90ef343",
+  "scope": "Store guest current-server test only; DEV reload held pending newer CI",
+  "resource_run": "owner223-current-20261028-001",
+  "resource": {
+    "holder_exit": 0,
+    "watcher_exit": 0,
+    "resource_final": "valid"
+  },
+  "stop_reason": "External Chrome activity/user changed app during profile selection. Stopped before any message; no service failure established.",
+  "guest_profile_selected": false,
+  "ui_messages_sent": 0,
+  "product_verdict": "unverified",
+  "build_boundary": "Store577/current advertised server65 intended; guest profile selection and message behavior not exercised. Last actual owner development observation remains79e4/DEV631; later disk promotion is separate, physical reload held.",
+  "cleanup": "No owned tab or conversation created; Profiles menu may remain open. No further GUI cleanup during active user interference. Cua reset; holder and watcher exited.",
+  "next_action": "Coordinate a fresh admitted lease when Chrome is available; repeat Store guest check. DEV reload requires current eligible promotion.",
+  "publication_limits": "No raw accessibility, screenshots, tab titles, account data, credentials or provider transcript."
+}
