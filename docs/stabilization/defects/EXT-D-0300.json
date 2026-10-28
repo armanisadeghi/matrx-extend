@@ -34,7 +34,7 @@
     "docs/stabilization/reports/failure-capture-source-verification-20261027.json",
     "docs/stabilization/reports/failure-capture-source-peer-20261027.json"
   ],
-  "next_action": "Push reviewed exact source/evidence, wait exact-main fresh-install CI with refreshed lock; normal guarded hosted SettingsB original+surrounding reload retest, then same-frozen artifact Scrape only if normal source/capacity admission passes. Keep local Chrome lease/journal and metadata changes until actual dispatch boundaries.",
+  "next_action": "Current complete Settings/Scrape operator recipe is in PLAN#3. Preserve omitted-runner refused attempt. After this checkpoint is synchronized/pushed, obtain successful exact-current-main CI artifact and use a separate full-argument normal SettingsB plan/dispatch with fresh approved-workflow/source/capacity/spend checks. No direct fallback, historical-artifact admission or retroactive product credit.",
   "transition_history": [
     {
       "at": "2026-10-27T19:40:18.049879+00:00",
@@ -55,6 +55,13 @@
       "to": "in-fix",
       "reason": "Combined Settings retired-mode persistence and narrow permission-footprint class repair independently accepted at source scope; native original and surrounding acceptance remains pending.",
       "evidence": "docs/stabilization/reports/theme-source-peer-final-20261028.json"
+    },
+    {
+      "at": "2026-10-28T14:39:51.198912+00:00",
+      "from": "in-fix",
+      "to": "in-fix",
+      "reason": "Exactf886 full CI succeeded; native plan refused missing explicit runner before resource/browser/dispatch. Original provider call retained, exit not retained. Correct complete operator contract reviewed; source advanced by skills sync, requiring new exact-source artifact before distinct normal attempt. No product verdict.",
+      "evidence": "docs/stabilization/reports/theme-native-admission-20261028.json"
     }
   ],
   "bounded_source_fix_files": {
@@ -278,7 +285,7 @@
     }
   },
   "theme_mode_materialization_repair": {
-    "state": "SOURCE_REVIEWED_FRESH_CI_NATIVE_PENDING",
+    "state": "F886_FRESH_CI_GREEN_NATIVE_ARGUMENT_REFUSED_LATEST_SOURCE_PENDING",
     "owner": "/root",
     "implementation_lane": "/root/theme1308_repair",
     "independent_lane": "/root/theme1308_source_review",
@@ -289,6 +296,15 @@
     "source_cause": "Actual production first tested Theme persistence writes the retired local mode default; unchanged comparator separately rejects valid container materialization without any permission field. Probe singleton was initialized; no native first-writer proof.",
     "repair": "Retire Settings-only mode field through v7 migration/persistence, preserve v6 agent/unrelated data and Chat/Pilot explicit Ask carry-over. Compare immutable raw footprints permitting only valid both-mode-field-absent container metadata differences; actual permission changes/malformed/extra fields remain failures. Reuse authoritative predicate in receipt, retaining rawserialization.",
     "verification": "58 final Vitest; final MJS1282total1271pass11skip0fail; compile0; lint3509files1039warnings0errors; sourceRED and meaningful migration/writer/observer mutants. R1 actual observer matrix gap corrected and independently accepted. Refused independent directcommand retained, no bypass/tests.",
-    "limits": "Source checks use installed dependencies preceding contributor lock refresh; exact-main fresh-install CI and actual original+surrounding native full-reload acceptance pending. No product closure/Store/release credit."
+    "limits": "Source checks use installed dependencies preceding contributor lock refresh; exact-main fresh-install CI and actual original+surrounding native full-reload acceptance pending. No product closure/Store/release credit.",
+    "fresh_ci": {
+      "run_id": 40703747420,
+      "source_sha": "f886a00137ecd9c69e6ee7f71f42f1e5ba2cfaee",
+      "conclusion": "success",
+      "artifact_id": 12824595119,
+      "digest": "sha256:e9149c9aeace5eeb624a870bec385a7a0ed58fb737ff7b4ed7b4cc0f4334a88d",
+      "limit": "Official CI/artifact metadata only; no local import/native adoption. Later e375 skills sync and ae64147a0 Chat-v2 dependency refresh require a new exact-source artifact; dependency drift is material."
+    },
+    "admission_refusal": "docs/stabilization/reports/theme-native-admission-20261028.json"
   }
 }

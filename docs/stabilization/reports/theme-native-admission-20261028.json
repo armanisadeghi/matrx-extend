@@ -1,0 +1,45 @@
+{
+  "task_id": "theme1308-native-B",
+  "lane": "B",
+  "status": "ARGUMENT_REFUSAL_STOPPED_NEW_CURRENT_SOURCE_REQUIRED",
+  "source_sha": "f886a00137ecd9c69e6ee7f71f42f1e5ba2cfaee",
+  "source_verdict": "bounded source peer pass; native pending",
+  "automatic_ci": {
+    "run_id": 40701952840,
+    "conclusion": "success",
+    "scope": "docs only",
+    "artifacts": 0
+  },
+  "full_ci": {
+    "run_id": 40703747420,
+    "conclusion": "success",
+    "artifact_id": 12824595119,
+    "artifact_digest": "sha256:e9149c9aeace5eeb624a870bec385a7a0ed58fb737ff7b4ed7b4cc0f4334a88d"
+  },
+  "native": {
+    "verdict": "unverified",
+    "plan": "plan-settings-guest",
+    "refusal": "HOSTED_SETTINGS_GUEST_RUNNER_REFUSED",
+    "cause": "runner-label omitted; helper requires explicit macos-15-intel",
+    "dispatch": false,
+    "seo_dispatch": false
+  },
+  "limitations": [
+    "Normal admission refusal honored; no bypass or retry.",
+    "No native product verdict, Store or release verdict.",
+    "No owned process remains; full CI terminal."
+  ],
+  "next_action": "Coordinator resolves refusal under normal admission policy before any further dispatch.",
+  "schema": 1,
+  "original_provider_receipt": {
+    "private_path": ".output/stabilization-checkpoints/wake1308/native/plan-original.jsonl",
+    "sha256": "83fc89796324baca01d6101dc4c4564712c42085a5162cdf0a31a4a762ce1306",
+    "call_id": "call_21eb23be48e7450aa13af7382df3af83",
+    "observed_at": "2026-10-28T14:26:47.026Z",
+    "actual_exit_status": "not_retained_in_original_wrapper",
+    "evidence": "Original argv omits runner-label; matching output records HOSTED_SETTINGS_GUEST_RUNNER_REFUSED. No resource/browser/dispatch checks ran."
+  },
+  "review": "theme-admission-peer-20261028.json",
+  "new_attempt_conditions": "Original invocation remains refused/zero-dispatch. Only after reviewed integrated workflow, new synchronized clean source and its successful exact CI artifact, explicit approved runner and all fresh normal plan/dispatch source/capacity/spend/resource guards pass may a distinct new attempt run. No rerun on historical f886 or alternate mechanism.",
+  "operator_contract": "docs/stabilization/PLAN.md#3-resource-admission-and-watchdog"
+}

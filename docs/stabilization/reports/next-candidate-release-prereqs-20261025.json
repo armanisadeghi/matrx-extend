@@ -50,5 +50,7 @@
     "next_rule": "Before any paid acceptance or release dispatch, obtain a fresh server weekly actual-spend total, components, timestamp and cap through an authorized existing identity. The cap is $100/week across all CI; stop on an actual spending or billing block."
   },
   "limits": "No new candidate artifact, real native T04/T22 outcome, current guest/member candidate result, or Store submission is claimed. Existing 0.2.577 Store installed guest proof remains separate.",
-  "superseding_live_evidence": "reports/release-gate-membership-diagnosis-20261025.json: stale local org diagnosed; same approved existing membership yields fresh189.64/100 all-service weekly spend. Paid work paused, no job moved or dispatched. Exact source CI40177491271 and focused40177491258 now success; metadata9aa CI40178224323 success."
+  "superseding_live_evidence": "reports/release-gate-membership-diagnosis-20261025.json: stale local org diagnosed; same approved existing membership yields fresh189.64/100 all-service weekly spend. Paid work paused, no job moved or dispatched. Exact source CI40177491271 and focused40177491258 now success; metadata9aa CI40178224323 success.",
+  "operator_template_superseded_by": "docs/stabilization/PLAN.md#3-resource-admission-and-watchdog",
+  "operator_template_limit": "Historical Settings command omits mandatory explicit runner label. Do not use this as a live operator recipe; original command retained as historical evidence."
 }
