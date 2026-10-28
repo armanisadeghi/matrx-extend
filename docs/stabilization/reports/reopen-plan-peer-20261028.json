@@ -1,0 +1,65 @@
+{
+  "schema": 1,
+  "task_id": "reopen_diagnostic_plan_peer",
+  "at": "2026-10-28T04:44:26.407982+00:00",
+  "verdict": "COMMIT_TRIMMED_FIRST_DISCRIMINATOR",
+  "plan_sha256": "3743f6e4e315c81200eb774a36867e4b7929458813997a2ae58e66dc9f539793",
+  "plan_source": "49f8d5bc5a1c0f203c2b377aa6de28bd0308c615",
+  "native_original_sha256": "b608b02e331241b8b6f8edae9a16c7d6e7fbdb8d388f5758f43dafc1e9713ebf",
+  "A": {
+    "verdict": "NATIVE_FAILURE_BOUNDARY_AUTHENTICATED; CAUSE_UNKNOWN",
+    "reality_contact": "Read retained original native JSON before code: source28a B40631696825, T04 Dark selected/persisted and management retirement/replacement criteria pass, then compound choice_settings_reopen failed, recovery restore_recovered_settings failed; T10 later generic initial_baseline_observation. Original raw hash matches frozen diagnosis.",
+    "proven": [
+      "settingsBeforeTheme first opens Settings, then opens mode section, reads preference and compares immutable footprint. Stage name alone cannot identify which operation failed.",
+      "runDiagnosticStage replaces original error with post_replacement_stage_failed. First restoration catch discards original error. Theme rewrap/final safeGuestFailureDiagnostics also omit already-defined finite failure codes.",
+      "Existing mode receipt derives differences only from authoritative comparator operands; source classifier and onStep provide finite first branch discrimination."
+    ],
+    "not_proven": [
+      "Actual Settings reopen failure",
+      "Pointer causality for full Theme failure",
+      "Actual native Theme-induced footprint mismatch",
+      "Application mode regression",
+      "Physical CPU causality",
+      "Original/full T10 acceptance"
+    ]
+  },
+  "B": {
+    "verdict": "COMMIT_WITH_MINIMUM_SCOPE_AND_REQUIRED_GUARDS",
+    "blocking": [],
+    "minimum_scope": [
+      "ONE compound Theme/full-recheck reporting class: settings-open substeps, mode-section-open, mode-read, mode-compare; retain started/completed/failed or last reached closed substep.",
+      "Reuse existing classifyReloadSettingsFailure/finite safeFailureCode logic and original exact-operand modeComparisonReceipt. Do not create a general pointer-geometry projector or a new classifier twin.",
+      "Capture finite summary from original exception before each wrapper drops it. Preserve independent choice, FIRST restoration and recovery summaries, including unavailable values; never label the recovery sample as the original restoration failure.",
+      "Forward finite summary through runGuestChoices aggregate, Theme catch, runFullExtensionRecheck safeGuestFailureDiagnostics and existing initial-baseline catch. Reproject closed enums/booleans/equality categories at final publication; existing warm-only stage whitelist must intentionally admit new full-recheck context rather than fake initial/final provenance.",
+      "Keep original generic failure/verdict and actual comparator arguments/order/action/read/reload counts unchanged. Diagnostic callbacks and hostile/malformed/frozen errors must never throw, add IO or replace authoritative failure."
+    ],
+    "explicit_deferrals": [
+      "Warm T10 runCase same-sample capture remains missing/UNKNOWN and is deferred to a separate reporting unit. Current first full-recheck discriminator does not need it.",
+      "Full pointer geometry, readiness object transport and arbitrary wait snapshots are unnecessary for branch classification; unavailable is sufficient when finite existing category cannot discriminate.",
+      "No production Settings fix or native replay is authorized by this source-only proposal review. Existing guarded exact-source review/test gates still apply."
+    ],
+    "required_guards": [
+      "RED old actual full-recheck callback path for each: successful Settings open then mode-compare failure; Settings pointer refusal before mode verification; readiness/wait failure; first restoration failure then different recovery failure. Final public receipt must distinguish branches while each case remains failed and action/read/reload counts remain identical.",
+      "Use exact comparator operands once for equality-category receipt; count observe calls and ensure no re-read/rebaseline/retry, including unavailable comparator samples.",
+      "Exercise privacy sentinel, unknown enum, throwing getter and frozen/primitive failures through final serialized receipt; no raw message/stack/URL/DOM/AX text/settings bytes/arbitrary error fields.",
+      "Re-use authoritative failure comparator and closed-safe publisher. Diagnostic failure must not change a failed verdict into pass, nor a valid operation into failure.",
+      "A manually materialized representative Theme storage value can force a diagnostic branch but cannot prove production setTheme caused the native failure. Proving that source class requires actual production store/action/persist execution or independently bound production provenance; native causality remains unproved until fresh actual receipt."
+    ],
+    "coverage": "All four runtime branch hypotheses have a finite first discriminator. No global census, broad harness rewrite, new browser read or added wait is required.",
+    "reuse_checked": [
+      "tests/browser/settings-panel-driver.mjs openGuestSettings(panel,onStep)",
+      "tests/browser/settings-reload-boundary.mjs classifyReloadSettingsFailure",
+      "tests/browser/settings-guest-extension-rechecks.mjs safeFailureCode/runDiagnosticStage/restoration catch",
+      "tests/browser/settings-full-extension-rechecks.mjs modeComparisonReceipt/safeModeComparison/settingsBeforeTheme/safeGuestFailureDiagnostics/Theme catch",
+      "tests/browser/settings-member-auth-diagnostic.mjs safeMemberPointerDiagnostic (not required for trimmed discriminator)"
+    ]
+  },
+  "execution": {
+    "source_edits": 0,
+    "tests": 0,
+    "browser_calls": 0,
+    "workflow_dispatches": 0,
+    "child_agents": 0,
+    "owned_processes": "none; all reads terminal"
+  }
+}

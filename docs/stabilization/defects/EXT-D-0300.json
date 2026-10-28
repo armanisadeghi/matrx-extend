@@ -34,7 +34,7 @@
     "docs/stabilization/reports/failure-capture-source-verification-20261027.json",
     "docs/stabilization/reports/failure-capture-source-peer-20261027.json"
   ],
-  "next_action": "Localize earliest Theme choice_settings_reopen and restore_recovered_settings using finite same-sample reopen substep/pointer/last-wait/context/original-transport evidence; independently review diagnostic change before any new native run. No blind retry, timeout change or T10 rebaseline.",
+  "next_action": "Implement reviewed finite compound Settings-open/mode-check diagnostic; actual-path RED/GREEN with independent source review before exact-source CI/native. Native cause unknown; no blind retry.",
   "transition_history": [
     {
       "at": "2026-10-27T19:40:18.049879+00:00",
@@ -221,5 +221,14 @@
       "first_failure": "T04 choice_settings_reopen; restore_recovered_settings failed; later T10 initial_baseline_observation is generic, cause unknown.",
       "final_backup_inspection": "unverified"
     }
+  },
+  "reload_reopen_diagnostic": {
+    "state": "SOURCE_REPORTING_GAP_PROVEN; IMPLEMENTATION_AND_NATIVE_PENDING",
+    "owner_lane": "/root/reopen_diagnostic_fix",
+    "native_cause": "UNKNOWN; choice_settings_reopen callback includes actual open and mode section/read/compare",
+    "diagnosis": "docs/stabilization/reports/settings-reopen-diagnosis-20261028.json",
+    "plan_review": "docs/stabilization/reports/reopen-plan-peer-20261028.json",
+    "hypothesis": "Untested native hypothesis: representative real Theme full-state persistence changes shared frozen mode footprint; existing fixture misses shared storage. No appcause proof.",
+    "limits": "Reuse existing finitecode/onStep/same-samplecomparison, distinguish choice/firstrestore/recovery; defer warmrunCase/newgeometry. No operation count/deadline/comparator/verdict changes."
   }
 }

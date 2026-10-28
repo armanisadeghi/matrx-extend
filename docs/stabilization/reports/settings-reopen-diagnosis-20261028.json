@@ -1,0 +1,154 @@
+{
+  "schema": 1,
+  "task_id": "settings_reopen_diagnosis",
+  "at": "2026-10-28T04:42:44.376321+00:00",
+  "status": "READ_ONLY_DIAGNOSIS_AND_MINIMAL_PROPOSAL; RUNTIME_CAUSE_UNKNOWN",
+  "source_sha": "49f8d5bc5a1c0f203c2b377aa6de28bd0308c615",
+  "native_source_sha": "28a5187d42b8e5688f3b18f8b10c8f2eac171c70",
+  "native_run_id": 40631696825,
+  "native_original": {
+    "path": "/Volumes/Samsung2TB/code/matrx-extend/.output/stabilization-checkpoints/wake0212/capture-fixed-native/original/matrx-extend/matrx-extend/test-results/settings-local-controls-acceptance.json",
+    "sha256": "b608b02e331241b8b6f8edae9a16c7d6e7fbdb8d388f5758f43dafc1e9713ebf"
+  },
+  "source_hashes": {
+    "tests/browser/settings-guest-extension-rechecks.mjs": "8ecf79cfb74d537398a93be156078f3d649be0a17cad8c6c4ec3acfee77b0714",
+    "tests/browser/settings-full-extension-rechecks.mjs": "96c9c5b2b9dc66839f7a91faf5c8aaa6e4b01754151efec89c51df35cd7fb5eb",
+    "tests/browser/settings-panel-driver.mjs": "aa0d53e53f8c94275b818f8677239b0f7668174a63cbc8f31e5926ae0886d4a2",
+    "tests/browser/settings-reload-boundary.mjs": "8d9ea017c1681bc980adb3e3a59919d115d06962e79257636744877b0a88362c",
+    "tests/browser/settings-member-auth-diagnostic.mjs": "051740aa7e7c1e48163675456a137fc8beebd98d1e9032211bcf02d4542759b1",
+    "tests/browser/settings-full-extension-rechecks.test.mjs": "33b7f697158772511d41220d8b258cd80f798ad152fe14b9e877123caf477250",
+    "tests/browser/settings-local-controls-acceptance.mjs": "5f71444150bab5cbcb3ca87160efa9e9612815b0895c739e1bdae8e68a60bf78",
+    "tests/browser/settings-guest-preference-batch.mjs": "bf832a773eb27669e0fd9eaaed8f34f46fcaf5c69d6f3cc9bf557484e4a5d6b7",
+    "src/state/settings.ts": "adc6f3483e4fab8374f807de0ad823238ef3923a4d064a28d6b758ebdb8a96ad"
+  },
+  "A": {
+    "verdict": "FAIL_PARTIAL; UNDERLYING_PRODUCT_CAUSE_UNKNOWN",
+    "observed": [
+      "Warm T04 Theme UI/persisted/rendered/panel-reload criteria pass, absent storage baseline restored.",
+      "Warm T10 first refusal observation passes; later operation throws stable-hit-pointer error. Its same-sample driverFailure is not retained by runCase.",
+      "Initial management extension reload lifecycle and immediate Settings-open guest observation pass. This is a different generation from the later Dark-choice replacement.",
+      "T04 full recheck original absent Theme baseline matches; Dark selection and persisted state pass; management reload/old-target-retirement/newworker/newpanel pass.",
+      "Then choice_settings_reopen compound callback fails. It invokes settingsBeforeTheme, which first opens Settings and then opens Chat settings, reads T10 mode and compares immutable mode shadow. Exact failing suboperation is UNKNOWN.",
+      "Restoration invokes same compound callback; recovery acquires live panel, then restore_recovered_settings compound callback fails. Baseline restoration is null.",
+      "Later T10 initial_baseline_observation is catch-all around mode verify; it does not identify failure operand or establish a mode regression."
+    ],
+    "current_full_recheck": {
+      "theme_first_stage": "choice_settings_reopen",
+      "theme_restore_stage": "restore_recovered_settings",
+      "theme_baseline_restoration": null,
+      "mode_first_stage": "initial_baseline_observation"
+    },
+    "not_proven": [
+      "Actual Settings tab reopen failure",
+      "Pointer cause at full Theme stage",
+      "Theme-induced mode-shadow mismatch in native run",
+      "Physical CPU causality",
+      "App permission-mode defect or full T10 acceptance",
+      "Successful final fixture backup inspection or remote deletion"
+    ]
+  },
+  "B": {
+    "verdict": "PROVEN_REPORTING_BOUNDARY_LOSS; NO_REPAIR_OR_TEST_EXECUTED",
+    "proven_source_losses": [
+      {
+        "source": "tests/browser/settings-guest-extension-rechecks.mjs:199-215",
+        "fact": "runDiagnosticStage catches without error binding, replaces original failure with post_replacement_stage_failed, and for settings invocation observeResult is default null. Pointer/readiness/wait/mode comparison evidence is discarded."
+      },
+      {
+        "source": "tests/browser/settings-full-extension-rechecks.mjs:564-576,719-725",
+        "fact": "The settings callback passed to Theme is settingsBeforeTheme compound open+modeverify; stage choice_settings_reopen is not an isolated tab-open measurement."
+      },
+      {
+        "source": "tests/browser/settings-guest-extension-rechecks.mjs:288-295,298-317,386-399",
+        "fact": "Choice failure codes are calculated after replacement; first restoration exception is discarded before recovery; aggregate stores finite codes but downstream wrapper does not forward them."
+      },
+      {
+        "source": "tests/browser/settings-full-extension-rechecks.mjs:754-771,319-335",
+        "fact": "Theme catch rewrap copies stages/classes/stage arrays but omits safeFirstChoiceFailureCode and safeRestorationFailureCode; safeGuestFailureDiagnostics publication omits these codes too."
+      },
+      {
+        "source": "tests/browser/settings-local-controls-acceptance.mjs:542-560",
+        "fact": "Warm case failure retains message and optional later reacquireDiagnostic only; same-sample driverFailure/waitDiagnostic are lost."
+      }
+    ],
+    "reuse_searched": [
+      "openGuestSettings onStep already emits fixed tabwait/beforeclick/clickreturned/guestwait substeps without extra browser reads.",
+      "classifyReloadSettingsFailure in settings-reload-boundary.mjs is the existing finite Settings-open failure classifier; extend in place, no new classifier twin.",
+      "safeMemberPointerDiagnostic in settings-member-auth-diagnostic.mjs already projects finite same-sample driver facts, used by other non-identical lanes. Reuse directly, or extract neutrally only if a justified generic canonical move is needed; do not duplicate its field table.",
+      "waitFor produces waitLabel/waitFailureCategory/waitDiagnostic; waitForReplacementTab produces already-bounded readinessDiagnostic.",
+      "modeComparisonReceipt in settings-full-extension-rechecks.mjs already derives finite differences from exact comparator operands and safeModeComparison reprojects at publication. Reuse this logic; immutable comparator itself stays unchanged."
+    ],
+    "sibling_test_gap": {
+      "source": "tests/browser/settings-full-extension-rechecks.test.mjs:406-445",
+      "fact": "T04 option fixture updates only states.T04; shared storage is not materialized even realModeStorage=true. T67 does mutate shared storage. Production setTheme invokes Zustand persist with full state/no partialize and defaultPermissionMode ask.",
+      "classification": "Falsifiable source-hypothesis gap, not proven native cause."
+    }
+  },
+  "hypotheses": [
+    {
+      "rank": 1,
+      "hypothesis": "Theme persistence creates Settings permission-field/container footprint; compound postreload verification rejects frozen absent mode shadow.",
+      "prediction": "Base Settings open, Chat section open and T10 read succeed; same-sample comparison reports Settings storage/field/mode differences while guest visible mode can remain Act.",
+      "discriminator": "Actual full-rerun callback plus real observeGuestPreference/storage, absent Settings baseline and production-shaped Theme persistence; do not update immutable baseline or relax comparison.",
+      "status": "UNTESTED; source-compatible, native operand absent."
+    },
+    {
+      "rank": 2,
+      "hypothesis": "Base Settings tab trusted-pointer admission fails after replacement.",
+      "prediction": "Last open substep before_click, original pointer refusal code and finite hit/animation/stability facts; mode verify never reached.",
+      "discriminator": "Forward exact already-sampled driverFailure through existing canonical classifier and publication.",
+      "status": "UNKNOWN; warm T10 pointer does not prove this stage."
+    },
+    {
+      "rank": 3,
+      "hypothesis": "Replacement tab readiness or transport fails before click.",
+      "prediction": "Last substep settings_tab_wait_started, finite readiness first/last or original transport category; no pointer dispatch.",
+      "discriminator": "Retain original already-sampled readinessDiagnostic/waitFailureCategory.",
+      "status": "UNKNOWN; successful earlier generation and late renderer sample do not exclude it."
+    },
+    {
+      "rank": 4,
+      "hypothesis": "Click completes but guest active-state observation does not settle.",
+      "prediction": "guest_wait_started, finite last wait active/guest booleans or unavailable category.",
+      "discriminator": "Retain existing guest_settings last wait fields, never transient text.",
+      "status": "UNKNOWN"
+    }
+  ],
+  "minimal_next_proposal": {
+    "purpose": "One finite same-sample diagnostic unit, not a product fix or rerun authorization.",
+    "boundaries": [
+      "Compound Theme callback: settings_open \u2192 mode_section_open \u2192 mode_read \u2192 mode_compare; record started/completed/failed for each with closed enums. Forward onStep into underlying openGuestSettings instead of ignoring its second argument.",
+      "At each existing catch, capture typed summary from the original failure before any wrapper replacement; retain first choice and restoration separately. Do not use a later browser read to fill missing data.",
+      "Preserve generic aggregate failure/verdict and original operation semantics; forward finite diagnostic through Theme rewrap, runFullExtensionRecheck safeGuestFailureDiagnostics and published criteria.",
+      "Reuse same open/pointer diagnostic for warm runCase T10 so its exact first refusal sample survives instead of only message/later reacquire diagnostic.",
+      "For mode_compare use the exact authoritative observed/baseline operands once; attach existing finite mode comparison receipt, no fresh read, no baseline recomputation."
+    ],
+    "data_contract": [
+      "Fixed substep/category/failure-code enums; finite booleans/counts from existing pointer projection; allowlisted readiness and wait fields only.",
+      "No raw message, stack, URL, DOM/AX text, actual settings bytes, token, credentials, opaque backup values, arbitrary error properties or fingerprints beyond existing finite comparison equality categories.",
+      "Diagnostics best effort; getters/malformed/frozen errors must not mask/replace original failure, trigger new IO or change operation counts/verdict. Unavailable remains explicit."
+    ],
+    "unchanged": [
+      "Original T10 baseline/comparator/control order/assertions",
+      "Existing deadline/retry/resource/source/spend guards",
+      "Actual trusted pointer actions and restore sequence",
+      "Production source and permissions/auth flows"
+    ],
+    "red_guard_target": [
+      "Use existing fullRestartFixture and actual rerunGuestSettingsAfterExtensionReload / runGuestChoicesAcrossExtensionRestarts path. Inject original pointer, readiness/guest-wait and mode-compare failure separately after actual replacement callback; assert final public record distinguishes each while all remain fail and action/read/reload counts stay identical. Old source must be red for missing retained fields.",
+      "Exercise real observeGuestPreference/guestModeShadowMatches with shared storage materialized by representative full production Theme persistence after absent baseline; old fixture state-only Theme path is inadequate. This tests the hypothesis, not native causal proof.",
+      "Include compound base-open-success+mode-compare-failure discriminator, first-restoration failure distinct from recovered failure, serialization/privacy sentinel and hostile-getter/unavailable cases. No test run was executed in this read-only lane."
+    ],
+    "native_gate": "Fresh independent proposal/source review and guarded red/green/final gates before any new exact-source native job. No blind replay. Runtime acceptance remains open."
+  },
+  "execution": {
+    "tracked_edits": 0,
+    "tests_executed": 0,
+    "browser_calls": 0,
+    "workflow_dispatches": 0,
+    "credentials_read": 0,
+    "child_agents": 0,
+    "owned_processes": "none; all read commands terminal",
+    "next_owner": "parent /root"
+  }
+}
