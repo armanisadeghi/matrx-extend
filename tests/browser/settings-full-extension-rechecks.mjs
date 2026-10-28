@@ -1,4 +1,3 @@
-import { classifyReloadSettingsFailure } from './settings-reload-boundary.mjs';
 import { safeTransportFailureClass } from './profile-reload-capture.mjs';
 import {
   GUEST_EXTENSION_RECHECK_FAILURE_STAGES,
@@ -18,6 +17,7 @@ import {
   scrapeModeMatches,
 } from './settings-guest-scrape-controls.mjs';
 import { originalSettingsCleanupFailure } from './settings-probe-cleanup.mjs';
+import { classifyReloadSettingsFailure } from './settings-reload-boundary.mjs';
 import {
   runWithAbsentScrapeModeBaseline,
   settingsFixtureIntegrityFailure,
