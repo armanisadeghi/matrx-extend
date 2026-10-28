@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-28T19:36:36.400968+00:00",
+  "updated_at": "2026-10-28T20:19:27.066161+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -34284,13 +34284,11 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "40531082596",
-              "workflow_source_sha": "3de57f898d0d5b13f2a3d5ee4c41e1063874cbd7",
-              "source_sha": "9093620ce6d9733f4a7b4b23dbe0a2c2d8c617a2",
-              "development_ci_run_id": 40528122564,
-              "development_artifact_id": 12745946437,
-              "artifact_manifest_version": "0.2.629",
-              "runtime_extension_identity_observed": true,
+              "run_id": "40760798455",
+              "source_sha": "d19043d8b95c05153fec3763559dfd6f57ebb882",
+              "development_ci_run_id": 40758972183,
+              "development_artifact_id": 12847457843,
+              "artifact_manifest_version": "0.2.631",
               "resource_decision": "valid",
               "resource_invalid": false,
               "observed_subtargets": [
@@ -34301,11 +34299,10 @@
               ],
               "full_case_pass": false,
               "evidence": [
-                "docs/stabilization/reports/seo-b-909-1518-20261027.json",
-                "docs/stabilization/reports/seo909-native-certificate-20261027.json",
-                "docs/stabilization/reports/seo-909-native-peer-20261027.json"
+                "docs/stabilization/reports/wake2001-seo-native-20261028.json",
+                "docs/stabilization/reports/wake2001-peer-20261028.json"
               ],
-              "scope": "Frozen workflow3de/app909 guest native360 stacked/long notice target only:9target/0noticehits, trustedrunning→settled/currenttitle and independentdismiss2→1→0/cleanup2of2. All3resourcefinalsvalid0/no pending, originalhistoricalcertificate+freshcanonicalreplayvalid. Startupimages do notcorroboratetargetgeometry; browser/profile/backendunobserved. Originalwrong-source preflightrefusal retained, oneowner-authorized correctednormalattempt. FullT02/D199/otherroles/latest280/Store unchanged."
+              "scope": "Frozen d190 DEV631 native360 controlled2notice fixture:9unobscuredReAudit hits; trustedrunning→settled/currenttitle; independentdismiss[0,1]→[0,0], cleanup2/2. Normalverifier valid/all3resources valid0; freshpeer boundedApartial/Bpass. Deliberate owned-worker notice injection, no naturalDBfailure or independentruntimeguestidentity. Startupimages do notshowtargetassertions. FullT02/D199/reload/otherroles/Store remainunverified."
             }
           },
           "result_history": [
@@ -35107,6 +35104,35 @@
                 ],
                 "scope": "Frozen dd5e workflow/app eBee; native360 stacked 199-character notices leave all9 Re-audit points clear, trusted running/settled/current title and independent dismiss2→1→0; cleanup2/2. All3resources valid0/no pending. Fresh independent evidence peer accepts original historical certificate; new replay refused after Settings executable edits. Startup images do not show target. Exact executed browser/profile/backend unverified. No full T02/D199/current-main/member/admin/Store acceptance."
               }
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "40531082596",
+                "workflow_source_sha": "3de57f898d0d5b13f2a3d5ee4c41e1063874cbd7",
+                "source_sha": "9093620ce6d9733f4a7b4b23dbe0a2c2d8c617a2",
+                "development_ci_run_id": 40528122564,
+                "development_artifact_id": 12745946437,
+                "artifact_manifest_version": "0.2.629",
+                "runtime_extension_identity_observed": true,
+                "resource_decision": "valid",
+                "resource_invalid": false,
+                "observed_subtargets": [
+                  {
+                    "id": "multiple_and_long_notice_clearance_at_native_360px",
+                    "status": "pass"
+                  }
+                ],
+                "full_case_pass": false,
+                "evidence": [
+                  "docs/stabilization/reports/seo-b-909-1518-20261027.json",
+                  "docs/stabilization/reports/seo909-native-certificate-20261027.json",
+                  "docs/stabilization/reports/seo-909-native-peer-20261027.json"
+                ],
+                "scope": "Frozen workflow3de/app909 guest native360 stacked/long notice target only:9target/0noticehits, trustedrunning→settled/currenttitle and independentdismiss2→1→0/cleanup2of2. All3resourcefinalsvalid0/no pending, originalhistoricalcertificate+freshcanonicalreplayvalid. Startupimages do notcorroboratetargetgeometry; browser/profile/backendunobserved. Originalwrong-source preflightrefusal retained, oneowner-authorized correctednormalattempt. FullT02/D199/otherroles/latest280/Store unchanged."
+              },
+              "superseded_at": "2026-10-28T20:19:27.066161+00:00"
             }
           ],
           "defect_ids": [

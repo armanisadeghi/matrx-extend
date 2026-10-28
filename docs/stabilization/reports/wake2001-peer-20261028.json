@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "reviewer": "wake2001_fresh_peer",
+  "independent": true,
+  "authorship": "zero authored source/evidence inputs",
+  "observed_at": "2026-10-28T20:18:46.892551+00:00",
+  "status": "DONE_WITH_BOUNDED_VERDICTS",
+  "verdict_A": {
+    "status": "PARTIAL",
+    "disk_adoption": "PASS bounded disk adoption only",
+    "stopped_Mac_UI": "PASS bounded stopped receipt; physical owner reload and guest conversation UNVERIFIED",
+    "hosted_guest_SEO": "PASS only T02 multiple_and_long_notice_clearance_at_native_360px instrumented native guest subtarget; original overall partial, all wider recipes unverified",
+    "blanket_product_health": "UNVERIFIED"
+  },
+  "verdict_B": {
+    "status": "PASS_WITH_STATED_PROVENANCE_LIMITS",
+    "disk": "Original promotion receipt, CI/import provenance and public/private receipt hashes match; 3256-file source and stable destination trees independently recomputed exact. No Store eligibility or publication claimed.",
+    "UI_procedure": "Exact 51-read watcher checked: max gap 2.006699584s, post-admission journal maximum age15.318119s. One getState begin/end entirely after healthy observation and before final valid. No Chrome selection/message in API ledger.",
+    "privacy": "Public receipts omit local absolute source/destination paths, sensitive URLs and credentials. Recent target tab activity correctly does not identify actor or prove user-changed-app exception.",
+    "provenance_limit": "Actual process exit0 receipts and raw getState observation are operator/tool provenance, not independently replayable from embedded disk originals. Kernel reset explicitly operator-reported.",
+    "hosted_SEO": "PASS original terminal run, archive digest and extracted-byte equality, exact artifact identity, workflow hash, resource finals and bounded native observations independently inspected. No actor passed label substituted for full recipe."
+  },
+  "evidence": {
+    "promotion_original": "test-results/ci-dev-promotion-receipt.json",
+    "promotion_original_sha256": "19bebeca1bc39fd984862b6f139036985a94cbab52af21171a841fb38bfb21e5",
+    "disk_private_sha256": "3f0e47354477b8405e8bc6d61e96d16f2662e9be20224bb68112f76f0cc45e56",
+    "owner_private_sha256": "d38e79b94daaa13a5e1bb9967a06beca357c9a2e14f7863445a3dc52643ac536",
+    "tree_sha256": "0358e75784ed6ae8b601a04ac889180a49796fc21e84b4ceeefc7703a4c5b3d5",
+    "files": 3256,
+    "sourceSha": "d19043d8b95c05153fec3763559dfd6f57ebb882",
+    "development_run": 40758972183,
+    "artifact_id": 12847457843,
+    "version": "0.2.631",
+    "public_server_advertised_sha": "7bff31fa939fa472f4ec084f5b76dc9fca2932e2",
+    "server_limit": "supplemental pre-attempt endpoint; no per-stream identity",
+    "seo": {
+      "run": 40760798455,
+      "attempt": 1,
+      "terminal": "completed/success",
+      "archive_artifact": 12849095451,
+      "archive_sha256": "c456f9a4c69037b339a17b7c7580cc24b7e25d4db7cbce01451a92a5a0bc7fb8",
+      "all_six_extracted_entries_byte_equal": true,
+      "native_report_sha256": "9765bd53b6e18fada2e7c5219061797570d6b4661efe110ed5efa35e40bf7ff3",
+      "workflow_sha256": "76e0578aaff6100aa51576036dea55c0028482ea250f2015951b473a98710fd2",
+      "resources": "package/browser/guest admitted and terminal valid exit0; receipt hashes match verifier",
+      "native_observations": {
+        "width": 360,
+        "notices": 2,
+        "long_message_length": 199,
+        "reaudit_hit_points": 9,
+        "notice_hit_points": 0,
+        "trusted_click": true,
+        "trace": "click_event trusted at287ms, disabled+spinner292ms, enabled settled368ms, finished454ms",
+        "current_title_matched": true,
+        "dismissed_title_counts": [[0, 1], [0, 0]],
+        "cleanup": "cleared attempted2 cleared2 failed0"
+      },
+      "fixture_characterization": "Read-only source inspection: two controlled error notices injected by extension-owned service worker chrome.runtime.sendMessage(db:failure-notice) into real NoticeHost; naturally occurring DB failure production is not established. Real page title used from example.org. No auth or network response mocking shown in selected driver branch.",
+      "visual_evidence": "Inspected native-side-panel.png:360px guest G startup skeleton; not a screenshot of stacked SEO notices. Geometry/re-audit/dismiss proof is native instrumented original report, not independently replayed UI.",
+      "auth_limit": "Mode guest and startup G observed; no independent runtime user/session identity receipt. Member/admin/auth-recovery not established.",
+      "process_limit": "Verifier actual exit0/session79268 independently operator retained and seo-report receipt; no verifier rerun by peer."
+    }
+  },
+  "findings": [],
+  "limits": [
+    "No GUI, jobs, tests, Git mutation, new dispatch or source edits performed.",
+    "No Store577 or owner loaded-runtime claim added.",
+    "Current source exactness only attested at promotion observation, not continuously.",
+    "No full T02, D199 closure, all-SEO pass, owner physical reload, Store acceptance or blanket health established.",
+    "Fixture characterization derives read-only current driver branch; immutable ZIP contains native result/resource receipts and startup images, not all test source."
+  ],
+  "private_report_sha256": "a0c676907c59dfaa7d7faa5e54e0215efea9fb87db651586486750cb1d9a5ba1"
+}

@@ -1,0 +1,272 @@
+{
+  "schema": 1,
+  "kind": "privacy-limited original native SEO projection",
+  "status": "PARTIAL",
+  "actor_report_sha256": "f59d2dd40c0ffd83720596f72adc28616e286ad03717389ea6c7a02544784b20",
+  "run": {
+    "lane": "B guest-seo notice-stacked",
+    "run_id": "40760798455",
+    "attempt": 1,
+    "terminal": "success",
+    "source_sha": "d19043d8b95c05153fec3763559dfd6f57ebb882",
+    "development_run_id": "40758972183",
+    "development_artifact_id": "12847457843",
+    "archive_artifact_id": "12849095451",
+    "archive_sha256": "c456f9a4c69037b339a17b7c7580cc24b7e25d4db7cbce01451a92a5a0bc7fb8",
+    "process_receipts": {
+      "plan": {
+        "exit_code": 0,
+        "session_id": null,
+        "stdout": "plan.stdout",
+        "stderr": "plan.stderr"
+      },
+      "dispatch": {
+        "exit_code": 0,
+        "session_id": 49202,
+        "stdout": "dispatch.stdout",
+        "stderr": "dispatch.stderr"
+      },
+      "verifier": {
+        "exit_code": 0,
+        "session_id": 79268,
+        "stdout": "verifier.stdout",
+        "stderr": "verifier.stderr"
+      }
+    },
+    "verifier_valid": true,
+    "resource_decisions": "package, browser, guest valid",
+    "product_verdict": "partial: original reports T02 multiple and long notice clearance at native 360px subtarget pass; trusted re-audit dispatched",
+    "limitations": [
+      "not a full T02 pass or D199 closure",
+      "full recipe, independent guest identity, fixture and mocks characterization, and reload not established",
+      "member, admin, Store and other SEO cases not established"
+    ],
+    "evidence": "original.zip, original/, member-sha256.txt, artifacts.json, run-terminal.json, verifier.stdout"
+  },
+  "native": {
+    "schema_version": 1,
+    "feature_id": "EXT-F-1008",
+    "mode": "guest",
+    "status": "partial",
+    "scope": "two controlled guest SEO notices and trusted Re-audit at native 360px",
+    "targets": [
+      {
+        "case_id": "EXT-F-1008-T02",
+        "subtarget": "multiple_and_long_notice_clearance_at_native_360px",
+        "status": "pass",
+        "evidence": {
+          "viewport_width": 360,
+          "viewport_source": "native",
+          "notice_count": 2,
+          "long_message_length": 199,
+          "distinct_notice_titles": 2,
+          "visible_dismiss_counts": [1, 1],
+          "target_hit_points": 9,
+          "notice_hit_points": 0,
+          "current_title_matched": true,
+          "independently_dismissed": [[0, 1], [0, 0]],
+          "cleared_count": 0
+        }
+      }
+    ],
+    "build": {
+      "before": {
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.631",
+        "treeSha256": "0358e75784ed6ae8b601a04ac889180a49796fc21e84b4ceeefc7703a4c5b3d5"
+      },
+      "after": {
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.631",
+        "treeSha256": "0358e75784ed6ae8b601a04ac889180a49796fc21e84b4ceeefc7703a4c5b3d5"
+      }
+    },
+    "imported_artifact": {
+      "schema_version": 1,
+      "kind": "ci_development_test",
+      "eligibleStore": false,
+      "publish_state": "not_published",
+      "repository": "armanisadeghi/matrx-extend",
+      "workflow": ".github/workflows/ci.yml",
+      "sourceSha": "d19043d8b95c05153fec3763559dfd6f57ebb882",
+      "runId": 40758972183,
+      "runAttempt": 1,
+      "artifactId": 12847457843,
+      "githubArtifactDigest": "sha256:b66d4a93c2af58125986711d97868df207497f7ddef4549c65f1ac7f3ebf6035",
+      "version": "0.2.631",
+      "treeSha256": "0358e75784ed6ae8b601a04ac889180a49796fc21e84b4ceeefc7703a4c5b3d5",
+      "source": {
+        "originMain": "d19043d8b95c05153fec3763559dfd6f57ebb882",
+        "localHead": "d19043d8b95c05153fec3763559dfd6f57ebb882",
+        "trackedDirty": false,
+        "untrackedRunnerInputs": [],
+        "claim": "current_pushed_source"
+      }
+    },
+    "case_selection": {
+      "scope": "notice-stacked",
+      "selected_cases": ["T02"],
+      "selected_subtargets": ["multiple_and_long_notice_clearance_at_native_360px"],
+      "excluded_cases": ["all other SEO targets; no full T02 or D199 closure"]
+    },
+    "stacked_notice_fixture_diagnostic": {
+      "failure_code": null,
+      "stage": "independent_dismiss",
+      "cleanup": {
+        "status": "cleared",
+        "attempted_count": 2,
+        "cleared_count": 2,
+        "failed_count": 0,
+        "failure_code": null
+      }
+    },
+    "reaudit_transition_diagnostic": {
+      "observer_available": true,
+      "sample_count": 9,
+      "dropped_samples": 0,
+      "samples": [
+        {
+          "stage": "before_click",
+          "elapsed_ms": 0,
+          "click_trusted": null,
+          "scopeValid": true,
+          "auditButtonPresent": true,
+          "auditButtonDisabled": false,
+          "auditSpinner": false,
+          "reAudit": true,
+          "error": false
+        },
+        {
+          "stage": "click_event",
+          "elapsed_ms": 287,
+          "click_trusted": true,
+          "scopeValid": true,
+          "auditButtonPresent": true,
+          "auditButtonDisabled": false,
+          "auditSpinner": false,
+          "reAudit": true,
+          "error": false
+        },
+        {
+          "stage": "dom_transition",
+          "elapsed_ms": 292,
+          "click_trusted": null,
+          "scopeValid": true,
+          "auditButtonPresent": true,
+          "auditButtonDisabled": true,
+          "auditSpinner": true,
+          "reAudit": false,
+          "error": false
+        },
+        {
+          "stage": "after_release",
+          "elapsed_ms": 307,
+          "click_trusted": null,
+          "scopeValid": true,
+          "auditButtonPresent": true,
+          "auditButtonDisabled": true,
+          "auditSpinner": true,
+          "reAudit": false,
+          "error": false
+        },
+        {
+          "stage": "running_wait",
+          "elapsed_ms": 316,
+          "click_trusted": null,
+          "scopeValid": true,
+          "auditButtonPresent": true,
+          "auditButtonDisabled": true,
+          "auditSpinner": true,
+          "reAudit": false,
+          "error": false
+        },
+        {
+          "stage": "settle_wait",
+          "elapsed_ms": 326,
+          "click_trusted": null,
+          "scopeValid": true,
+          "auditButtonPresent": true,
+          "auditButtonDisabled": true,
+          "auditSpinner": true,
+          "reAudit": false,
+          "error": false
+        },
+        {
+          "stage": "dom_transition",
+          "elapsed_ms": 368,
+          "click_trusted": null,
+          "scopeValid": true,
+          "auditButtonPresent": true,
+          "auditButtonDisabled": false,
+          "auditSpinner": false,
+          "reAudit": true,
+          "error": false
+        },
+        {
+          "stage": "settle_wait",
+          "elapsed_ms": 440,
+          "click_trusted": null,
+          "scopeValid": true,
+          "auditButtonPresent": true,
+          "auditButtonDisabled": false,
+          "auditSpinner": false,
+          "reAudit": true,
+          "error": false
+        },
+        {
+          "stage": "finished",
+          "elapsed_ms": 454,
+          "click_trusted": null,
+          "scopeValid": true,
+          "auditButtonPresent": true,
+          "auditButtonDisabled": false,
+          "auditSpinner": false,
+          "reAudit": true,
+          "error": false
+        }
+      ]
+    }
+  },
+  "original_members": [
+    {
+      "path": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-40760798455-1.jsonl",
+      "sha256": "6aca92af23d76226dd374ddf93e2e1c213bff6edc9c617f2729ec61cca91b766",
+      "bytes": 988
+    },
+    {
+      "path": "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-1J4JEC/native-side-panel.png",
+      "sha256": "86426d0be4776150d8df5a88f6c751b20c8b26f7f31b350bcdda6849f0f5bf6c",
+      "bytes": 8598
+    },
+    {
+      "path": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-40760798455-1.jsonl",
+      "sha256": "d05b7cdd7c9ecb7221379d9b3f23465fcd6e2c6645c138d31d2b5f1bfa25851d",
+      "bytes": 970
+    },
+    {
+      "path": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-40760798455-1.jsonl",
+      "sha256": "041c4dda14b95965626b93a90e5cf9ba4ee7862d663f61a459fa94bd54dd1fa0",
+      "bytes": 1821
+    },
+    {
+      "path": "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-1J4JEC/normal-target-after-open.png",
+      "sha256": "b40fd4bba1a54c1403ccecf49f36bc9de1cb5f67ef081a74294abfef37e8ef5c",
+      "bytes": 27046
+    },
+    {
+      "path": "matrx-extend/matrx-extend/test-results/seo-guest-acceptance.json",
+      "sha256": "9765bd53b6e18fada2e7c5219061797570d6b4661efe110ed5efa35e40bf7ff3",
+      "bytes": 7128
+    }
+  ],
+  "fixture_and_limits": [
+    "Two notices deliberately injected through an owned extension worker relay; no naturally occurring database failure was reproduced.",
+    "Native owned fixture/Chrome side panel; instrumentation records hit geometry and trusted Re-audit. Original startup images do not show stacked notice assertions.",
+    "Guest label does not establish independent signed-out identity. Complete T02 recipe, reload, other roles, Store behavior and D199 closure unverified.",
+    "No broad no-mocks or live-backend failure recovery claim. Exact runtime flags are governed by the original workflow; API-only and actual Store-installed evidence are separate.",
+    "Remote profile/process deletion not independently read back; no shared secrets staged by lane."
+  ],
+  "full_case_pass": false
+}
