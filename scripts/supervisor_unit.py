@@ -1,13 +1,11 @@
 """Actual supervisor functions, external kernel/syscall seams only. No product proof."""
-import importlib.util
 import io
 from pathlib import Path
 from types import SimpleNamespace
 import sys
 
-spec = importlib.util.spec_from_file_location('supervisor', Path(__file__).with_name('linux_owned_supervisor.py'))
-sut = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(sut)
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import linux_owned_supervisor as sut  # noqa: E402 - static import so the scanner can resolve it
 
 class Kernel:
     def __init__(self, mode):
