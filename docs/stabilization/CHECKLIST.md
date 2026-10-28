@@ -1,11 +1,11 @@
 # Stabilization checklist
 
-Generated 2026-10-28 04:07 UTC from inventory.json, defect records, daily Store records, and the historical coverage audit. Inventory updated 2026-10-28T04:03:45.460619+00:00.
+Generated 2026-10-28 04:35 UTC from inventory.json, defect records, daily Store records, and the historical coverage audit. Inventory updated 2026-10-28T04:34:06.586578+00:00.
 
 ## Current truth
 
 - Scope: 207 feature records, 833 cases, 1422 controls, 1340 applicable case-role slots.
-- Case results: pass 92, partial 99, fail 1, unverified 1137, n/a 11; 205 explicitly unverified and 932 with no result record. Missing results count as unverified, including later-wave surfaces.
+- Case results: pass 92, partial 105, fail 1, unverified 1131, n/a 11; 199 explicitly unverified and 932 with no result record. Missing results count as unverified, including later-wave surfaces.
 - Fully verified feature-role pairs: 0/402 under the rule that every applicable case passes and every control maps to a case.
 - Procedure gaps: 0 missing steps; 0 missing expected outcomes; 0 missing control links; 1 explicitly control-less procedures.
 - Defect states: closed 166, retest-pass 10, fixed 90, in-fix 26, open 3. A fixed or closed defect is not a feature-level UI pass.
@@ -27,12 +27,12 @@ These observations are bounded to their recorded times and inspected dashboard v
 
 ## Inventory freshness review
 
-Since inventory source `e4b5e32b5e6936e302905ec327b3ab60f858c792`, **167 `src/` paths changed** through `665c106516c6b4148d272fc14205492334a746e7`. A direct path-anchor comparison matched 25 and left 142 without an exact inventory anchor.
+Since inventory source `e4b5e32b5e6936e302905ec327b3ab60f858c792`, **167 `src/` paths changed** through `28a5187d42b8e5688f3b18f8b10c8f2eac171c70`. A direct path-anchor comparison matched 25 and left 142 without an exact inventory anchor.
 A direct anchor miss is only a census-review hint. Feature inventory anchors are not an exhaustive dependency graph, so it does not prove an omitted feature or behavior.
 
 ## Next test priorities
 
-- **Coverage model / all contained surfaces** — 0 of 402 applicable feature-role pairs meet the full-verification rule. The inventory records 92 pass, 205 explicit unverified, 99 partial, 1 fail, 11 not applicable, and 932 slots with no result. A pass retains its original build boundary. Next: Continue recording bounded runs by exact build and role; do not infer whole-feature health from a repaired defect or scoped pass.
+- **Coverage model / all contained surfaces** — 0 of 402 applicable feature-role pairs meet the full-verification rule. The inventory records 92 pass, 199 explicit unverified, 105 partial, 1 fail, 11 not applicable, and 932 slots with no result. A pass retains its original build boundary. Next: Continue recording bounded runs by exact build and role; do not infer whole-feature health from a repaired defect or scoped pass.
 - **Executable test procedures** — 0 cases lack steps, 0 lack expected outcomes, 0 lack control links; explicitly control-less procedures: 1. The registered-executor surface has 173 cases; its live catalog parity does not prove runtime behavior. Next: Design each missing case from the live advertised tool contract and safe real fixtures before execution.
 - **Current install and native breadth** — Published 0.2.205 has bounded unpacked public-CRX evidence; this is not actual Store-installed lifecycle acceptance. The last resource-valid stable-server guest check is October 5 run37356729984. October 6 checks produced replies but failed deployment-stability or resource-validity gates, so current-server acceptance remains unverified. Development artifacts and their bounded case results carry separate receipts. Personal Chrome reload, broad guest/member/admin sidepanel/content-script/service-worker/offscreen coverage and signout privacy remain unverified. Next: Bind native runs to current artifact receipt, real user surface and persona; preserve admission guard.
 - **Notes, Files, Saved captures** — Notes D61/D62/D63/D67/D68 have scoped exact139 admin native verification; feature/member breadth remains open. On exact173, D64 Files admin read-error/Retry passed for Library and Screenshots, and D65 Saved captures admin last-click race passed for late success and late failure. Member behavior, full search/pagination/edit/delete controls and full feature cases remain unverified. Next: Run the remaining current-build member and admin controls; do not count the exact-ID backend test-fixture cleanup as Saved captures UI deletion coverage.
@@ -53,7 +53,7 @@ Pass and partial counts are recorded results; unverified includes explicit unver
 | Generated API request, credential and result transport | 1 | 0 | 0 | 0 | 12 | 0 |
 | Navigation / shell | 1 | 7 | 7 | 0 | 21 | 0 |
 | Popup / options / mic permission | 1 | 0 | 0 | 0 | 24 | 0 |
-| Settings | 1 | 19 | 16 | 0 | 67 | 1 |
+| Settings | 1 | 19 | 22 | 0 | 61 | 1 |
 | Profile | 1 | 5 | 6 | 0 | 21 | 0 |
 | Debug log | 1 | 4 | 1 | 0 | 46 | 0 |
 | Debug bridges | 1 | 0 | 0 | 0 | 28 | 0 |

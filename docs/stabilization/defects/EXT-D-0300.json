@@ -34,7 +34,7 @@
     "docs/stabilization/reports/failure-capture-source-verification-20261027.json",
     "docs/stabilization/reports/failure-capture-source-peer-20261027.json"
   ],
-  "next_action": "Obtain successful automatic exactcurrentmain CI/artifact; original Settings B retest FIRST on clean current source, no stale906retry. Actual finitecapturepredicates nowretained iffailure. No blindA/timeout/policy/runner/legacybypass. D300 original/adjacent andfullReload stillopen; SEO906boundedpass separate.",
+  "next_action": "Localize earliest Theme choice_settings_reopen and restore_recovered_settings using finite same-sample reopen substep/pointer/last-wait/context/original-transport evidence; independently review diagnostic change before any new native run. No blind retry, timeout change or T10 rebaseline.",
   "transition_history": [
     {
       "at": "2026-10-27T19:40:18.049879+00:00",
@@ -193,7 +193,7 @@
   },
   "fixture_capture_order_source_fix": {
     "source_sha": "665c106516c6b4148d272fc14205492334a746e7",
-    "state": "SOURCE_GUARDS_REVIEW_PASS; CI/nativepending",
+    "state": "SOURCE_GUARDS_AND_EXACT_CI_PASS; NATIVE_ORIGINAL_CAPTURE_ABORT_NOT_REPEATED; FULL_ACCEPTANCE_FAILS_AT_LATER_REOPEN",
     "source_hashes": {
       "tests/browser/settings-scrape-mode-baseline.mjs": "2ee93e7a0bc3507633d5f38e00fc1fb1ba76588f1ef340c0f1ec9a49d5680bbb",
       "tests/browser/settings-probe-cleanup.mjs": "ee948302c98ee4f120ae9fb862a100afbfd2c30f13434054e7715c19729bb666",
@@ -210,6 +210,16 @@
     "gates": "OriginalactualT40RED1261/1249pass/1fail/11skip valid; final1272/1261pass/0fail/11skip valid,compile0,lint3508/0errors1039warnings,all3completedvalid0. Rawpre/postsource11+lockframes andlogsretained/hashesverified.",
     "review": "docs/stabilization/reports/capture-order-gate-peer-20261028.json",
     "scope": "Strictfiveownenvelopefields/values independentRecordorder, opaque rawstrings exact, supportedtypedJSON unchangedkeys/types/arraysordered, unsupportedbeforemutation, finitealready-readcapturepredicates. T10 immutablecomparator untouched.",
-    "causal_limit": "Native originaloperandUNKNOWN; not appcause or closure."
+    "causal_limit": "Native originaloperandUNKNOWN; not appcause or closure.",
+    "native_retest": {
+      "source": "28a5187d42b8e5688f3b18f8b10c8f2eac171c70",
+      "run": 40631696825,
+      "artifact": 12791873440,
+      "report": "docs/stabilization/reports/source28a-native-20261028.json",
+      "review": "docs/stabilization/reports/source28a-native-peer-20261028.json",
+      "original_comparison_scope": "Early/late immutable comparison pass by control-flow reachability only; no separate successful operand sample.",
+      "first_failure": "T04 choice_settings_reopen; restore_recovered_settings failed; later T10 initial_baseline_observation is generic, cause unknown.",
+      "final_backup_inspection": "unverified"
+    }
   }
 }

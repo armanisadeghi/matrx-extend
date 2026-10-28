@@ -1,0 +1,63 @@
+{
+  "schema": 1,
+  "task_id": "source28a-publication-peer",
+  "at": "2026-10-28T04:36:02.268973+00:00",
+  "scope": "Read-only final publication packet review; no source/tests/workflow/UI/auth work. Only this private review report written.",
+  "A": {
+    "verdict": "PASS_BOUNDED_PUBLICATION_TRUTH",
+    "findings": [],
+    "correction_verified": "T10guest wording now distinguishes comparison execution/pass inferred by source controlflow from nonrecurrence of mismatch; separately retained successful operands remain absent.",
+    "checks": [
+      "Native typed fields/build/case projection match retained original actor and original native report; actor hash exact.",
+      "Original raw5pass/12fail/2unknown; zero fullcase/closure/release credits.",
+      "EarliestfullT04choice_settings_reopen then restore_recovered_settings; genericT10 observation and warm pointer failure remain causeunknown.",
+      "Exactly7guestmode cells changed; each exact previous result/history retained, no other case field changes.",
+      "Three copied peer/disk reports semantically identical to retained private originals.",
+      "Disk import actualexit1 preserved; standalone0/promotion0 and independent officialZIP2821 matching trees are bounded facts; no loadedChrome/currentpostmetadata claim."
+    ],
+    "limits": [
+      "This is a publication review, not a fresh native/product run. Prior independent native/disk evidence checks carry their own limits.",
+      "No fullcase/productcause/defectclosure/release/Store acceptance established."
+    ]
+  },
+  "B": {
+    "verdict": "PASS_INTEGRITY_PRIVACY_AND_SCOPE",
+    "findings": [],
+    "checks": [
+      "All3journal hashes/bytes/finalrecords match originals; actualguest RESOURCE_CPU_PENDING3/RESOURCE_CPU_RECOVERED1 correctly projected.",
+      "Stale actor initial no-action-yet limits omitted and original hash retained.",
+      "No raw native ZIP/report/log/images copied into this packet; reviewed peer report is typed bounded metadata.",
+      "No credential-like values found in4newreports; no credentials requested/read.",
+      "Generateddiff reflects6newpartial slots from7updatedcells, unchanged92pass and0fullfeature-role pairs.",
+      "git diff --check0."
+    ],
+    "limits": [
+      "Raw bundle/image publication is not approved.",
+      "Source/native/remoteprofile cleanup and loadedChrome limits remain explicit."
+    ]
+  },
+  "reviewed_hashes": {
+    "docs/stabilization/reports/source28a-native-20261028.json": "c1cba2a966b15c7eaf922d0be9c14dba2b9214fa0e22d37ae71394fed2438480",
+    "docs/stabilization/reports/source28a-native-peer-20261028.json": "46b8354d9044519ee9f9e0613a59f9e6baeecbf32a40d1e404e74e2badf74bb4",
+    "docs/stabilization/reports/source28a-disk-adoption-20261028.json": "74a94f3b59fe4db0f1b6a09cf2ec35186b6110d59bbbf6945dbe1e860a142a14",
+    "docs/stabilization/reports/source28a-disk-peer-20261028.json": "58a479139a0d6f4ebf05fb4cc40c23e401093d947266482a70cb03e42e1b52da",
+    "docs/stabilization/inventory.json": "1c6baff391041260103e68d4c461ce02a7ac541b4808d6218ea3c22539e74720",
+    "docs/stabilization/COORDINATOR.md": "337e12019b3f9289ceeca1cf46a4fce7e795485c1284ee887376adfc7bf2e773",
+    "docs/stabilization/defects/EXT-D-0300.json": "10c00b72491e86daefa54cc3367c0263f8c6792a80db45ac9dfeb7df30a28860",
+    "docs/stabilization/STATUS.md": "f97376384ab3c051b9af8aa611fa376e0a13e335653d9d783bef15bb5b52baa0",
+    "docs/stabilization/STATUS.html": "727a25763264221a7013614207f0819116b31923d2af91b591c9ad836a3e1001",
+    "docs/stabilization/CHECKLIST.md": "0af206f2d30296230a50d99e9a3f203b022a79f78e0e9065f8bb2f2ab9f8086d"
+  },
+  "mode_deltas": [
+    "EXT-F-1003-T04",
+    "EXT-F-1003-T10",
+    "EXT-F-1003-T37",
+    "EXT-F-1003-T46",
+    "EXT-F-1003-T73",
+    "EXT-F-1003-T76",
+    "EXT-F-1003-T92"
+  ],
+  "owned_processes": {
+    "none_active": true
+  }
+}

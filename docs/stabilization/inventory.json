@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-28T04:03:45.460619+00:00",
+  "updated_at": "2026-10-28T04:34:06.586578+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -7547,19 +7547,27 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
-              "run_id": "settings-6f86-40195311320",
-              "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
-              "development_ci_run_id": 40194412591,
-              "development_artifact_id": 12599612108,
-              "build_version": "0.2.621",
-              "resource_valid": false,
-              "runner_reported_status": "invalid",
+              "status": "partial",
+              "run_id": 40631696825,
+              "source_sha": "28a5187d42b8e5688f3b18f8b10c8f2eac171c70",
+              "development_ci_run_id": 40630629761,
+              "development_artifact_id": 12791319277,
+              "build_version": "0.2.630",
+              "resource_invalid": false,
+              "acceptance_run_successful": false,
+              "full_case_pass": false,
+              "new_product_credit": false,
+              "raw_case_status": "fail",
+              "scope": "Actual Dark selection and worker/panel replacement passed; Settings reopen and recovery failed; cause unknown.",
               "evidence": [
-                "docs/stabilization/reports/settings-native-b-1247.json",
-                "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
+                "docs/stabilization/reports/source28a-native-20261028.json",
+                "docs/stabilization/reports/source28a-native-peer-20261028.json"
               ],
-              "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
+              "unverified": [
+                "Full case and other role/feature coverage",
+                "Exact browser/profile/backend identity; owner Chrome; Store/candidate acceptance",
+                "Final remote profile deletion and fixture backup inspection"
+              ]
             }
           },
           "linked_defects": [
@@ -8082,6 +8090,26 @@
               },
               "superseded_at": "2026-10-25T13:32:33.560076+00:00",
               "reason": "New6f86 attempt resource-invalid; previous valid scopes remain historical, no new case credit."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "settings-6f86-40195311320",
+                "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+                "development_ci_run_id": 40194412591,
+                "development_artifact_id": 12599612108,
+                "build_version": "0.2.621",
+                "resource_valid": false,
+                "runner_reported_status": "invalid",
+                "evidence": [
+                  "docs/stabilization/reports/settings-native-b-1247.json",
+                  "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
+                ],
+                "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
+              },
+              "superseded_at": "2026-10-28T04:34:06.586578+00:00",
+              "reason": "Exact28a native scoped evidence; previous frozen result retained. No fullcase promotion."
             }
           ],
           "attempt_history": [
@@ -8655,42 +8683,26 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": 40626192102,
-              "source_sha": "906a8ad56eb20be3d2dcd40b3e82512879f32e0f",
-              "development_ci_run_id": 40625170785,
-              "development_artifact_id": 12789765843,
+              "run_id": 40631696825,
+              "source_sha": "28a5187d42b8e5688f3b18f8b10c8f2eac171c70",
+              "development_ci_run_id": 40630629761,
+              "development_artifact_id": 12791319277,
               "build_version": "0.2.630",
               "resource_invalid": false,
               "acceptance_run_successful": false,
               "full_case_pass": false,
               "new_product_credit": false,
-              "failure_stage": "T40 fixture capture; original lateT10/T63 not reached",
-              "error_code": "settings_fixture_integrity_failed",
-              "fixture_receipt": {
-                "phase": "capture",
-                "ownershipEstablished": false,
-                "restoredAfterReload": false,
-                "snapshotRetained": true,
-                "documentReplaced": false,
-                "backupPresent": true,
-                "backupOwned": true,
-                "cleanupPhase": "capture"
-              },
-              "raw_batch_counts": {
-                "pass": 3,
-                "fail": 5,
-                "unverified": 11
-              },
-              "unverified": [
-                "original lateModeComparison/surroundingfullReload",
-                "actualnativefailedcapturepredicate",
-                "backend/profile/owner/Store/currentnewclassfixacceptance"
-              ],
+              "raw_case_status": "fail",
+              "scope": "Original early/late mismatch did not recur; comparisons passed by control-flow reachability, without separately retained successful operands. Warm pointer admission and later full-recheck initial observation failed, after preceding Theme recovery failure. No own post-choice consumer pass.",
               "evidence": [
-                "docs/stabilization/reports/native906-fixture-capture-20261028.json",
-                "docs/stabilization/reports/fixture-capture-diagnosis-20261028.json"
+                "docs/stabilization/reports/source28a-native-20261028.json",
+                "docs/stabilization/reports/source28a-native-peer-20261028.json"
               ],
-              "detail": "AllresourceNONINVALID/packagebrowservalid0/guestchildfailed1. Backupinspectionowned/present/retained, directbody/restore/dispose notreached; actualsourcechangeconditionunknown. DeterministicAPIRecordorder sourcevulnerabilityproven, notnativeoperandcausality. Missingfullrechecks not5appbugs; no retry/auth/AI/sharedfixture-secretstaging; remoteprofiledeletionunknown. Prior7fexactModeComparisoncause remainsretained history."
+              "unverified": [
+                "Full case and other role/feature coverage",
+                "Exact browser/profile/backend identity; owner Chrome; Store/candidate acceptance",
+                "Final remote profile deletion and fixture backup inspection"
+              ]
             }
           },
           "linked_defects": [
@@ -9155,6 +9167,50 @@
               },
               "superseded_at": "2026-10-28T04:03:45.460619+00:00",
               "reason": "Exact906 native retest evidence; preserve previous frozen observations, no fullcase pass."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": 40626192102,
+                "source_sha": "906a8ad56eb20be3d2dcd40b3e82512879f32e0f",
+                "development_ci_run_id": 40625170785,
+                "development_artifact_id": 12789765843,
+                "build_version": "0.2.630",
+                "resource_invalid": false,
+                "acceptance_run_successful": false,
+                "full_case_pass": false,
+                "new_product_credit": false,
+                "failure_stage": "T40 fixture capture; original lateT10/T63 not reached",
+                "error_code": "settings_fixture_integrity_failed",
+                "fixture_receipt": {
+                  "phase": "capture",
+                  "ownershipEstablished": false,
+                  "restoredAfterReload": false,
+                  "snapshotRetained": true,
+                  "documentReplaced": false,
+                  "backupPresent": true,
+                  "backupOwned": true,
+                  "cleanupPhase": "capture"
+                },
+                "raw_batch_counts": {
+                  "pass": 3,
+                  "fail": 5,
+                  "unverified": 11
+                },
+                "unverified": [
+                  "original lateModeComparison/surroundingfullReload",
+                  "actualnativefailedcapturepredicate",
+                  "backend/profile/owner/Store/currentnewclassfixacceptance"
+                ],
+                "evidence": [
+                  "docs/stabilization/reports/native906-fixture-capture-20261028.json",
+                  "docs/stabilization/reports/fixture-capture-diagnosis-20261028.json"
+                ],
+                "detail": "AllresourceNONINVALID/packagebrowservalid0/guestchildfailed1. Backupinspectionowned/present/retained, directbody/restore/dispose notreached; actualsourcechangeconditionunknown. DeterministicAPIRecordorder sourcevulnerabilityproven, notnativeoperandcausality. Missingfullrechecks not5appbugs; no retry/auth/AI/sharedfixture-secretstaging; remoteprofiledeletionunknown. Prior7fexactModeComparisoncause remainsretained history."
+              },
+              "superseded_at": "2026-10-28T04:34:06.586578+00:00",
+              "reason": "Exact28a native scoped evidence; previous frozen result retained. No fullcase promotion."
             }
           ],
           "attempt_history": [
@@ -11863,19 +11919,27 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
-              "run_id": "settings-6f86-40195311320",
-              "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
-              "development_ci_run_id": 40194412591,
-              "development_artifact_id": 12599612108,
-              "build_version": "0.2.621",
-              "resource_valid": false,
-              "runner_reported_status": "invalid",
+              "status": "partial",
+              "run_id": 40631696825,
+              "source_sha": "28a5187d42b8e5688f3b18f8b10c8f2eac171c70",
+              "development_ci_run_id": 40630629761,
+              "development_artifact_id": 12791319277,
+              "build_version": "0.2.630",
+              "resource_invalid": false,
+              "acceptance_run_successful": false,
+              "full_case_pass": false,
+              "new_product_credit": false,
+              "raw_case_status": "pass",
+              "scope": "Warm and panel-reload criteria passed; coming-soon deep-clean toggle and restoration",
               "evidence": [
-                "docs/stabilization/reports/settings-native-b-1247.json",
-                "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
+                "docs/stabilization/reports/source28a-native-20261028.json",
+                "docs/stabilization/reports/source28a-native-peer-20261028.json"
               ],
-              "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
+              "unverified": [
+                "Full case and other role/feature coverage",
+                "Exact browser/profile/backend identity; owner Chrome; Store/candidate acceptance",
+                "Final remote profile deletion and fixture backup inspection"
+              ]
             }
           },
           "linked_defects": [
@@ -12001,6 +12065,26 @@
               },
               "superseded_at": "2026-10-25T13:32:33.560076+00:00",
               "reason": "New6f86 attempt resource-invalid; previous valid scopes remain historical, no new case credit."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "settings-6f86-40195311320",
+                "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+                "development_ci_run_id": 40194412591,
+                "development_artifact_id": 12599612108,
+                "build_version": "0.2.621",
+                "resource_valid": false,
+                "runner_reported_status": "invalid",
+                "evidence": [
+                  "docs/stabilization/reports/settings-native-b-1247.json",
+                  "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
+                ],
+                "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
+              },
+              "superseded_at": "2026-10-28T04:34:06.586578+00:00",
+              "reason": "Exact28a native scoped evidence; previous frozen result retained. No fullcase promotion."
             }
           ],
           "attempt_history": [
@@ -13012,19 +13096,27 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
-              "run_id": "settings-6f86-40195311320",
-              "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
-              "development_ci_run_id": 40194412591,
-              "development_artifact_id": 12599612108,
-              "build_version": "0.2.621",
-              "resource_valid": false,
-              "runner_reported_status": "invalid",
+              "status": "partial",
+              "run_id": 40631696825,
+              "source_sha": "28a5187d42b8e5688f3b18f8b10c8f2eac171c70",
+              "development_ci_run_id": 40630629761,
+              "development_artifact_id": 12791319277,
+              "build_version": "0.2.630",
+              "resource_invalid": false,
+              "acceptance_run_successful": false,
+              "full_case_pass": false,
+              "new_product_credit": false,
+              "raw_case_status": "pass",
+              "scope": "Warm and panel-reload criteria passed; desktop-engine port input boundaries and restoration",
               "evidence": [
-                "docs/stabilization/reports/settings-native-b-1247.json",
-                "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
+                "docs/stabilization/reports/source28a-native-20261028.json",
+                "docs/stabilization/reports/source28a-native-peer-20261028.json"
               ],
-              "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
+              "unverified": [
+                "Full case and other role/feature coverage",
+                "Exact browser/profile/backend identity; owner Chrome; Store/candidate acceptance",
+                "Final remote profile deletion and fixture backup inspection"
+              ]
             }
           },
           "linked_defects": [
@@ -13231,6 +13323,26 @@
               },
               "superseded_at": "2026-10-25T13:32:33.560076+00:00",
               "reason": "New6f86 attempt resource-invalid; previous valid scopes remain historical, no new case credit."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "settings-6f86-40195311320",
+                "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+                "development_ci_run_id": 40194412591,
+                "development_artifact_id": 12599612108,
+                "build_version": "0.2.621",
+                "resource_valid": false,
+                "runner_reported_status": "invalid",
+                "evidence": [
+                  "docs/stabilization/reports/settings-native-b-1247.json",
+                  "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
+                ],
+                "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
+              },
+              "superseded_at": "2026-10-28T04:34:06.586578+00:00",
+              "reason": "Exact28a native scoped evidence; previous frozen result retained. No fullcase promotion."
             }
           ],
           "attempt_history": [
@@ -15737,19 +15849,27 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
-              "run_id": "settings-6f86-40195311320",
-              "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
-              "development_ci_run_id": 40194412591,
-              "development_artifact_id": 12599612108,
-              "build_version": "0.2.621",
-              "resource_valid": false,
-              "runner_reported_status": "invalid",
+              "status": "partial",
+              "run_id": 40631696825,
+              "source_sha": "28a5187d42b8e5688f3b18f8b10c8f2eac171c70",
+              "development_ci_run_id": 40630629761,
+              "development_artifact_id": 12791319277,
+              "build_version": "0.2.630",
+              "resource_invalid": false,
+              "acceptance_run_successful": false,
+              "full_case_pass": false,
+              "new_product_credit": false,
+              "raw_case_status": "pass",
+              "scope": "Warm plus first full-management-reload guest-negative visibility criteria passed.",
               "evidence": [
-                "docs/stabilization/reports/settings-native-b-1247.json",
-                "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
+                "docs/stabilization/reports/source28a-native-20261028.json",
+                "docs/stabilization/reports/source28a-native-peer-20261028.json"
               ],
-              "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
+              "unverified": [
+                "Full case and other role/feature coverage",
+                "Exact browser/profile/backend identity; owner Chrome; Store/candidate acceptance",
+                "Final remote profile deletion and fixture backup inspection"
+              ]
             }
           },
           "linked_defects": [
@@ -15823,6 +15943,26 @@
               },
               "superseded_at": "2026-10-25T13:32:33.560076+00:00",
               "reason": "New6f86 attempt resource-invalid; previous valid scopes remain historical, no new case credit."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "settings-6f86-40195311320",
+                "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+                "development_ci_run_id": 40194412591,
+                "development_artifact_id": 12599612108,
+                "build_version": "0.2.621",
+                "resource_valid": false,
+                "runner_reported_status": "invalid",
+                "evidence": [
+                  "docs/stabilization/reports/settings-native-b-1247.json",
+                  "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
+                ],
+                "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
+              },
+              "superseded_at": "2026-10-28T04:34:06.586578+00:00",
+              "reason": "Exact28a native scoped evidence; previous frozen result retained. No fullcase promotion."
             }
           ],
           "attempt_history": [
@@ -16008,19 +16148,27 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
-              "run_id": "settings-6f86-40195311320",
-              "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
-              "development_ci_run_id": 40194412591,
-              "development_artifact_id": 12599612108,
-              "build_version": "0.2.621",
-              "resource_valid": false,
-              "runner_reported_status": "invalid",
+              "status": "partial",
+              "run_id": 40631696825,
+              "source_sha": "28a5187d42b8e5688f3b18f8b10c8f2eac171c70",
+              "development_ci_run_id": 40630629761,
+              "development_artifact_id": 12791319277,
+              "build_version": "0.2.630",
+              "resource_invalid": false,
+              "acceptance_run_successful": false,
+              "full_case_pass": false,
+              "new_product_credit": false,
+              "raw_case_status": "pass",
+              "scope": "Warm plus first full-management-reload guest-negative visibility criteria passed.",
               "evidence": [
-                "docs/stabilization/reports/settings-native-b-1247.json",
-                "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
+                "docs/stabilization/reports/source28a-native-20261028.json",
+                "docs/stabilization/reports/source28a-native-peer-20261028.json"
               ],
-              "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
+              "unverified": [
+                "Full case and other role/feature coverage",
+                "Exact browser/profile/backend identity; owner Chrome; Store/candidate acceptance",
+                "Final remote profile deletion and fixture backup inspection"
+              ]
             }
           },
           "linked_defects": [
@@ -16094,6 +16242,26 @@
               },
               "superseded_at": "2026-10-25T13:32:33.560076+00:00",
               "reason": "New6f86 attempt resource-invalid; previous valid scopes remain historical, no new case credit."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "settings-6f86-40195311320",
+                "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+                "development_ci_run_id": 40194412591,
+                "development_artifact_id": 12599612108,
+                "build_version": "0.2.621",
+                "resource_valid": false,
+                "runner_reported_status": "invalid",
+                "evidence": [
+                  "docs/stabilization/reports/settings-native-b-1247.json",
+                  "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
+                ],
+                "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
+              },
+              "superseded_at": "2026-10-28T04:34:06.586578+00:00",
+              "reason": "Exact28a native scoped evidence; previous frozen result retained. No fullcase promotion."
             }
           ],
           "attempt_history": [
@@ -16967,19 +17135,27 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
-              "run_id": "settings-6f86-40195311320",
-              "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
-              "development_ci_run_id": 40194412591,
-              "development_artifact_id": 12599612108,
-              "build_version": "0.2.621",
-              "resource_valid": false,
-              "runner_reported_status": "invalid",
+              "status": "partial",
+              "run_id": 40631696825,
+              "source_sha": "28a5187d42b8e5688f3b18f8b10c8f2eac171c70",
+              "development_ci_run_id": 40630629761,
+              "development_artifact_id": 12791319277,
+              "build_version": "0.2.630",
+              "resource_invalid": false,
+              "acceptance_run_successful": false,
+              "full_case_pass": false,
+              "new_product_credit": false,
+              "raw_case_status": "pass",
+              "scope": "Warm plus first full-management-reload guest-negative visibility criteria passed.",
               "evidence": [
-                "docs/stabilization/reports/settings-native-b-1247.json",
-                "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
+                "docs/stabilization/reports/source28a-native-20261028.json",
+                "docs/stabilization/reports/source28a-native-peer-20261028.json"
               ],
-              "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
+              "unverified": [
+                "Full case and other role/feature coverage",
+                "Exact browser/profile/backend identity; owner Chrome; Store/candidate acceptance",
+                "Final remote profile deletion and fixture backup inspection"
+              ]
             },
             "member": {
               "status": "unverified",
@@ -17066,6 +17242,26 @@
               },
               "superseded_at": "2026-10-25T13:32:33.560076+00:00",
               "reason": "New6f86 attempt resource-invalid; previous valid scopes remain historical, no new case credit."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "settings-6f86-40195311320",
+                "source_sha": "6f86e4bcdc859149d9c4518c3d70a3c8e16bb08b",
+                "development_ci_run_id": 40194412591,
+                "development_artifact_id": 12599612108,
+                "build_version": "0.2.621",
+                "resource_valid": false,
+                "runner_reported_status": "invalid",
+                "evidence": [
+                  "docs/stabilization/reports/settings-native-b-1247.json",
+                  "docs/stabilization/reports/native-6f86-evidence-peer-1307.json"
+                ],
+                "scope": "CPU watchdog invalid3; native case report absent, zero case credit. No pass/fail inferred from screenshots."
+              },
+              "superseded_at": "2026-10-28T04:34:06.586578+00:00",
+              "reason": "Exact28a native scoped evidence; previous frozen result retained. No fullcase promotion."
             }
           ],
           "linked_defects": [

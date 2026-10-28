@@ -1,0 +1,164 @@
+{
+  "task_id": "source28a-disk-adoption",
+  "at": "2026-10-28T04:21:49.552274+00:00",
+  "status": "STANDALONE_VERIFIED_PROMOTED_DISK_ONLY_IMPORT_PROCESS_LIMIT",
+  "sourceSha": "28a5187d42b8e5688f3b18f8b10c8f2eac171c70",
+  "ciRunId": 40630629761,
+  "focusedRunId": 40630629866,
+  "artifactId": 12791319277,
+  "digest": "sha256:f794065a7111e9c3b034f844380b8fca93fecfbad76cb61411eec0133f69e5e4",
+  "importAttempt": {
+    "session": 13510,
+    "exitCode": 1,
+    "stdout": "test_artifact_operation_failed",
+    "log": {
+      "path": "/Volumes/Samsung2TB/code/matrx-extend/.output/stabilization-checkpoints/wake0212/28a-import.log",
+      "sha256": "8c783689cd8f48efe8bcb282167c7ca4727355e8a63d435db05d6a4d56b38588"
+    },
+    "completeTargetObserved": true,
+    "causalLimit": "Exact target was complete with receipts; importing process/actual exception cause unresolved. Other owned native lane denied local import. No removal or retry."
+  },
+  "standaloneVerification": {
+    "exitCode": 0,
+    "evidence": {
+      "schema_version": 1,
+      "kind": "ci_development_test",
+      "eligibleStore": false,
+      "publish_state": "not_published",
+      "repository": "armanisadeghi/matrx-extend",
+      "workflow": ".github/workflows/ci.yml",
+      "sourceSha": "28a5187d42b8e5688f3b18f8b10c8f2eac171c70",
+      "runId": 40630629761,
+      "runAttempt": 1,
+      "artifactId": 12791319277,
+      "githubArtifactDigest": "sha256:f794065a7111e9c3b034f844380b8fca93fecfbad76cb61411eec0133f69e5e4",
+      "version": "0.2.630",
+      "treeSha256": "290f1d4030a9961c0b97acf25b1e2b54ef465630568e752a1af3a65a592d97e6",
+      "source": {
+        "originMain": "28a5187d42b8e5688f3b18f8b10c8f2eac171c70",
+        "localHead": "28a5187d42b8e5688f3b18f8b10c8f2eac171c70",
+        "trackedDirty": false,
+        "untrackedRunnerInputs": [],
+        "claim": "current_pushed_source"
+      }
+    },
+    "ref": {
+      "path": "/Volumes/Samsung2TB/code/matrx-extend/.output/stabilization-checkpoints/wake0212/28a-standalone-evidence.json",
+      "sha256": "5b484838e57f0f88ab65f5ee862804a2772484082556efb93d7aee0f4dfb4f66"
+    }
+  },
+  "promotion": {
+    "session": 74085,
+    "exitCode": 0,
+    "log": {
+      "path": "/Volumes/Samsung2TB/code/matrx-extend/.output/stabilization-checkpoints/wake0212/28a-promote.log",
+      "sha256": "e17ba4c0128d12f3ec157d0ebcb37ed91d58e408eda802c8fdce2591a9995c90"
+    },
+    "receipt": {
+      "schema_version": 1,
+      "kind": "ci_development_test_promotion",
+      "eligibleStore": false,
+      "publish_state": "not_published",
+      "observedAt": "2026-10-28T04:21:22.766Z",
+      "sourceSha": "28a5187d42b8e5688f3b18f8b10c8f2eac171c70",
+      "mainSha": "28a5187d42b8e5688f3b18f8b10c8f2eac171c70",
+      "compatibility": "exact-source",
+      "allowedDiffPaths": [],
+      "version": "0.2.630",
+      "runId": 40630629761,
+      "runAttempt": 1,
+      "artifactId": 12791319277,
+      "sourceDir": "/Volumes/Samsung2TB/code/matrx-extend/test-results/ci-artifacts/28a5187d42b8e5688f3b18f8b10c8f2eac171c70/40630629761-1/chrome-mv3",
+      "destinationDir": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+      "treeSha256": "290f1d4030a9961c0b97acf25b1e2b54ef465630568e752a1af3a65a592d97e6",
+      "fileCount": 2821
+    }
+  },
+  "originals": {
+    "ci-receipt.json": {
+      "path": "/Volumes/Samsung2TB/code/matrx-extend/test-results/ci-artifacts/28a5187d42b8e5688f3b18f8b10c8f2eac171c70/40630629761-1/ci-receipt.json",
+      "sha256": "977b6ec283967b49b7405073df6ca255f4ab5b9d21fe05027fabaecb940fb78e",
+      "receipt": {
+        "schema_version": 1,
+        "kind": "local_dev_unpacked",
+        "publish_state": "not_published",
+        "observedAt": "2026-10-28T04:18:42.437Z",
+        "extensionDir": "/home/runner/work/matrx-extend/matrx-extend/.output/chrome-mv3",
+        "version": "0.2.630",
+        "treeSha256": "290f1d4030a9961c0b97acf25b1e2b54ef465630568e752a1af3a65a592d97e6"
+      }
+    },
+    "provenance.json": {
+      "path": "/Volumes/Samsung2TB/code/matrx-extend/test-results/ci-artifacts/28a5187d42b8e5688f3b18f8b10c8f2eac171c70/40630629761-1/provenance.json",
+      "sha256": "d9383a96ee4d64bafc7cda6a698e628edbfdd3935532897c04e732f11e478246",
+      "receipt": {
+        "schema_version": 1,
+        "kind": "ci_development_test",
+        "eligibleStore": false,
+        "publish_state": "not_published",
+        "repository": "armanisadeghi/matrx-extend",
+        "workflow": ".github/workflows/ci.yml",
+        "event": "push",
+        "ref": "refs/heads/main",
+        "sourceSha": "28a5187d42b8e5688f3b18f8b10c8f2eac171c70",
+        "runId": 40630629761,
+        "runAttempt": 1,
+        "version": "0.2.630",
+        "expectedExtensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "treeSha256": "290f1d4030a9961c0b97acf25b1e2b54ef465630568e752a1af3a65a592d97e6"
+      }
+    },
+    "local-dev-receipt.json": {
+      "path": "/Volumes/Samsung2TB/code/matrx-extend/test-results/ci-artifacts/28a5187d42b8e5688f3b18f8b10c8f2eac171c70/40630629761-1/local-dev-receipt.json",
+      "sha256": "976a8764f97409b83625bee06748538fa5c8d3f56bb3411042a19fe0286a0469",
+      "receipt": {
+        "schema_version": 1,
+        "kind": "local_dev_unpacked",
+        "publish_state": "not_published",
+        "observedAt": "2026-10-28T04:19:51.182Z",
+        "extensionDir": "/Volumes/Samsung2TB/code/matrx-extend/test-results/ci-artifacts/28a5187d42b8e5688f3b18f8b10c8f2eac171c70/40630629761-1/chrome-mv3",
+        "version": "0.2.630",
+        "treeSha256": "290f1d4030a9961c0b97acf25b1e2b54ef465630568e752a1af3a65a592d97e6"
+      }
+    },
+    "import-status.json": {
+      "path": "/Volumes/Samsung2TB/code/matrx-extend/test-results/ci-artifacts/28a5187d42b8e5688f3b18f8b10c8f2eac171c70/40630629761-1/import-status.json",
+      "sha256": "e51c1a694930ab39320420c9c645790b3599f4b213fcbf2870d25c67a60c466b",
+      "receipt": {
+        "schema_version": 1,
+        "eligibleStore": false,
+        "sourceSha": "28a5187d42b8e5688f3b18f8b10c8f2eac171c70",
+        "runId": 40630629761,
+        "runAttempt": 1,
+        "artifactId": 12791319277,
+        "githubArtifactDigest": "sha256:f794065a7111e9c3b034f844380b8fca93fecfbad76cb61411eec0133f69e5e4",
+        "treeSha256": "290f1d4030a9961c0b97acf25b1e2b54ef465630568e752a1af3a65a592d97e6",
+        "ciReceiptSha256": "977b6ec283967b49b7405073df6ca255f4ab5b9d21fe05027fabaecb940fb78e",
+        "provenanceSha256": "d9383a96ee4d64bafc7cda6a698e628edbfdd3935532897c04e732f11e478246",
+        "source": {
+          "originMain": "28a5187d42b8e5688f3b18f8b10c8f2eac171c70",
+          "localHead": "28a5187d42b8e5688f3b18f8b10c8f2eac171c70",
+          "trackedDirty": false,
+          "untrackedRunnerInputs": [],
+          "claim": "current_pushed_source"
+        }
+      }
+    }
+  },
+  "post": {
+    "head": "28a5187d42b8e5688f3b18f8b10c8f2eac171c70",
+    "originMain": "28a5187d42b8e5688f3b18f8b10c8f2eac171c70",
+    "porcelain": ""
+  },
+  "limits": [
+    "Disk only; actual Chrome Loaded from/ID/version/pin/reload unverified; no CUA capability/UI call.",
+    "No manual build/install/release; artifact unpublished development only.",
+    "Initial root import exited1; do not claim successful process or actor/exception causality.",
+    "Standalone evidence and normal promotion0 separately verified."
+  ],
+  "processes": {
+    "ownedImportTerminal": true,
+    "ownedPromotionTerminal": true,
+    "importScratchDirectoriesObserved": 0
+  }
+}

@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-28 04:07 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-28T04:03:45.460619+00:00. 207 features · 833 cases · 1422 controls · 301 linked defect records.
+Generated 2026-10-28 04:35 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-28T04:34:06.586578+00:00. 207 features · 833 cases · 1422 controls · 301 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1340** — Pass: 92 · Partial: 99 · Fail: 1 · Unverified: 1137 · N/A: 11.
-Unverified splits into **205 explicitly marked unverified** and **932 with no result record**.
+Applicable case-by-role slots: **1340** — Pass: 92 · Partial: 105 · Fail: 1 · Unverified: 1131 · N/A: 11.
+Unverified splits into **199 explicitly marked unverified** and **932 with no result record**.
 Full feature-role pairs: **0/402**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 0 without control links; 1 explicitly control-less.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -21,7 +21,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Generated API request, credential and result transport](#generated-api-request,-credential-and-result-transport) | 1 | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 12, n/a 0 | 1 |
 | [Navigation / shell](#navigation--shell) | 1 | 4 pass · 4 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 3 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 7, partial 7, fail 0, unverified 21, n/a 0 | 0 |
 | [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 24, n/a 0 | 0 |
-| [Settings](#settings) | 1 | 5 pass · 5 partial · 0 fail · 18 unverified · 0 deferred; 0/1 full | 2 pass · 3 partial · 0 fail · 25 unverified · 0 deferred; 0/1 full | 12 pass · 8 partial · 0 fail · 24 unverified · 0 deferred; 0/1 full | pass 19, partial 16, fail 0, unverified 67, n/a 1 | 11 |
+| [Settings](#settings) | 1 | 5 pass · 11 partial · 0 fail · 12 unverified · 0 deferred; 0/1 full | 2 pass · 3 partial · 0 fail · 25 unverified · 0 deferred; 0/1 full | 12 pass · 8 partial · 0 fail · 24 unverified · 0 deferred; 0/1 full | pass 19, partial 22, fail 0, unverified 61, n/a 1 | 11 |
 | [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 5 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | pass 5, partial 6, fail 0, unverified 21, n/a 0 | 5 |
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
@@ -443,7 +443,7 @@ These historical checks retain their original artifact boundary; they do not est
 | EXT-F-1003-T01 guest: Organization selector | Pass | N/A | N/A | EXT-F-1003-C01 |
 | EXT-F-1003-T02 member: Organization selector | N/A | Unverified | N/A | EXT-F-1003-C01 |
 | EXT-F-1003-T03 admin: Organization selector | N/A | N/A | Unverified | EXT-F-1003-C01 |
-| EXT-F-1003-T04 guest: Theme | Unverified | N/A | N/A | EXT-F-1003-C02 |
+| EXT-F-1003-T04 guest: Theme | Partial | N/A | N/A | EXT-F-1003-C02 |
 | EXT-F-1003-T05 member: Theme | N/A | Partial | N/A | EXT-F-1003-C02 |
 | EXT-F-1003-T06 admin: Theme | N/A | N/A | Pass | EXT-F-1003-C02 |
 | EXT-F-1003-T07 guest: Default agent | Pass | N/A | N/A | EXT-F-1003-C03 |
@@ -476,7 +476,7 @@ These historical checks retain their original artifact boundary; they do not est
 | EXT-F-1003-T34 guest: Show password suggestions on websites | Unverified | N/A | N/A | EXT-F-1003-C12 |
 | EXT-F-1003-T35 member: Show password suggestions on websites | N/A | Unverified | N/A | EXT-F-1003-C12 |
 | EXT-F-1003-T36 admin: Show password suggestions on websites | N/A | N/A | Unverified | EXT-F-1003-C12 |
-| EXT-F-1003-T37 guest: Deep clean | Unverified | N/A | N/A | EXT-F-1003-C13 |
+| EXT-F-1003-T37 guest: Deep clean | Partial | N/A | N/A | EXT-F-1003-C13 |
 | EXT-F-1003-T38 member: Deep clean | N/A | Unverified | N/A | EXT-F-1003-C13 |
 | EXT-F-1003-T39 admin: Deep clean | N/A | N/A | Unverified | EXT-F-1003-C13 |
 | EXT-F-1003-T40 guest: Auto-scrape on load | Partial | N/A | N/A | EXT-F-1003-C14 |
@@ -485,7 +485,7 @@ These historical checks retain their original artifact boundary; they do not est
 | EXT-F-1003-T43 guest: Desktop bridge pairing | Partial | N/A | N/A | EXT-F-1003-C15 |
 | EXT-F-1003-T44 member: Desktop bridge pairing | N/A | Partial | N/A | EXT-F-1003-C15 |
 | EXT-F-1003-T45 admin: Desktop bridge pairing | N/A | N/A | Partial | EXT-F-1003-C15 |
-| EXT-F-1003-T46 guest: Desktop engine port | Unverified | N/A | N/A | EXT-F-1003-C16 |
+| EXT-F-1003-T46 guest: Desktop engine port | Partial | N/A | N/A | EXT-F-1003-C16 |
 | EXT-F-1003-T47 member: Desktop engine port | N/A | Partial | N/A | EXT-F-1003-C16 |
 | EXT-F-1003-T48 admin: Desktop engine port | N/A | N/A | Partial | EXT-F-1003-C16 |
 | EXT-F-1003-T49 guest: Clear local data | Pass | N/A | N/A | EXT-F-1003-C17 |
@@ -512,10 +512,10 @@ These historical checks retain their original artifact boundary; they do not est
 | EXT-F-1003-T70 guest: About browser readiness and extension update status | Unverified | N/A | N/A | EXT-F-1003-C10, EXT-F-1003-C30, EXT-F-1003-C31 |
 | EXT-F-1003-T71 member: About browser readiness and extension update status | N/A | Unverified | N/A | EXT-F-1003-C10, EXT-F-1003-C30, EXT-F-1003-C31 |
 | EXT-F-1003-T72 admin: About browser readiness and extension update status | N/A | N/A | Partial | EXT-F-1003-C10, EXT-F-1003-C30, EXT-F-1003-C31 |
-| EXT-F-1003-T73 guest: Account identity and role | Unverified | N/A | N/A | EXT-F-1003-C32 |
+| EXT-F-1003-T73 guest: Account identity and role | Partial | N/A | N/A | EXT-F-1003-C32 |
 | EXT-F-1003-T74 member: Account identity and role | N/A | Unverified | N/A | EXT-F-1003-C32 |
 | EXT-F-1003-T75 admin: Account identity and role | N/A | N/A | Pass | EXT-F-1003-C32 |
-| EXT-F-1003-T76 guest: Organization archive filter visibility | Unverified | N/A | N/A | EXT-F-1003-C33 |
+| EXT-F-1003-T76 guest: Organization archive filter visibility | Partial | N/A | N/A | EXT-F-1003-C33 |
 | EXT-F-1003-T77 member: Organization archive filter | N/A | Unverified | N/A | EXT-F-1003-C33 |
 | EXT-F-1003-T78 admin: Organization archive filter | N/A | N/A | Unverified | EXT-F-1003-C33 |
 | EXT-F-1003-T79 guest: Desktop bridge status and health | Partial | N/A | N/A | EXT-F-1003-C34 |
@@ -531,7 +531,7 @@ These historical checks retain their original artifact boundary; they do not est
 | EXT-F-1003-T89 Audit key late persistence failure | N/A | N/A | Pass | EXT-F-1003-C25, EXT-F-1003-C37 |
 | EXT-F-1003-T90 Concurrent audit key rotation preserves receipt verification | N/A | N/A | Pass | EXT-F-1003-C09, EXT-F-1003-C25 |
 | EXT-F-1003-T91 Audit storage locking unavailable recovery | N/A | N/A | Partial | EXT-F-1003-C09, EXT-F-1003-C24, EXT-F-1003-C25, EXT-F-1003-C37 |
-| EXT-F-1003-T92 Archived organization management link and guest visibility | Unverified | Unverified | Unverified | EXT-F-1003-C39 |
+| EXT-F-1003-T92 Archived organization management link and guest visibility | Partial | Unverified | Unverified | EXT-F-1003-C39 |
 | EXT-F-1003-T93 guest: Chat version selector persistence | Unverified | N/A | N/A | EXT-F-1003-C40 |
 | EXT-F-1003-T94 member: Chat version selector persistence | N/A | Unverified | N/A | EXT-F-1003-C40 |
 | EXT-F-1003-T95 admin: Chat version selector persistence | N/A | N/A | Unverified | EXT-F-1003-C40 |
@@ -547,8 +547,8 @@ These historical checks retain their original artifact boundary; they do not est
   Evidence / build / date recorded: ['docs/stabilization/reports/settings-inventory-reconcile-20261026.json', 'docs/stabilization/reports/settings-inventory-peer-20261026.json']
 - EXT-F-1003-T03 · admin: Unverified. Current load-ladder semantics supersede the original no-device-choice/manual-Choose procedure; its old results are historical. Historical result/procedure objects are retained whole; no current native execution or applicability verdict is supplied by this source reconciliation.
   Evidence / build / date recorded: ['docs/stabilization/reports/settings-inventory-reconcile-20261026.json', 'docs/stabilization/reports/settings-inventory-peer-20261026.json']
-- EXT-F-1003-T04 · guest: Unverified.
-  Evidence / build / date recorded: settings-6f86-40195311320, ['docs/stabilization/reports/settings-native-b-1247.json', 'docs/stabilization/reports/native-6f86-evidence-peer-1307.json']
+- EXT-F-1003-T04 · guest: Partial.
+  Evidence / build / date recorded: 40631696825, ['docs/stabilization/reports/source28a-native-20261028.json', 'docs/stabilization/reports/source28a-native-peer-20261028.json']
 - EXT-F-1003-T05 · member: Partial. Six native cases: changed Light/System saves, rejected Dark write with visible error/Retry, retry Dark persistence after panel reload, and latest rapid System choice before/after panel reload. Rendered theme appearance and full extension Reload not established by this run.
   Evidence / build / date recorded: settings-mounted-member-full6-20261003-01, ['.research/settings-all-modes-evidence-peer.json', '.research/settings-mounted-native.json']
 - EXT-F-1003-T06 · admin: Pass.
@@ -560,8 +560,8 @@ These historical checks retain their original artifact boundary; they do not est
   Evidence / build / date recorded: ['docs/stabilization/reports/settings-inventory-reconcile-20261026.json', 'docs/stabilization/reports/settings-inventory-peer-20261026.json']
 - EXT-F-1003-T09 · admin: Unverified. Expanded membership-backed load/unavailable-organization criteria are unverified; original agent-selection evidence is retained whole as bounded history. Historical result/procedure objects are retained whole; no current native execution or applicability verdict is supplied by this source reconciliation.
   Evidence / build / date recorded: ['docs/stabilization/reports/settings-inventory-reconcile-20261026.json', 'docs/stabilization/reports/settings-inventory-peer-20261026.json']
-- EXT-F-1003-T10 · guest: Partial. AllresourceNONINVALID/packagebrowservalid0/guestchildfailed1. Backupinspectionowned/present/retained, directbody/restore/dispose notreached; actualsourcechangeconditionunknown. DeterministicAPIRecordorder sourcevulnerabilityproven, notnativeoperandcausality. Missingfullrechecks not5appbugs; no retry/auth/AI/sharedfixture-secretstaging; remoteprofiledeletionunknown. Prior7fexactModeComparisoncause remainsretained history.
-  Evidence / build / date recorded: 40626192102, ['docs/stabilization/reports/native906-fixture-capture-20261028.json', 'docs/stabilization/reports/fixture-capture-diagnosis-20261028.json']
+- EXT-F-1003-T10 · guest: Partial.
+  Evidence / build / date recorded: 40631696825, ['docs/stabilization/reports/source28a-native-20261028.json', 'docs/stabilization/reports/source28a-native-peer-20261028.json']
 - EXT-F-1003-T13 · guest: Unverified.
   Evidence / build / date recorded: settings-6f86-40195311320, ['docs/stabilization/reports/settings-native-b-1247.json', 'docs/stabilization/reports/native-6f86-evidence-peer-1307.json']
 - EXT-F-1003-T15 · admin: Pass. Actual adminUI on0.2.51; full control criteria includingreload verified, System/Fast/groups restored; resourcehealthy.
@@ -584,8 +584,8 @@ These historical checks retain their original artifact boundary; they do not est
   Evidence / build / date recorded: settings-6f86-40195311320, ['docs/stabilization/reports/settings-native-b-1247.json', 'docs/stabilization/reports/native-6f86-evidence-peer-1307.json']
 - EXT-F-1003-T34 · guest: Unverified.
   Evidence / build / date recorded: settings-6f86-40195311320, ['docs/stabilization/reports/settings-native-b-1247.json', 'docs/stabilization/reports/native-6f86-evidence-peer-1307.json']
-- EXT-F-1003-T37 · guest: Unverified.
-  Evidence / build / date recorded: settings-6f86-40195311320, ['docs/stabilization/reports/settings-native-b-1247.json', 'docs/stabilization/reports/native-6f86-evidence-peer-1307.json']
+- EXT-F-1003-T37 · guest: Partial.
+  Evidence / build / date recorded: 40631696825, ['docs/stabilization/reports/source28a-native-20261028.json', 'docs/stabilization/reports/source28a-native-peer-20261028.json']
 - EXT-F-1003-T40 · guest: Partial.
   Evidence / build / date recorded: 40570683530, ['docs/stabilization/reports/settings-capture-944-20261027.json', 'docs/stabilization/reports/settings-guest-capture-944-peer-20261027.json', 'docs/stabilization/reports/settings944-publication-manifest-20261027.json']
 - EXT-F-1003-T43 · guest: Partial.
@@ -594,8 +594,8 @@ These historical checks retain their original artifact boundary; they do not est
   Evidence / build / date recorded: desktop-settings-member-20261003-independent01, ['.research/desktop-settings-independent-native.json', '.research/desktop-settings-guard-proof.json', '.research/settings-forget-reset-final.json']
 - EXT-F-1003-T45 · admin: Partial.
   Evidence / build / date recorded: desktop-settings-admin-final-20261003-01, ['.research/desktop-settings-admin-final.json', '.research/desktop-settings-guard-proof.json', '.research/settings-forget-reset-final.json']
-- EXT-F-1003-T46 · guest: Unverified.
-  Evidence / build / date recorded: settings-6f86-40195311320, ['docs/stabilization/reports/settings-native-b-1247.json', 'docs/stabilization/reports/native-6f86-evidence-peer-1307.json']
+- EXT-F-1003-T46 · guest: Partial.
+  Evidence / build / date recorded: 40631696825, ['docs/stabilization/reports/source28a-native-20261028.json', 'docs/stabilization/reports/source28a-native-peer-20261028.json']
 - EXT-F-1003-T47 · member: Partial.
   Evidence / build / date recorded: desktop-settings-member-20261003-independent01, ['.research/desktop-settings-independent-native.json', '.research/desktop-settings-guard-proof.json', '.research/settings-forget-reset-final.json']
 - EXT-F-1003-T48 · admin: Partial.
@@ -634,12 +634,12 @@ These historical checks retain their original artifact boundary; they do not est
   Evidence / build / date recorded: settings-6f86-40195311320, ['docs/stabilization/reports/settings-native-b-1247.json', 'docs/stabilization/reports/native-6f86-evidence-peer-1307.json']
 - EXT-F-1003-T72 · admin: Partial.
   Evidence / build / date recorded: personal-dev577-refresh-20261020, ['docs/stabilization/reports/personal-dev577-refresh-20261020.json']
-- EXT-F-1003-T73 · guest: Unverified.
-  Evidence / build / date recorded: settings-6f86-40195311320, ['docs/stabilization/reports/settings-native-b-1247.json', 'docs/stabilization/reports/native-6f86-evidence-peer-1307.json']
+- EXT-F-1003-T73 · guest: Partial.
+  Evidence / build / date recorded: 40631696825, ['docs/stabilization/reports/source28a-native-20261028.json', 'docs/stabilization/reports/source28a-native-peer-20261028.json']
 - EXT-F-1003-T75 · admin: Pass. Known authorized admin account identity, ADMIN badge and Sign out matched warm and after exact development extension reload/reopen. Native AX and inline-only screenshots; receipt/tree/runtime binding verified. Not wholeSettings or577Store evidence.
   Evidence / build / date recorded: settings-native-identity-20261020-b, ['docs/stabilization/reports/settings-actual-native-20261020.json', 'docs/stabilization/reports/member577-native-fresh-peer-20261020.json']
-- EXT-F-1003-T76 · guest: Unverified.
-  Evidence / build / date recorded: settings-6f86-40195311320, ['docs/stabilization/reports/settings-native-b-1247.json', 'docs/stabilization/reports/native-6f86-evidence-peer-1307.json']
+- EXT-F-1003-T76 · guest: Partial.
+  Evidence / build / date recorded: 40631696825, ['docs/stabilization/reports/source28a-native-20261028.json', 'docs/stabilization/reports/source28a-native-peer-20261028.json']
 - EXT-F-1003-T79 · guest: Partial. {'warm': 'Matrx Local: Not connected. No Engine health, version, degraded, or failed service row was exposed.', 'after_extension_reload': 'Matrx Local: Not connected. No Engine health, version, degraded, or failed service row was exposed.', 'transport_comparison': 'Underlying bridge transport and health response were not independently observed, so the displayed status cannot be fully matched to transport.'}
   Evidence / build / date recorded: guest-settings-batch-20261021-0620, ['docs/stabilization/reports/guest-connections579-20261021.json', 'docs/stabilization/reports/connections-evidence0625.json', 'docs/stabilization/resource-journals/guest-settings-batch-20261021-0620.jsonl']
 - EXT-F-1003-T81 · admin: Partial. Native Matrx2 not running / Local not connected shown warm and afterreload; no health response or pairing/backend behavior proof.
@@ -662,8 +662,8 @@ These historical checks retain their original artifact boundary; they do not est
   Evidence / build / date recorded: 37699585477, ['.research/audit-selected-native-20261007.json', '.research/settings-audit-native-peer-20261007.json', '.research/desktop-route-audit-final-peer-20261007.json']
 - EXT-F-1003-T91 · admin: Partial. Unavailable-lock details/export/rotation states disabled actions and preserved history; restoration/read-only retry recovered. Cold auth-shell boot and ordinary retryable failures were not tested in this case.
   Evidence / build / date recorded: 37699585477, ['.research/audit-selected-native-20261007.json', '.research/settings-audit-native-peer-20261007.json', '.research/desktop-route-audit-final-peer-20261007.json']
-- EXT-F-1003-T92 · guest: Unverified.
-  Evidence / build / date recorded: settings-6f86-40195311320, ['docs/stabilization/reports/settings-native-b-1247.json', 'docs/stabilization/reports/native-6f86-evidence-peer-1307.json']
+- EXT-F-1003-T92 · guest: Partial.
+  Evidence / build / date recorded: 40631696825, ['docs/stabilization/reports/source28a-native-20261028.json', 'docs/stabilization/reports/source28a-native-peer-20261028.json']
 - EXT-F-1003-T93 · guest: Unverified. The Current/New selector procedure is stale against audited source; current native applicability is unknown, not N/A. Historical result/procedure objects are retained whole; no current native execution or applicability verdict is supplied by this source reconciliation.
   Evidence / build / date recorded: ['docs/stabilization/reports/settings-inventory-reconcile-20261026.json', 'docs/stabilization/reports/settings-inventory-peer-20261026.json']
 - EXT-F-1003-T94 · member: Unverified. The Current/New selector procedure is stale against audited source; current native applicability is unknown, not N/A. Historical result/procedure objects are retained whole; no current native execution or applicability verdict is supplied by this source reconciliation.

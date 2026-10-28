@@ -1,0 +1,256 @@
+{
+  "lane": "B",
+  "status": "TERMINAL_NATIVE_FAILURE_AFTER_FIXTURE_CASES_AND_MANAGEMENT_RELOAD",
+  "source_sha": "28a5187d42b8e5688f3b18f8b10c8f2eac171c70",
+  "full_ci_run_id": 40630629761,
+  "focused_ci_run_id": 40630629866,
+  "full_ci_conclusion": "success",
+  "focused_ci_conclusion": "success",
+  "development_artifact_id": 12791319277,
+  "development_artifact_digest": "sha256:f794065a7111e9c3b034f844380b8fca93fecfbad76cb61411eec0133f69e5e4",
+  "native_run_id": 40631696825,
+  "native_run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/40631696825",
+  "native_status": "completed",
+  "native_conclusion": "failure",
+  "native_artifact_id": 12791873440,
+  "native_artifact_digest": "sha256:4954ba1b31d21066685858e9c0efacb860492447b953df34aefa566e47ab15ff",
+  "native_zip_sha256": "4954ba1b31d21066685858e9c0efacb860492447b953df34aefa566e47ab15ff",
+  "native_log_sha256": "b5e008fdf6ce7d78b9d8a0b9b1320d4e9bb1a31ff5f703842e23f4f915470ff1",
+  "report_sha256": "b608b02e331241b8b6f8edae9a16c7d6e7fbdb8d388f5758f43dafc1e9713ebf",
+  "manifest_sha256": "b454d1404eb053348ddc831cd2ff80f8d636d42b8b9863f9ca845f6e62ffabe4",
+  "helper": {
+    "plan_mode": "plan-settings-guest",
+    "dispatch_mode": "dispatch-settings-guest",
+    "plan_exit": 0,
+    "dispatch_exit": 0,
+    "case": "settings-controls",
+    "lane": "B",
+    "runner_label": "macos-15-intel"
+  },
+  "preflight": {
+    "head_equals_origin_main": true,
+    "globally_clean": true,
+    "exact_source": true,
+    "public_repository_enabled": true,
+    "open_ci_breaker_count": 0,
+    "existing_active_native_runs": 0
+  },
+  "cleanup": "Actual fixture case UI/value cleanup assertions complete, no fixture integrity failure retained. Final backup existence/disposal lacks a separate success receipt; remote profile/process deletion remains unverified. No shared DB/auth/temp-secret mutation or local UI/import/promotion by this lane.",
+  "processes": {
+    "helper_session_59852": "terminal0",
+    "full_ci_watch_43582": "terminal0",
+    "native_watch_96161": "terminal0",
+    "native_workflow_40631696825": "completed/failure",
+    "owned_browser_local": "none"
+  },
+  "task_id": "source28a-native-projection",
+  "at": "2026-10-28T04:34:06.586578+00:00",
+  "actor_original_sha256": "d4b22527125e5989255c28b39d05726199ff9d08d48c0c1a91a8baa51a68b617",
+  "build": {
+    "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "kind": "local_dev_unpacked",
+    "publishState": "not_published",
+    "version": "0.2.630",
+    "treeSha256": "290f1d4030a9961c0b97acf25b1e2b54ef465630568e752a1af3a65a592d97e6",
+    "verified": true
+  },
+  "projection": "Typed bounded projection only; raw original report/ZIP/log/images private. Stale actor initial limits omitted; actual original journal CPU counts used.",
+  "case_outcomes": [
+    {
+      "id": "EXT-F-1003-T04",
+      "raw_status": "fail",
+      "observations": 12,
+      "full_case_credit": false
+    },
+    {
+      "id": "EXT-F-1003-T10",
+      "raw_status": "fail",
+      "observations": 2,
+      "full_case_credit": false
+    },
+    {
+      "id": "EXT-F-1003-T13",
+      "raw_status": "fail",
+      "observations": 0,
+      "full_case_credit": false
+    },
+    {
+      "id": "EXT-F-1003-T16",
+      "raw_status": "fail",
+      "observations": 0,
+      "full_case_credit": false
+    },
+    {
+      "id": "EXT-F-1003-T19",
+      "raw_status": "fail",
+      "observations": 0,
+      "full_case_credit": false
+    },
+    {
+      "id": "EXT-F-1003-T22",
+      "raw_status": "fail",
+      "observations": 2,
+      "full_case_credit": false
+    },
+    {
+      "id": "EXT-F-1003-T28",
+      "raw_status": "fail",
+      "observations": 44,
+      "full_case_credit": false
+    },
+    {
+      "id": "EXT-F-1003-T31",
+      "raw_status": "fail",
+      "observations": 0,
+      "full_case_credit": false
+    },
+    {
+      "id": "EXT-F-1003-T34",
+      "raw_status": "fail",
+      "observations": 0,
+      "full_case_credit": false
+    },
+    {
+      "id": "EXT-F-1003-T37",
+      "raw_status": "pass",
+      "observations": 4,
+      "full_case_credit": false
+    },
+    {
+      "id": "EXT-F-1003-T40",
+      "raw_status": "fail",
+      "observations": 6,
+      "full_case_credit": false
+    },
+    {
+      "id": "EXT-F-1003-T46",
+      "raw_status": "pass",
+      "observations": 11,
+      "full_case_credit": false
+    },
+    {
+      "id": "EXT-F-1003-T63",
+      "raw_status": "unverified",
+      "observations": 2,
+      "full_case_credit": false
+    },
+    {
+      "id": "EXT-F-1003-T64",
+      "raw_status": "fail",
+      "observations": 0,
+      "full_case_credit": false
+    },
+    {
+      "id": "EXT-F-1003-T67",
+      "raw_status": "fail",
+      "observations": 5,
+      "full_case_credit": false
+    },
+    {
+      "id": "EXT-F-1003-T70",
+      "raw_status": "unverified",
+      "observations": 3,
+      "full_case_credit": false
+    },
+    {
+      "id": "EXT-F-1003-T73",
+      "raw_status": "pass",
+      "observations": 2,
+      "full_case_credit": false
+    },
+    {
+      "id": "EXT-F-1003-T76",
+      "raw_status": "pass",
+      "observations": 2,
+      "full_case_credit": false
+    },
+    {
+      "id": "EXT-F-1003-T92",
+      "raw_status": "pass",
+      "observations": 2,
+      "full_case_credit": false
+    }
+  ],
+  "counts": {
+    "raw_pass": 5,
+    "raw_fail": 12,
+    "raw_unverified": 2,
+    "full_case_credit": 0,
+    "defect_closures": 0,
+    "releases": 0
+  },
+  "resource_journals": [
+    {
+      "sha256": "efa914e7f679778e75511b4c6e118104a28d39c314115ae177538a0935f1167c",
+      "bytes": 7440,
+      "final": {
+        "schema": 1,
+        "at": "2026-10-28T04:29:16.907Z",
+        "runId": "hosted-guest-40631696825-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 1,
+        "decision": "child_failed",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "CPU_PENDING": 3,
+      "CPU_RECOVERED": 1
+    },
+    {
+      "sha256": "7e0b5f094cfc29f75a5d4defbf2c0eb8f567a2cd33618eb4610aa86e3625a9dc",
+      "bytes": 1412,
+      "final": {
+        "schema": 1,
+        "at": "2026-10-28T04:24:16.455Z",
+        "runId": "hosted-browser-40631696825-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "CPU_PENDING": 0,
+      "CPU_RECOVERED": 0
+    },
+    {
+      "sha256": "069d02d7b534c60f41d53aee8397eebc886cc9a07b62b63466c9fe8364d70e39",
+      "bytes": 992,
+      "final": {
+        "schema": 1,
+        "at": "2026-10-28T04:22:18.087Z",
+        "runId": "hosted-package-40631696825-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "CPU_PENDING": 0,
+      "CPU_RECOVERED": 0
+    }
+  ],
+  "bounded_pass_ids": [
+    "EXT-F-1003-T37",
+    "EXT-F-1003-T46",
+    "EXT-F-1003-T73",
+    "EXT-F-1003-T76",
+    "EXT-F-1003-T92"
+  ],
+  "fixture_scope": "Actual T40/T67/T37 bodies, persisted/panel-reload cleanup criteria and later T63 ran; original capture abort absent. No separate final backup/disposal success receipt. Immutable early/late comparisons passed by source control-flow reachability, not separately sampled successful operands.",
+  "first_full_recheck_failure": {
+    "case": "EXT-F-1003-T04",
+    "phase": "choice_settings_reopen",
+    "restoration_phase": "restore_recovered_settings",
+    "baselineRestoration": null,
+    "management_reload_replacement_predicates": true
+  },
+  "T10": {
+    "warm_failure": "stable hit target for pointer",
+    "full_reload_failure": "initial_baseline_observation",
+    "cause": "UNKNOWN; generic stage can wrap any verifyModeBeforeCleanup failure. T04 recovery failure precedes it.",
+    "own_post_choice_full_reload_pass": false
+  },
+  "role_browser_limits": "Owned isolated fresh guest route and actual guest-negative controls; exact browser version, OS profile path, backend SHA and owner loaded Chrome not established by this packet. Store-installed evidence separate.",
+  "next_action": "Localize earliest Theme choice_settings_reopen and restore_recovered_settings using finite same-sample reopen substep/pointer/last-wait/context/original-transport evidence; independently review diagnostic change before any new native run. No blind retry, timeout change or T10 rebaseline.",
+  "review": "docs/stabilization/reports/source28a-native-peer-20261028.json"
+}
