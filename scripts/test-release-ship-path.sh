@@ -515,7 +515,8 @@ set -e
 check "dependency input change refreshes the install"   '[[ $(( $(grep -c "^install --frozen-lockfile$" "$SANDBOX/pnpm-calls") - INSTALLS_BEFORE )) -eq 1 ]]'
 check "dependency input change does not stop the release" '[[ $INPUT_CHANGE_STATUS -eq 0 ]] && grep -q "  pushed" "$SANDBOX/dependency-input-out" && ! grep -q "RELEASE STOPPED" "$SANDBOX/dependency-input-out"'
 check "the refreshed candidate is published"            '[[ "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" != "$INPUT_CHANGE_BASE" ]] && git --git-dir="$SANDBOX/origin.git" show main:package.json | grep -q fixture-new-dependency'
-check "the package gate ran after the refresh"          'tail -n +"$(grep -n "^install --frozen-lockfile$" "$SANDBOX/pnpm-calls" | tail -1 | cut -d: -f1)" "$SANDBOX/pnpm-calls" | grep -q "check:matrx-packages"'
+check "the package gate ran after the refresh"          'tail -n +"$(grep -n "^install --frozen-lockfile$" "$SANDBOX/pnpm-calls" | tail -1 | cut -d: -f1)" "$SANDBOX/pnpm-calls" | grep -q "check:matrx-packages"' \
+  'echo "--- pnpm-calls (numbered) ---"; nl -ba "$SANDBOX/pnpm-calls"; echo "--- dependency-input-out ---"; cat "$SANDBOX/dependency-input-out"'
 check "the checkout now holds the merged main"          'git merge-base --is-ancestor "$INPUT_CHANGE_BASE" HEAD'
 check "the refresh is reported, never silent"           'grep -q "reinstalled from the merged lockfile" "$SANDBOX/dependency-input-out"'
 
