@@ -1,0 +1,459 @@
+{
+  "task_id": "fixture_implementation",
+  "at": "2026-10-28T02:52:03.088231+00:00",
+  "status": "HANDOFF_FRESH_FIXER_REQUIRED_AFTER_ROUND2_RESIDUAL_IMPORTANT",
+  "defect_id": "EXT-D-0300",
+  "base_sha": "306f997dd10baa1757795fd0a19ddc783044bc53",
+  "current_sha": "306f997dd10baa1757795fd0a19ddc783044bc53",
+  "files": {
+    "tests/browser/settings-full-extension-rechecks.mjs": "de8f5eccb2aa414beab617535345aa5354ac6a56c5f2a572a3e22d4c3cc321af",
+    "tests/browser/settings-full-extension-rechecks.test.mjs": "33b7f697158772511d41220d8b258cd80f798ad152fe14b9e877123caf477250",
+    "tests/browser/settings-guest-preference-batch.test.mjs": "8d269a5083d33c65dda474a2b83d3debedb166f361de1b39e1945a19446fc416",
+    "tests/browser/settings-guest-scrape-controls.mjs": "a8a2193689a0ba7803a3fbd4d29112a14a6a9c62bf5149533c577c565b7ff782",
+    "tests/browser/settings-guest-scrape-controls.test.mjs": "f136c5c1bc2f6e56e8739335a20b300d66b9fd7e77b7bbb8310a14d74fcfd1e5",
+    "tests/browser/settings-local-controls-acceptance.mjs": "5f71444150bab5cbcb3ca87160efa9e9612815b0895c739e1bdae8e68a60bf78",
+    "tests/browser/settings-progress-checkpoint.test.mjs": "051641ab00c9054dc2596ce3362f956d786536c569ddadc5ea446d74f34cec6a",
+    "tests/browser/settings-reload-boundary.test.mjs": "391f6a6cd022fe4a912da109b773234ca90da9ea366d8323b43476e9e0e1a090",
+    "tests/browser/settings-scrape-mode-baseline.mjs": "40219e988c568f6bde5dbcc724f7e7b84608fbd61b9cf8ec838553f0ae92a785"
+  },
+  "lockfile_sha256": "a509ae55fa034a4663c35c931f8cd067d4e02c3ee25a22db668600e553bd65d5",
+  "runs": [
+    {
+      "label": "red",
+      "run_id": "d300-fixture-red-20261028a",
+      "journal": "docs/stabilization/resource-journals/d300-fixture-red-20261028a.jsonl",
+      "journal_sha256": "eaf237aafd376356f31fad054870a979bd4922915ebde60b76a7a44d873c3407",
+      "final": [
+        {
+          "schema": 1,
+          "at": "2026-10-28T02:33:57.477Z",
+          "runId": "d300-fixture-red-20261028a",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 1,
+          "decision": "child_failed",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      ],
+      "child": [
+        {
+          "schema": 1,
+          "at": "2026-10-28T02:33:57.423Z",
+          "runId": "d300-fixture-red-20261028a",
+          "childExitCode": 1,
+          "childSignal": null,
+          "code": "RESOURCE_JOB_EXIT"
+        }
+      ],
+      "counts": {
+        "tests": 1218,
+        "pass": 1206,
+        "fail": 1,
+        "skipped": 11
+      },
+      "log": "Original RED output in tool session2094; journal/hash freeze retained."
+    },
+    {
+      "label": "green1",
+      "run_id": "d300-fixture-green1-20261028a",
+      "journal": "docs/stabilization/resource-journals/d300-fixture-green1-20261028a.jsonl",
+      "journal_sha256": "ea82204a3238f92e92c7136c27c08889257163143d8887004238ba533821f242",
+      "final": [
+        {
+          "schema": 1,
+          "at": "2026-10-28T02:40:59.367Z",
+          "runId": "d300-fixture-green1-20261028a",
+          "admitted": true,
+          "resourceInvalid": true,
+          "exitCode": 3,
+          "decision": "invalid",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      ],
+      "child": [
+        {
+          "schema": 1,
+          "at": "2026-10-28T02:40:59.305Z",
+          "runId": "d300-fixture-green1-20261028a",
+          "childExitCode": 1,
+          "childSignal": null,
+          "code": "RESOURCE_JOB_EXIT"
+        }
+      ],
+      "counts": {
+        "tests": 1247,
+        "pass": 1230,
+        "fail": 6,
+        "skipped": 11
+      },
+      "log": ".output/stabilization-checkpoints/wake0212/fixture-green1.log",
+      "log_sha256": "41c835339e0bbff22f185d1394406bcd6d63dfccaf1b0af8a0cfebf831095197"
+    },
+    {
+      "label": "green2",
+      "run_id": "d300-fixture-green2-20261028a",
+      "journal": "docs/stabilization/resource-journals/d300-fixture-green2-20261028a.jsonl",
+      "journal_sha256": "25f16a67263a236a32cebc66b399be07417636b1422ce8aca73a9154f6c1c1b4",
+      "final": [
+        {
+          "schema": 1,
+          "at": "2026-10-28T02:46:04.845Z",
+          "runId": "d300-fixture-green2-20261028a",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      ],
+      "child": [
+        {
+          "schema": 1,
+          "at": "2026-10-28T02:46:04.791Z",
+          "runId": "d300-fixture-green2-20261028a",
+          "childExitCode": 0,
+          "childSignal": null,
+          "code": "RESOURCE_JOB_EXIT"
+        }
+      ],
+      "counts": {
+        "tests": 1253,
+        "pass": 1242,
+        "fail": 0,
+        "skipped": 11
+      },
+      "log": ".output/stabilization-checkpoints/wake0212/fixture-green2.log",
+      "log_sha256": "8d4e1117c23df037f5941b9430d6e8aeea3e91dec3df1d5bf5dbf92057df55a7"
+    },
+    {
+      "label": "green3",
+      "run_id": "d300-fixture-green3-20261028a",
+      "journal": "docs/stabilization/resource-journals/d300-fixture-green3-20261028a.jsonl",
+      "journal_sha256": "eb39c3c0c3a376b29facd426d93757e0b35fc71fb4f80984b5825758f8a2628d",
+      "final": [
+        {
+          "schema": 1,
+          "at": "2026-10-28T02:51:03.809Z",
+          "runId": "d300-fixture-green3-20261028a",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      ],
+      "child": [
+        {
+          "schema": 1,
+          "at": "2026-10-28T02:51:03.756Z",
+          "runId": "d300-fixture-green3-20261028a",
+          "childExitCode": 0,
+          "childSignal": null,
+          "code": "RESOURCE_JOB_EXIT"
+        }
+      ],
+      "counts": {
+        "tests": 1259,
+        "pass": 1248,
+        "fail": 0,
+        "skipped": 11
+      },
+      "log": ".output/stabilization-checkpoints/wake0212/fixture-green3.log",
+      "log_sha256": "f9ba18c39b2b0a7c2ba66f8ef9180fac6f0e049829507e34b33fd9e8fb333d18"
+    }
+  ],
+  "red": {
+    "guard": "actual T40 caller -> full settings materialization -> value-only restoration -> immutable real guestModeShadow expression/matcher",
+    "message": "original absent Settings footprint must survive actual caller cleanup; false !== true",
+    "tests": 1218,
+    "pass": 1206,
+    "fail": 1,
+    "skip": 11,
+    "resource_valid": true,
+    "limitation": "RED source hashes captured after invocation but before RESOURCE_ADMITTED; no source edit in either admission or execution."
+  },
+  "sourcefreeze": {
+    "red": "fixture-red-freeze.sha256",
+    "green1": "fixture-green1-freeze.sha256",
+    "green2": "fixture-green2-freeze.sha256",
+    "green3": "fixture-green3-freeze.sha256",
+    "observed_unchanged_through_completed_runs": true,
+    "full_manifests": {
+      "fixture-green3-freeze.sha256": [
+        {
+          "path": "tests/browser/settings-scrape-mode-baseline.mjs",
+          "sha256": "40219e988c568f6bde5dbcc724f7e7b84608fbd61b9cf8ec838553f0ae92a785",
+          "still_current": true
+        },
+        {
+          "path": "tests/browser/settings-probe-cleanup.mjs",
+          "sha256": "975d14a086b912542820ea4c4c237ca2fbb29f550b068f226fc018508d4f8112",
+          "still_current": true
+        },
+        {
+          "path": "tests/browser/settings-guest-scrape-controls.mjs",
+          "sha256": "a8a2193689a0ba7803a3fbd4d29112a14a6a9c62bf5149533c577c565b7ff782",
+          "still_current": true
+        },
+        {
+          "path": "tests/browser/settings-local-controls-acceptance.mjs",
+          "sha256": "5f71444150bab5cbcb3ca87160efa9e9612815b0895c739e1bdae8e68a60bf78",
+          "still_current": true
+        },
+        {
+          "path": "tests/browser/settings-full-extension-rechecks.mjs",
+          "sha256": "de8f5eccb2aa414beab617535345aa5354ac6a56c5f2a572a3e22d4c3cc321af",
+          "still_current": true
+        },
+        {
+          "path": "tests/browser/settings-guest-scrape-controls.test.mjs",
+          "sha256": "f136c5c1bc2f6e56e8739335a20b300d66b9fd7e77b7bbb8310a14d74fcfd1e5",
+          "still_current": true
+        },
+        {
+          "path": "tests/browser/settings-full-extension-rechecks.test.mjs",
+          "sha256": "33b7f697158772511d41220d8b258cd80f798ad152fe14b9e877123caf477250",
+          "still_current": true
+        },
+        {
+          "path": "tests/browser/settings-reload-boundary.test.mjs",
+          "sha256": "391f6a6cd022fe4a912da109b773234ca90da9ea366d8323b43476e9e0e1a090",
+          "still_current": true
+        },
+        {
+          "path": "tests/browser/settings-guest-preference-batch.test.mjs",
+          "sha256": "8d269a5083d33c65dda474a2b83d3debedb166f361de1b39e1945a19446fc416",
+          "still_current": true
+        },
+        {
+          "path": "tests/browser/settings-progress-checkpoint.test.mjs",
+          "sha256": "051641ab00c9054dc2596ce3362f956d786536c569ddadc5ea446d74f34cec6a",
+          "still_current": true
+        }
+      ],
+      "fixture-red-freeze.sha256": [
+        {
+          "path": "tests/browser/settings-scrape-mode-baseline.mjs",
+          "sha256": "eaf9868cb6e48b585f97a1355e160fb6de33d4868c68fccf7ecd9fceb76aa969",
+          "still_current": false
+        },
+        {
+          "path": "tests/browser/settings-probe-cleanup.mjs",
+          "sha256": "975d14a086b912542820ea4c4c237ca2fbb29f550b068f226fc018508d4f8112",
+          "still_current": true
+        },
+        {
+          "path": "tests/browser/settings-guest-scrape-controls.mjs",
+          "sha256": "e93bbd0b69b46f47ca47ada0ec1bd5b9803607c47f22137f17488c63125739ea",
+          "still_current": false
+        },
+        {
+          "path": "tests/browser/settings-local-controls-acceptance.mjs",
+          "sha256": "c10d218b4b569fee6af3c1d1533115b5fcc0666d5b824d10219fc2161c01e340",
+          "still_current": false
+        },
+        {
+          "path": "tests/browser/settings-full-extension-rechecks.mjs",
+          "sha256": "69252d3af765ed39225be95a8a9ef2876ac4e4c172c86e24793202e1ea0f4418",
+          "still_current": false
+        },
+        {
+          "path": "tests/browser/settings-guest-scrape-controls.test.mjs",
+          "sha256": "5cff5157e06e018ce244d3618e6a6a70486fd5bc3a9095fbc9c1e7d8a8017a6d",
+          "still_current": false
+        },
+        {
+          "path": "tests/browser/settings-full-extension-rechecks.test.mjs",
+          "sha256": "989ca47df1222362e803f861d6719ede2746f30ac575eac7507780d78e1f8cab",
+          "still_current": false
+        },
+        {
+          "path": "tests/browser/settings-reload-boundary.test.mjs",
+          "sha256": "91b3359e73d5571818aa025a5c1ab0402ad7d11ab07ffad682fbcc8261b18c98",
+          "still_current": false
+        }
+      ],
+      "fixture-green1-freeze.sha256": [
+        {
+          "path": "tests/browser/settings-scrape-mode-baseline.mjs",
+          "sha256": "d8069277f997bc9df3b546c3c65aa2b4551fd136e1f8a5ddc5d102fc48ab9145",
+          "still_current": false
+        },
+        {
+          "path": "tests/browser/settings-probe-cleanup.mjs",
+          "sha256": "975d14a086b912542820ea4c4c237ca2fbb29f550b068f226fc018508d4f8112",
+          "still_current": true
+        },
+        {
+          "path": "tests/browser/settings-guest-scrape-controls.mjs",
+          "sha256": "d1be3b4452f4b614c54d07a5e418c8d43f8c1da1afca77fdbdecde36a66c69c6",
+          "still_current": false
+        },
+        {
+          "path": "tests/browser/settings-local-controls-acceptance.mjs",
+          "sha256": "2faad6153c8ea1e35d723620b280d491a32c30e4e9c2debeee3eb38a435c1d9a",
+          "still_current": false
+        },
+        {
+          "path": "tests/browser/settings-full-extension-rechecks.mjs",
+          "sha256": "d51d75a9fd139c4e3450d14f217a6c09c31bbe2e5f1e8ae427392c16238c4b0d",
+          "still_current": false
+        },
+        {
+          "path": "tests/browser/settings-guest-scrape-controls.test.mjs",
+          "sha256": "9176cf6de2cd227d7b4202b7b9271cceba103614f85913f0383a56dff46d6430",
+          "still_current": false
+        },
+        {
+          "path": "tests/browser/settings-full-extension-rechecks.test.mjs",
+          "sha256": "33b7f697158772511d41220d8b258cd80f798ad152fe14b9e877123caf477250",
+          "still_current": true
+        },
+        {
+          "path": "tests/browser/settings-reload-boundary.test.mjs",
+          "sha256": "62081145d97806aa9813d89890cfcc31614b16090c97aaccf775983a0794e36c",
+          "still_current": false
+        }
+      ],
+      "fixture-green2-freeze.sha256": [
+        {
+          "path": "tests/browser/settings-scrape-mode-baseline.mjs",
+          "sha256": "d8069277f997bc9df3b546c3c65aa2b4551fd136e1f8a5ddc5d102fc48ab9145",
+          "still_current": false
+        },
+        {
+          "path": "tests/browser/settings-probe-cleanup.mjs",
+          "sha256": "975d14a086b912542820ea4c4c237ca2fbb29f550b068f226fc018508d4f8112",
+          "still_current": true
+        },
+        {
+          "path": "tests/browser/settings-guest-scrape-controls.mjs",
+          "sha256": "d1be3b4452f4b614c54d07a5e418c8d43f8c1da1afca77fdbdecde36a66c69c6",
+          "still_current": false
+        },
+        {
+          "path": "tests/browser/settings-local-controls-acceptance.mjs",
+          "sha256": "2faad6153c8ea1e35d723620b280d491a32c30e4e9c2debeee3eb38a435c1d9a",
+          "still_current": false
+        },
+        {
+          "path": "tests/browser/settings-full-extension-rechecks.mjs",
+          "sha256": "d51d75a9fd139c4e3450d14f217a6c09c31bbe2e5f1e8ae427392c16238c4b0d",
+          "still_current": false
+        },
+        {
+          "path": "tests/browser/settings-guest-scrape-controls.test.mjs",
+          "sha256": "780e557806e030ccbb84a21d70cdc2c7afde1b0e4252ea029dbabac51b25671a",
+          "still_current": false
+        },
+        {
+          "path": "tests/browser/settings-full-extension-rechecks.test.mjs",
+          "sha256": "33b7f697158772511d41220d8b258cd80f798ad152fe14b9e877123caf477250",
+          "still_current": true
+        },
+        {
+          "path": "tests/browser/settings-reload-boundary.test.mjs",
+          "sha256": "cbd4be916879d283f38905f167a925989d512587a9eb1bebd12807e502acffb1",
+          "still_current": false
+        },
+        {
+          "path": "tests/browser/settings-guest-preference-batch.test.mjs",
+          "sha256": "c3e4cb0bc5a8d6d2b4aada4db550a48f971cdd47bda320fd786b3c6beeaba98e",
+          "still_current": false
+        },
+        {
+          "path": "tests/browser/settings-progress-checkpoint.test.mjs",
+          "sha256": "051641ab00c9054dc2596ce3362f956d786536c569ddadc5ea446d74f34cec6a",
+          "still_current": true
+        }
+      ]
+    },
+    "green3_still_current": true,
+    "note": "Each completed run was checked unchanged before next edits. Earlier manifests intentionally differ from current source after bounded repairs. RED manifest captured after invocation but before admission; no edits in run."
+  },
+  "guards": [
+    "all three actual canonical runners and T37 actual executable source callback",
+    "absent, partial bytes with unknown sibling, explicit full container",
+    "malformed string and nonstring opaque preservation",
+    "storage API and capture/read/ownership/restore/reload/verify/disposal uncertainty",
+    "primary mutable/frozen/primitive plus cleanup failure",
+    "real immutable mode expression/matcher marker noninterference",
+    "actual canonical old-ready/new-origin reload predicate",
+    "actual runCase case_end before branded stop, ordinary failures continue",
+    "actual inner guest catch and full-recheck branded propagation",
+    "actual exercisePanel controlled return and actual post-native verification/enforcement/final atomic publisher source",
+    "awaited per-caller UI/persistence predicate before disposal",
+    "finite canonical operation metadata separate from final snapshot disposition"
+  ],
+  "mutants": [
+    "all3 actual caller lifecycle omission",
+    "constant lifecycle noop",
+    "omit whole-container restore",
+    "omit final reload",
+    "omit disposal",
+    "constant restore",
+    "drop unknown sibling",
+    "wrong owner",
+    "raw return leak",
+    "readiness-only old document",
+    "drop runCase rethrow",
+    "drop controlled callback return",
+    "swallow full-recheck marker"
+  ],
+  "open": [
+    {
+      "priority": "Important",
+      "finding": "safeUnexpectedError currently unwraps any branded safeCleanupFailed error that has a cause, so a mutable primary Error with its own existing cause loses its own finite operation code/stage/diagnostic.",
+      "next_action": "Fresh fixer must reuse canonical cleanup module-owned wrapper identity to resolve only authentic SettingsCleanupFailure wrappers; never public safeCleanupFailed/cause structure. Add regression for mutable/frozen primary with existing cause through actual runCase/full recheck, then source peer reverify."
+    },
+    {
+      "priority": "static_error",
+      "finding": "Scoped biome check found noParameterAssign in canonical safeUnexpectedError assignment.",
+      "next_action": "Use authentic wrapper resolver result as local candidate instead of parameter reassignment; batch with fresh fix before final gates."
+    },
+    {
+      "priority": "proof_limit",
+      "finding": "Actual post-harness verified assertion/build flag/enforcement/atomic final publisher suffix is executed. DEV_BUILD_RECEIPT branch/sourceReceipt/tree checks and real native process/profile teardown are not newly executed by these source guards.",
+      "next_action": "Keep explicit; independent native original/adjacent acceptance remains required."
+    },
+    {
+      "priority": "pending_gates",
+      "finding": "Final source-focused suite, compile and lint are not complete for the forthcoming fixed source.",
+      "next_action": "Only after all source/static findings and root review, freeze final hashes and use normal exact admitted commands. No policy/threshold/launcher bypass."
+    }
+  ],
+  "limits": [
+    "No product source, comparator, deadline, policy, workflow, permission, auth, package or docs/inventory edits by this lane.",
+    "No branches, worktrees, children, UI, build, install or release.",
+    "GREEN1 counts are diagnostic only because final resource verdict invalid.",
+    "GREEN2 is valid pre-review source increment, not final source certification.",
+    "Actual source tests exercise external storage/DOM/CDP/harness/fs boundaries; they do not prove native browser process teardown or real product acceptance.",
+    "No global queued-write drain guarantee; late write must fail exact post-reload verification."
+  ],
+  "commits": [],
+  "processcleanup": {
+    "checked_at": "2026-10-28T02:52:03.183240+00:00",
+    "all_four_tool_sessions_terminal": true,
+    "owned_resource_wrapper_processes": [],
+    "host_heavy_owner_present": false,
+    "no_native_browser_profile_created_by_lane": true,
+    "authority": "Actual child terminal and guard-owned completed journal decisions; no session-id-as-pid claim; no external/native teardown claim."
+  },
+  "checkpoints": {
+    "RED": "valid resource, authentic original-class sole failure",
+    "GREEN1": "invalid resource, diagnostic only,6 old seam failures",
+    "GREEN2": "valid0,1253tests1242pass0fail11skip,pre-core-review source increment",
+    "GREEN3": "valid0,1259tests1248pass0fail11skip,current intermediate source; finalB still fails residual metadata finding",
+    "scoped_biome": "exit1,noParameterAssign known;7warnings;format/import fixes applied before GREEN3"
+  },
+  "review_finding_history": {
+    "addressed_in_green3": [
+      "Canonical finite original-operation metadata added separately from cleanup receipt; residual authentic-wrapper selection defect remains.",
+      "Awaited actual T40/T67/T37 original UI+persisted post-reload predicates before backup disposal; original-mode full T67 callback.",
+      "Final read-only owned snapshot presence/validity probe plus failure phase versus final cleanup phase; missing/foreign/corrupt/transport and later successful cleanup truth.",
+      "Actual post-native assertion/build.verified/enforcement/terminal atomic publisher suffix executed; publisher failure preserves prior bytes."
+    ],
+    "remaining": "Fresh round3 fixer per parent instruction; no further edits/gates from this lane."
+  },
+  "handoff": "Root owns integration/records/commits. No source edits or jobs after GREEN3 terminal and parent fresh-fixer directive. Preserve nine changed source/test paths and all four completed journals. Fresh fixer needed; no native/product/release closure claim."
+}

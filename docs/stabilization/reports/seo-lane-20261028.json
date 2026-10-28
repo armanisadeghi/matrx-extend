@@ -1,0 +1,66 @@
+{
+  "task_id": "seo_current_native",
+  "lane": "B",
+  "at": "2026-10-28T02:15:17.401706+00:00",
+  "status": "CHECKPOINT_NO_NATIVE_ATTEMPT_EXACT_ARTIFACT_GAP",
+  "head": "306f997dd10baa1757795fd0a19ddc783044bc53",
+  "route": {
+    "mode": "plan-scrape/dispatch-scrape",
+    "case": "guest-scrape-development",
+    "scope": "seo-schema-empty",
+    "auth": "guest",
+    "runner": "macos-15-intel"
+  },
+  "preflight": {
+    "public": true,
+    "open_ci_breakers": 0,
+    "active_hosted_browser_runs": 0,
+    "clean": true,
+    "head_equals_origin": true
+  },
+  "current_ci": {
+    "run_id": 40618268121,
+    "conclusion": "success",
+    "scope": "docs-only",
+    "artifacts": 0
+  },
+  "available_artifact": {
+    "run_id": 40616270771,
+    "artifact_id": 12786150932,
+    "source": "d6282d509b6bd31c66e3a3aeac9c68b75086ce01",
+    "eligible_for_scrape_current_head": false
+  },
+  "reason": "allowRuntimeEquivalent only enabled for guestSeo and memberData, not separate scrape route; requireScrapeDispatchAdmission requires exact current source. No helper invocation/refusal/dispatch attempted; do not substitute plan-guest-seo route.",
+  "actions": {
+    "native_dispatch": 0,
+    "ci_dispatch": 0,
+    "AI": 0,
+    "auth_fixture_secret_write": 0,
+    "source_or_tracked_edits": 0
+  },
+  "next_action": "After root reviewed D300 source integration and successful exact-current-main CI artifact, recheck source/clean/capacity/fixture/official artifact and normal plan-scrape then dispatch-scrape ONE guest seo-schema-empty B attempt. Freeze exact source/artifact, wait native terminal, download originalZIP/journals/screenshots, run applicable verify-scrape, independent review. Serialize B with Settings; stop all paths on actual refusal.",
+  "parent_adjudication": "No new CI for docs-only head; batch with next actual reviewed D300 fixture source/fullCI artifact, then serialize B product runs. No alternate guestSeo route or helper refusal.",
+  "verification": {
+    "feature_id": "EXT-F-1007",
+    "case_id": "EXT-F-1007-T08",
+    "subtarget": "guest_no_signal_seo_and_empty_schema_panes",
+    "verdict": "UNEXECUTED on current main; older frozen3ef bounded pass preserved",
+    "baseline_reference": "docs/stabilization/reports/scrape-b-3ef-20261027.json and scrape-b-3ef-peer-20261027.json"
+  },
+  "cleanup": {
+    "owned_workflows": 0,
+    "local_command_sessions": "all terminal",
+    "native_profiles": 0,
+    "observers": 0,
+    "auth_fixture_secret_writes": 0,
+    "temporary_secrets": 0,
+    "cleanup_obligations": "none created by this preflight"
+  },
+  "spend": "Existing unchanged PUBLIC runner manifest states billed increment0; no new dispatch, paid work, publication, runner/account relocation, cap change, or spending-block bypass.",
+  "limits": [
+    "No current main native behavior/image/report/resource certificate exists because no attempt occurred.",
+    "No exact artifact at306f; d628 runtime-equivalent metadata cannot opt scrape mode into its own disabled compatibility policy.",
+    "No actual helper invocation/refusal or external action; no unsupported verifier path.",
+    "No Store/member/admin/fullT08/productpass/defectclosure or broader SEO claim."
+  ]
+}

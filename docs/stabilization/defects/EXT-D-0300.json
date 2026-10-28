@@ -34,7 +34,7 @@
     "docs/stabilization/reports/failure-capture-source-verification-20261027.json",
     "docs/stabilization/reports/failure-capture-source-peer-20261027.json"
   ],
-  "next_action": "Restore original case-owned Settings fixture presence/shape across T40/T67/T37 through existing cleanup primitives, after reviewed plan; preserve immutable comparator/baseline/read/input/deadline/verdict and unrelated settings. Original initial/final fullReload surrounding retest and other D300 final-only gaps remain open. No blind rerun or app patch.",
+  "next_action": "Fresh Sol fixes authentic cleanup-wrapper resolver (never structural cause/flag unwrap) and lint local-variable correction after round2 review; final source review then frozen guarded focused/compile/lint, synchronized push/fullCI and fresh original/adjacent native B retest. No local build/release, threshold/lease/runner bypass, blind A rerun or baseline relaxation.",
   "transition_history": [
     {
       "at": "2026-10-27T19:40:18.049879+00:00",
@@ -131,5 +131,17 @@
       "docs/stabilization/reports/settings7f-native-20261028.json",
       "docs/stabilization/reports/settings7f-failure-peer-20261028.json"
     ]
+  },
+  "fixture_lifecycle_working_tree_checkpoint": {
+    "at": "2026-10-28T02:54:47.753288+00:00",
+    "owner": "root / fixture_fresh_fix",
+    "status": "IN-FIX, uncommitted owned source; not source-accepted/native-tested",
+    "base_sha": "306f997dd10baa1757795fd0a19ddc783044bc53",
+    "source_packet": "docs/stabilization/reports/fixture-implementation-20261028.json",
+    "plan": "docs/stabilization/reports/fixture-design-20261028.json",
+    "plan_attack": "docs/stabilization/reports/fixture-concrete-plan-peer-20261028.json",
+    "review": "docs/stabilization/reports/fixture-final-source-peer-20261028.json",
+    "verification": "Original native7f receipt remains authoritative RED. Local RED1218/1206pass/1fail/11skip valid but original RED tool transcript not separately retained; actor-transcribed output only. IntermediateGREEN1 invalid-resource+6seamfail; GREEN2 valid1253/1242pass/0fail/11skip; GREEN3 valid1259/1248pass/0fail/11skip. These do not certify final source: remaining Important authentic primary/cause unwrap + queued lint correction handed to fresh Sol before final gates.",
+    "scope": "Opaque browser-only backup, exact restored container and postreload UI predicates, document identity barrier, narrow fixture-integrity stop. No comparator/deadline/production API/policy change. No fullcase/product/Store/release credit."
   }
 }

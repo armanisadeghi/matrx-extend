@@ -1,0 +1,102 @@
+{
+  "task_id": "fixture_final_source_peer",
+  "at": "2026-10-28T02:50:38.558086+00:00",
+  "scope": "Read-only source/diff/hash review of frozen nine-file D300 fixture unit. No tests, mutants, UI, CI, builds, installs, auth, child agents, source edits, or commits. Only this private report written. GREEN3 and queued lint rename are not certified by this review.",
+  "verdict_A": "PARTIAL: current source addresses original absent-to-materialized Settings contamination mechanism; native original late T10 and adjacent/full-reload acceptance remain unverified.",
+  "verdict_B": "FIX_FIRST: all three original correction mechanisms are present, but primary diagnostics still incorrectly unwrap a mutable primary owning its own cause. Final source gates remain pending.",
+  "prior_findings": [
+    {
+      "id": "persist-primary-operation-diagnostic",
+      "status": "ADDRESSED_WITH_RESIDUAL_IMPORTANT",
+      "evidence": "Actual warm runCase and full runFullExtensionRecheck now persist operationFailure via canonical finite safeUnexpectedError beside fixtureIntegrityFailure; T67 stage/kind/originalStage projector and T40 last safe observation survive tested mutable-no-cause/frozen-with-wrapper corpus. Raw primary message/cause/payload is not serialized. Residual authentic-unwrapping defect described below."
+    },
+    {
+      "id": "post-opaque-restore-ui-proof",
+      "status": "ADDRESSED",
+      "evidence": "Lifecycle awaits onRestored after opaque restore + reload + exact storage verify and before setting restoredAfterReload/disposal. Real T40/T67/T37 callbacks inspect original UI + persisted baseline; outer absent T67 reopens actual current getPanel and checks originalMode with canonical matcher. Wrong-hydrated-UI guards call actual runners/observation expressions and require retained owned backup."
+    },
+    {
+      "id": "snapshot-retention-final-truth",
+      "status": "ADDRESSED",
+      "evidence": "Catch performs separate read-only inspect with finite backupPresent/backupOwned/snapshotRetained booleans, unknown on transport/parse uncertainty. Missing is absent/false, foreign/corrupt is present/unowned/false, valid-owned retained true. First integrity.phase is preserved separately from final cleanupPhase and final restoration/disposal facts, including ownership failure followed by successful cleanup."
+    }
+  ],
+  "findings": [
+    {
+      "id": "authentic-primary-unwrapping",
+      "severity": "Important",
+      "file": "tests/browser/settings-full-extension-rechecks.mjs",
+      "line": 194,
+      "finding": "safeUnexpectedError uses genuine fixture brand plus safeCleanupFailed and any nonundefined cause as a wrapper test. preserveFailureDuringCleanup intentionally retains the exact mutable primary Error and merely adds safeCleanupFailed. Therefore a primary Error that already owns cause is misidentified as SettingsCleanupFailure: projection runs on its underlying cause and drops the original primary finite code, source, T40 last/wait observation or T67 safe stage/kind. A throwing cause getter similarly prevents otherwise available finite primary metadata. This leaves the durable original-operation contract incomplete even though thrown identity remains intact.",
+      "source_counterexample": "Mutable Error with code EPIPE, safeLastAutoScrapeObservation and cause=new Error(private cause), thrown by execute while fixture cleanup fails: preserveFailureDuringCleanup returns that same primary; current line199 replaces it with cause before reading code/lastSafeObservation. No execution was performed by reviewer.",
+      "required": "Unwrap only an authentically created cleanup wrapper, or preserve the exact original operation separately via private identity metadata. Do not infer wrapper identity from public safeCleanupFailed/cause fields. Extend actual runCase and full-recheck producer guard with mutable primary carrying its own cause and finite diagnostics; original metadata must survive, cause/raw sentinel must not appear. Respect source freeze until current job is terminal."
+    }
+  ],
+  "proof_limits": [
+    {
+      "id": "outer-suffix-receipt-branch",
+      "severity": "Minor",
+      "file": "tests/browser/settings-reload-boundary.test.mjs",
+      "line": 1625,
+      "finding": "New guard executes actual post-harness result.verified check, enforcement and final publisher and rejects verified=false/publisher failure. It sets DEV_BUILD_RECEIPT undefined, so receipt/version/tree branch is not executed or mutation-proven. Source inspection shows that branch unchanged and still reachable after controlled return. Do not claim this test executes source/receipt/tree verification; use a nonundefined real external receipt/tree dependency fixture if that stronger claim is required."
+    },
+    {
+      "id": "native-teardown",
+      "severity": "Unverified",
+      "finding": "External handwritten try/finally teardown counter remains a callback-boundary double. Actual native harness teardown/profile/process deletion is not exercised by this source guard. Corrected actual outer suffix does not turn it into native cleanup proof."
+    }
+  ],
+  "accepted_source": [
+    "Raw full Settings payload remains inside browser fixtureStoragePhase; capture/restore/compare operate on chrome.storage.local, CDP expression carries helper source and opaque backup/owner identifiers only. Finite responses/errors exclude payload. SHA256 seal remains browser-only, nonce/handle not published.",
+    "Backup uses separate local key surviving renderer/full extension reload; reject collision, validate owner/schema/sourceKey/seal before restore/dispose, never broad-clear. Source restoration retains absence or exact string bytes; supported nonstring JSON values compared structurally inside browser; malformed/unknown shape not normalized.",
+    "Canonical reloadSettings requires finite old timeOrigin then changed finite timeOrigin AND complete readyState before Settings reopen, retains original wait label/default deadline/diagnostic route. Actual helper old-complete/new-loading/new-complete/invalid/unchanged and ready-only mutant corpus inspect real expressions.",
+    "Warm order remains T28,T40,T67,snapshotPanelDocumentReload,T37. T40 full path uses same actual runner; full T67 outer opaque lifecycle uses dynamic activePanel/getPanel across actual manager restart helper. ESM cycle avoided by passed canonical matcher.",
+    "Private WeakMap brand/classifier cannot be forged by public flag copy. Actual runCase records criterion and case_end then rethrows authentic marker; full recheck records failed criteria then rethrows; inner guest catch rethrows; outer exercise callback only controls return for authentic brand. Ordinary assertion and unmarked safeCleanupFailed errors preserve continuation.",
+    "Immutable T10 comparator/footprint expression, baseline capture/order and verdict rules are unchanged by git diff. Actual source expression/comparator and real control callers are exercised by guard code, with external UI/storage dependencies doubled beneath orchestration.",
+    "In-memory named lifecycle mutants include constant-noop, omit restore/reload/disposal, constant restore, drop unknown sibling, wrong owner and raw leak. Actual caller omission detects absent-to-materialized footprint corruption. Readback/transport/missing/foreign/corrupt/later-recovery, late writer, async UI completion and wrong hydrated UI cases are represented. This reviewer inspected code only; execution results belong to actor."
+  ],
+  "diff": {
+    "tracked_changed_paths": [
+      "tests/browser/settings-scrape-mode-baseline.mjs",
+      "tests/browser/settings-guest-scrape-controls.mjs",
+      "tests/browser/settings-local-controls-acceptance.mjs",
+      "tests/browser/settings-full-extension-rechecks.mjs",
+      "tests/browser/settings-guest-scrape-controls.test.mjs",
+      "tests/browser/settings-full-extension-rechecks.test.mjs",
+      "tests/browser/settings-reload-boundary.test.mjs",
+      "tests/browser/settings-guest-preference-batch.test.mjs",
+      "tests/browser/settings-progress-checkpoint.test.mjs"
+    ],
+    "whitespace_insensitive_sha256": "d2457e1e567001b9a152c9c3dd5d93dd7118f5fa7645710ef34f26179fdb285d",
+    "numstat": [
+      "44\t6\ttests/browser/settings-full-extension-rechecks.mjs",
+      "17\t3\ttests/browser/settings-full-extension-rechecks.test.mjs",
+      "2\t0\ttests/browser/settings-guest-preference-batch.test.mjs",
+      "154\t6\ttests/browser/settings-guest-scrape-controls.mjs",
+      "650\t11\ttests/browser/settings-guest-scrape-controls.test.mjs",
+      "61\t70\ttests/browser/settings-local-controls-acceptance.mjs",
+      "27\t10\ttests/browser/settings-progress-checkpoint.test.mjs",
+      "450\t6\ttests/browser/settings-reload-boundary.test.mjs",
+      "247\t46\ttests/browser/settings-scrape-mode-baseline.mjs"
+    ],
+    "comparison": "working tree versus HEAD; no production/policy/workflow/package/comparator changes in nine-path diff"
+  },
+  "source_hashes_at_report": {
+    "tests/browser/settings-scrape-mode-baseline.mjs": "40219e988c568f6bde5dbcc724f7e7b84608fbd61b9cf8ec838553f0ae92a785",
+    "tests/browser/settings-guest-scrape-controls.mjs": "a8a2193689a0ba7803a3fbd4d29112a14a6a9c62bf5149533c577c565b7ff782",
+    "tests/browser/settings-local-controls-acceptance.mjs": "5f71444150bab5cbcb3ca87160efa9e9612815b0895c739e1bdae8e68a60bf78",
+    "tests/browser/settings-full-extension-rechecks.mjs": "de8f5eccb2aa414beab617535345aa5354ac6a56c5f2a572a3e22d4c3cc321af",
+    "tests/browser/settings-guest-scrape-controls.test.mjs": "f136c5c1bc2f6e56e8739335a20b300d66b9fd7e77b7bbb8310a14d74fcfd1e5",
+    "tests/browser/settings-full-extension-rechecks.test.mjs": "33b7f697158772511d41220d8b258cd80f798ad152fe14b9e877123caf477250",
+    "tests/browser/settings-reload-boundary.test.mjs": "391f6a6cd022fe4a912da109b773234ca90da9ea366d8323b43476e9e0e1a090",
+    "tests/browser/settings-guest-preference-batch.test.mjs": "8d269a5083d33c65dda474a2b83d3debedb166f361de1b39e1945a19446fc416",
+    "tests/browser/settings-progress-checkpoint.test.mjs": "051641ab00c9054dc2596ce3362f956d786536c569ddadc5ea446d74f34cec6a"
+  },
+  "verification_limits": [
+    "No independent suite/mutant/gate run. Current physical Mac GREEN3 is actor-owned and may still be running; pending noParameterAssign rename means final gate green cannot be declared.",
+    "No continuous freeze proof, no current no-job resource metadata certification, no native/case/Store acceptance or defect closure.",
+    "Private original reports/design were read only as needed; raw native logs/evidence were not republished.",
+    "Native original same-sample late T10 comparison and surrounding full extension rechecks on frozen eligible artifact remain required."
+  ],
+  "next_action": "Owner adjudicate narrow primary-cause diagnostic fix after GREEN3 terminal; retain successful current fixes, extend actual producer guard, then normal final source/gate verification and fresh native original/adjacent retest. This report grants no native or closure acceptance."
+}

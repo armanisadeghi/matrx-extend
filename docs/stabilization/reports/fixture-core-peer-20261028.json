@@ -1,0 +1,71 @@
+{
+  "task_id": "fixture_core_peer",
+  "at": "2026-10-28T02:42:54.752996+00:00",
+  "status": "SOURCE_REVIEW_FIX_FIRST_NOT_FINAL_ACCEPTANCE",
+  "scope": "Read-only current coherent fixture source/test review and whitespace-insensitive diff. No source edits, suites, UI, CI, builds, installs, auth, child agents or commits; actor owns Mac test permit. Private report only.",
+  "verdict_A": "PARTIAL: core direction matches original native absent-to-materialized Settings footprint class, but implementation/guard gaps below must be fixed and original/surrounding native retest remains unverified.",
+  "verdict_B": "FIX_FIRST: three Important contract gaps; no overall source-green/native/closure acceptance.",
+  "accepted_source": [
+    "Browser storage raw value is captured/copied/restored/compared only inside serialized fixtureStoragePhase; CDP carries only helper source, fixed Settings key, opaque UUID key/owner and phase. Finite ok response, browser error catch and controlled Node fixture error avoid raw payload/error transport.",
+    "Whole-container string bytes/absence and supported Chrome-JSON nonstring shape are preserved rather than field-merging materialized Zustand defaults. Marker is a separate local key; immutable T10 reads only original three fixed stores and comparator unchanged.",
+    "Actual T40/T67 wrappers and extracted T37 remain at original caller position. ESM cycle removed via passed existing matcher; no duplicate matcher or production API/store/permission/policy/deadline change found.",
+    "Canonical reloadSettings now requires finite different performance.timeOrigin and complete readyState before Settings reopen under original wait label. Actual extracted helper old-ready/invalid identity/ready-only mutant corpus is source-wired.",
+    "Module-private WeakMap brand prevents forged public flag from aborting ordinary errors; runCase emits case_end then rethrows and selective outer callback permits source/receipt verification path and normal outer finalizer. Full recheck catch rethrows marker; inner guest catch likewise."
+  ],
+  "findings": [
+    {
+      "id": "persist-primary-operation-diagnostic",
+      "severity": "Important",
+      "files": [
+        "tests/browser/settings-local-controls-acceptance.mjs:549",
+        "tests/browser/settings-full-extension-rechecks.mjs:371"
+      ],
+      "finding": "When operation and fixture cleanup both fail, preserveFailureDuringCleanup keeps the Error/cause in memory, but branded report branches overwrite durable error with settings_fixture_integrity_failed and save only fixture cleanup receipt. T67 safeCategory/safeStage/safeFailureKind and T40 finite wait/last-observation metadata are bypassed; selective return prevents later safeUnexpectedError report capture. Original primary operation evidence is no longer available in the terminal report.",
+      "required": "Persist finite safe primary diagnostic beside fixture cleanup receipt using existing canonical projectors/category/stage allowlists, without raw message/cause/snapshot disclosure. Account for immutable/primitive primary wrapped as cause. Preserve original thrown identity where possible. Drive actual runCase and full-recheck producers with operation+restore failure and assert both original finite code/stage and cleanup phase survive with no sentinel/raw text."
+    },
+    {
+      "id": "post-opaque-restore-ui-proof",
+      "severity": "Important",
+      "files": [
+        "tests/browser/settings-scrape-mode-baseline.mjs:145",
+        "tests/browser/settings-guest-scrape-controls.mjs:158"
+      ],
+      "finding": "After opaque raw restoration, cleanup reloads then checks only storage equality, sets restoredAfterReload and deletes backup. The actual T40/T67/T37 semantic UI/persisted predicates run before opaque restoration. No relevant original UI predicate is checked after the final reload; onRestored is non-awaited and runs only after disposal, with the absent-T67 wrapper recording constant true. Exact persistence can be restored while post-reload UI is wrong/incomplete and this lifecycle still succeeds.",
+      "required": "Await actual per-caller finite original UI/persisted verification after opaque restore/new document and before deleting backup; failure must retain or truthfully classify snapshot and become branded fixture uncertainty. T40/T67/T37 and outer forced-absent lifecycle need appropriate original-baseline semantic proof. Add actual-caller wrong-post-restore-UI fixture where raw bytes are correct, plus omission mutant; do not infer fresh UI from reload invocation alone."
+    },
+    {
+      "id": "snapshot-retention-final-truth",
+      "severity": "Important",
+      "files": [
+        "tests/browser/settings-scrape-mode-baseline.mjs:103",
+        "tests/browser/settings-scrape-mode-baseline.mjs:110",
+        "tests/browser/settings-scrape-mode-baseline.mjs:164"
+      ],
+      "finding": "snapshotRetained becomes true after capture and remains true on every pre-dispose failure, even if backup is deleted or made foreign/corrupt by the existing missing/foreign/corrupt tests. Browser phase returns only ok:false so Node has no current retention evidence. fail() snapshots this receipt early; an ownership/removeSource failure followed by successful restore/reload/disposal still publishes old restoredAfterReload:false/snapshotRetained:true. Failure-time phase is being presented with stale final cleanup facts.",
+      "required": "Separate first failing phase from final observed cleanup state. Report current backup presence/valid-owned status only when observed by browser, otherwise null/unknown; never retained=true for missing or transport uncertainty. Update final restored/disposed facts after successful recovery without hiding original failure. Add missing/foreign/corrupt/partial transport and body ownership-failure-plus-successful-cleanup guard assertions."
+    }
+  ],
+  "guard_claim_limit": {
+    "file": "tests/browser/settings-reload-boundary.test.mjs:1544",
+    "finding": "The test titled actual exercisePanel controlled return preserves harness verification and terminal outer publication runs real callback and a handwritten external try/finally counter only. It does not execute post-harness result/source-receipt/build.verified checks or actual final publisher. Source continuation appears preserved, but that test cannot authenticate those stronger behavior claims or kill their omission.",
+    "required": "Use existing actual outer-source seam after controlled callback to verify real result/source-verification/final publisher continuation and original failure, or explicitly narrow test/report claims. This is a guard-proof limit, not an observed native teardown failure."
+  },
+  "verification_limits": [
+    "Original native B7f receipt is inherited saved evidence; this reviewer did not independently replay Chrome or reread original ZIP in this source-only task.",
+    "No suites or mutations executed by reviewer. Inspected mutant code and actual caller/observation expressions, but actor owns actual RED/GREEN execution and post-review source may change.",
+    "Source hashes are snapshot at report completion, not continuous all-files freeze proof. Two narrow test seam files were being updated by actor after GREEN1 during review; core findings bind inspected source lines.",
+    "Native original late initial/final T10 comparisons plus full surrounding extension reload cases remain mandatory before supporting/product closure."
+  ],
+  "source_hashes_at_report": {
+    "tests/browser/settings-scrape-mode-baseline.mjs": "d8069277f997bc9df3b546c3c65aa2b4551fd136e1f8a5ddc5d102fc48ab9145",
+    "tests/browser/settings-guest-scrape-controls.mjs": "d1be3b4452f4b614c54d07a5e418c8d43f8c1da1afca77fdbdecde36a66c69c6",
+    "tests/browser/settings-local-controls-acceptance.mjs": "2faad6153c8ea1e35d723620b280d491a32c30e4e9c2debeee3eb38a435c1d9a",
+    "tests/browser/settings-full-extension-rechecks.mjs": "d51d75a9fd139c4e3450d14f217a6c09c31bbe2e5f1e8ae427392c16238c4b0d",
+    "tests/browser/settings-guest-scrape-controls.test.mjs": "780e557806e030ccbb84a21d70cdc2c7afde1b0e4252ea029dbabac51b25671a",
+    "tests/browser/settings-full-extension-rechecks.test.mjs": "33b7f697158772511d41220d8b258cd80f798ad152fe14b9e877123caf477250",
+    "tests/browser/settings-reload-boundary.test.mjs": "cbd4be916879d283f38905f167a925989d512587a9eb1bebd12807e502acffb1",
+    "tests/browser/settings-guest-preference-batch.test.mjs": "c3e4cb0bc5a8d6d2b4aada4db550a48f971cdd47bda320fd786b3c6beeaba98e",
+    "tests/browser/settings-progress-checkpoint.test.mjs": "051641ab00c9054dc2596ce3362f956d786536c569ddadc5ea446d74f34cec6a"
+  },
+  "next_action": "Owner adjudicate findings, assign original implementer corrections only after current job terminal, then fresh scoped independent source/gate review and normal native original/surrounding retest."
+}
