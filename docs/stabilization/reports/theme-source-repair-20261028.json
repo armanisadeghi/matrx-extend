@@ -322,5 +322,16 @@
     "journals": "docs/stabilization/resource-journals/wake1308-{r1-focused,r1-final,r1-final2,r1-lint-final}.jsonl"
   },
   "independent_review": "theme-source-peer-final-20261028.json",
-  "independent_execution_limit": "Peer refused unsupported direct three-file command before admission; no tests/retry/bypass. Fresh source review and original builder gate/hash/journal authentication accepted separately."
+  "independent_execution_limit": "Peer refused unsupported direct three-file command before admission; no tests/retry/bypass. Fresh source review and original builder gate/hash/journal authentication accepted separately.",
+  "integration": {
+    "production_source_commit": "8074607843c3f7358e46fec26d5bda1278428bf6",
+    "concurrent_journal_commits": [
+      "e46d5be537a4eace766ef62c318dc7efeb537393",
+      "a1414b8ecada73509ce9010eca2c63ee337e3be5"
+    ],
+    "root_evidence_commit": "2e12c2e8251ce585a7891f821dacdfd2ed2b8cdf",
+    "actor_limit": "Implementation lane attests no stage/commit/push; concurrent shared writer integrated source and some journals. Git identity does not identify operator. All15 reviewed source hashes independently match production commit and current tree.",
+    "intervening_docs": "Two concurrent FEATURE docs are factually correct. Independent integration peer found minor duplicate rule; UI FEATURE now links to state FEATURE as the one home.",
+    "ci": "Production8074 autoCI concurrencycancelled by subsequent commits; root2e automaticCI pending at observation, no artifact assumed. Wait latest automaticCI; if successful docs-only noartifact, use existing authorized exact-current CI workflow_dispatch once. No fabricated release context, no admission/paid/billing bypass."
+  }
 }
