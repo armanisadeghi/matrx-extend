@@ -17,10 +17,7 @@
     "finding": {
       "severity": "Minor",
       "kind": "documentation duplication",
-      "paths": [
-        "src/features/settings/FEATURE.md:10",
-        "src/state/FEATURE.md:18"
-      ],
+      "paths": ["src/features/settings/FEATURE.md:10", "src/state/FEATURE.md:18"],
       "detail": "Both additions restate the same permission-mode/migration/carry-over rule without a link to one home. This conflicts with repository law15/docs skill no-duplication. Prefer one directory rule home with a pointer from the other; no production fix or gate rerun required."
     }
   },

@@ -22,9 +22,7 @@
     "docs/feature-tests.md": "d63139f008f6d3b8579542053add44d14ad3d085dbff05f4521d3f54accc0df9"
   },
   "all_15_hashes_match": true,
-  "changes_since_round1": [
-    "tests/browser/settings-guest-preference-batch.test.mjs"
-  ],
+  "changes_since_round1": ["tests/browser/settings-guest-preference-batch.test.mjs"],
   "round1_preserved": {
     "path": ".output/stabilization-checkpoints/wake1308/source-peer-round1.json",
     "sha256": "4a17d17d896ba63ae9c2a5ac40f0c58a734e23e3258662ba7d9745ba3597edb4",
