@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-28T20:19:27.066161+00:00",
+  "updated_at": "2026-10-28T22:32:38.615528+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -50727,6 +50727,33 @@
               },
               "superseded_at": "2026-10-27T22:55:44.753564+00:00",
               "reason": "New513 attempt stopped earlier at initial panel setup wall-budget deadline; originalf670 authpointer and1038 nameentry observations remain retained."
+            }
+          ],
+          "attempt_history": [
+            {
+              "recorded_at": "2026-10-28T22:32:38.615100+00:00",
+              "mode": "member",
+              "run_id": 40778915561,
+              "workflow_source_sha": "db60d0edc55f9a1fd3def436d3d6f1cea22e497c",
+              "artifact_source_sha": "d19043d8b95c05153fec3763559dfd6f57ebb882",
+              "status": "unverified",
+              "resource_invalid": true,
+              "acceptance_run_successful": false,
+              "full_case_pass": false,
+              "product_credit": 0,
+              "stage": "input/cdp_connect",
+              "safe_startup_code": "owned_cdp_endpoint_timeout",
+              "not_reached": [
+                "member sign-in/proof",
+                "original pattern-name input",
+                "automatic extraction states",
+                "saved-row behavior"
+              ],
+              "evidence": [
+                "docs/stabilization/reports/wake2216-member-startup-20261028.json",
+                "docs/stabilization/reports/wake2216-member-peer-20261028.json"
+              ],
+              "limits": "One admitted owned Chromium startup attempt; sampled endpoint absent within existing8s wait, nativeexit1 whileCPUconfirmationpending/finalinvalid3. No underlying CPU/platform/driver/product cause established. Prior mode result unchanged; no retry or policy change."
             }
           ]
         },

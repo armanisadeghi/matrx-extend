@@ -1,0 +1,268 @@
+{
+  "schema": 1,
+  "status": "RESOURCE_INVALID_STARTUP_NO_PRODUCT_VERDICT",
+  "case_id": "EXT-F-2005-T08",
+  "mode": "member",
+  "run_id": 40778915561,
+  "workflow_checkout_sha": "db60d0edc55f9a1fd3def436d3d6f1cea22e497c",
+  "immutable_app": {
+    "source_sha": "d19043d8b95c05153fec3763559dfd6f57ebb882",
+    "run_id": 40758972183,
+    "artifact_id": 12847457843,
+    "tree_sha256": "0358e75784ed6ae8b601a04ac889180a49796fc21e84b4ceeefc7703a4c5b3d5",
+    "version": "0.2.631"
+  },
+  "dispatch": {
+    "normal_plan_exit": 0,
+    "normal_plan_session": 40158,
+    "normal_dispatch_exit": 0,
+    "normal_dispatch_session": 39147,
+    "clean_before_any_local_pending_journal": true,
+    "actual_hosted_runs": 1,
+    "paid_job_or_relocation": false
+  },
+  "archive_artifact_id": 12856063252,
+  "archive_sha256": "20b020fd0666f18b61e320bae145dc6a3b17947bf5a97687baf173317516ee89",
+  "original_members": [
+    {
+      "path": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-40778915561-1.jsonl",
+      "bytes": 992,
+      "sha256": "9a77609535173d76bfb36b4fc01c87e6b623d2025a466fc836b6b94971e80772"
+    },
+    {
+      "path": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-40778915561-1.jsonl",
+      "bytes": 992,
+      "sha256": "d501b7f419a628e2fde65ed4d1b9a1399c10d52ebf4bbf18b130f3a6cb6ecb27"
+    },
+    {
+      "path": "matrx-extend/matrx-extend/test-results/data-member-auto-extract-acceptance.json",
+      "bytes": 949,
+      "sha256": "faee0cd65dcfdf7202ce49e4c77e68a31855dc390dd37f36557dc49195bd57e0"
+    },
+    {
+      "path": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-40778915561-1.jsonl",
+      "bytes": 4881,
+      "sha256": "2db9b2df1ca96cad9afe24225587f1e56e01cd4738fc8f8273b4689b55b00e59"
+    }
+  ],
+  "native_report": {
+    "schema_version": 1,
+    "reload_open_diagnostic": {
+      "enabled": false,
+      "evidence_class": "acceptance_eligible",
+      "perturbation": "none"
+    },
+    "reload_sender_document_diagnostic": {
+      "enabled": false,
+      "evidence_class": "acceptance_eligible",
+      "perturbation": "none"
+    },
+    "case_id": "EXT-F-2005-T08",
+    "auth_mode": "member",
+    "status": "fail",
+    "stage": "input",
+    "native_stage": "cdp_connect",
+    "artifact": {
+      "source_sha": "d19043d8b95c05153fec3763559dfd6f57ebb882",
+      "run_id": 40758972183,
+      "artifact_id": 12847457843,
+      "tree_sha256": "0358e75784ed6ae8b601a04ac889180a49796fc21e84b4ceeefc7703a4c5b3d5",
+      "version": "0.2.631"
+    },
+    "authentication": null,
+    "observations": {},
+    "cleanup": null,
+    "failure_stage": "input",
+    "limits": "Signed-in nonadmin member automatic extraction on an owned page and exact saved row; no admin, guest, or Store claim.",
+    "error_code": "native_acceptance_error"
+  },
+  "startup_diagnostic": {
+    "failureCode": "owned_cdp_endpoint_timeout",
+    "elapsedMs": 8032,
+    "exitCode": null,
+    "signalCode": null,
+    "launchFailed": false,
+    "spawnObserved": true,
+    "stderrFlags": {
+      "hadStderr": false,
+      "codeSignature": false,
+      "dynamicLoader": false,
+      "permissionDenied": false,
+      "sandbox": false,
+      "crash": false,
+      "devtoolsListening": false
+    },
+    "endpointWaitDiagnostic": {
+      "polls": 205,
+      "elapsedMs": 8009,
+      "longestReadMs": 165,
+      "lastRead": {
+        "startedElapsedMs": 7992,
+        "completedElapsedMs": 7993,
+        "outcome": "missing"
+      }
+    }
+  },
+  "original_log_sha256": "e38ad4b3e770aed7b866d21c5ecda8439fb24927185029c82ba0253bde6bac0a",
+  "resource_finals": [
+    {
+      "journal": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-40778915561-1.jsonl",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-28T22:20:44.569Z",
+        "runId": "hosted-package-40778915561-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "journal": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-40778915561-1.jsonl",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-28T22:22:38.046Z",
+        "runId": "hosted-browser-40778915561-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "journal": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-40778915561-1.jsonl",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-28T22:25:16.190Z",
+        "runId": "hosted-guest-40778915561-1",
+        "admitted": true,
+        "resourceInvalid": true,
+        "exitCode": 3,
+        "decision": "invalid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    }
+  ],
+  "resource_timeline": [
+    {
+      "at": "2026-10-28T22:23:11.539Z",
+      "code": "RESOURCE_JOURNAL_OPENED"
+    },
+    {
+      "at": "2026-10-28T22:24:19.441Z",
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.6,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.29,
+        "logicalCpus": 4,
+        "cpuBusyFraction": 0.031428571428571424,
+        "swapUsedMiB": 0,
+        "repoFreeGiB": 108.30150604248047,
+        "profileFreeGiB": 108.30150604248047,
+        "safetyFreeGiB": 108.30150604248047,
+        "systemFreeGiB": 108.30150604248047
+      },
+      "reasons": [],
+      "code": "RESOURCE_ADMITTED"
+    },
+    {
+      "at": "2026-10-28T22:24:35.759Z",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.6,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.29,
+        "logicalCpus": 4,
+        "cpuBusyFraction": 0.42,
+        "swapUsedMiB": 0,
+        "repoFreeGiB": 108.07117080688477,
+        "profileFreeGiB": 108.07117080688477,
+        "safetyFreeGiB": 108.07117080688477,
+        "systemFreeGiB": 108.07117080688477
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "at": "2026-10-28T22:24:51.910Z",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.6,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.57,
+        "logicalCpus": 4,
+        "cpuBusyFraction": 0.29,
+        "swapUsedMiB": 0,
+        "repoFreeGiB": 107.8599853515625,
+        "profileFreeGiB": 107.8599853515625,
+        "safetyFreeGiB": 107.8599853515625,
+        "systemFreeGiB": 107.8599853515625
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "at": "2026-10-28T22:25:08.616Z",
+      "reasons": ["RESOURCE_CPU_BUSY", "RESOURCE_CPU_HIGH_LOAD_BUSY"],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.6,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 10.06,
+        "logicalCpus": 4,
+        "cpuBusyFraction": 1,
+        "swapUsedMiB": 0,
+        "repoFreeGiB": 108.09363555908203,
+        "profileFreeGiB": 108.09363555908203,
+        "safetyFreeGiB": 108.09363555908203,
+        "systemFreeGiB": 108.09363555908203
+      },
+      "code": "RESOURCE_CPU_PENDING"
+    },
+    {
+      "at": "2026-10-28T22:25:15.561Z",
+      "childExitCode": 1,
+      "childSignal": null,
+      "code": "RESOURCE_JOB_EXIT"
+    },
+    {
+      "at": "2026-10-28T22:25:16.190Z",
+      "resourceInvalid": true,
+      "exitCode": 3,
+      "decision": "invalid",
+      "code": "RESOURCE_FINAL_DECISION"
+    }
+  ],
+  "causal_limits": [
+    "Snapshot includes external OS/provisioner work and owned Chromium; cumulative process percentages are not per-interval causal accounting.",
+    "No evidence establishes that CPU pressure caused endpoint timeout, or identifies platform, policy, driver or product cause.",
+    "Null child exit/signal and empty stderr flags at failure do not prove later survival, health or absence of unobserved faults.",
+    "Member sign-in, original name entry, automatic extraction and saved-row behavior were not reached; no T08/product/auth acceptance, closure or release credit."
+  ],
+  "normal_verifier": {
+    "exit": 1,
+    "code": "HOSTED_RUN_NOT_SUCCESSFUL",
+    "result_kind": "correct refusal of failed run; not a product certificate"
+  },
+  "cleanup": {
+    "owner_receipt_sha256": "15d16400ea2b3d2f8f1d4dfd959825ae8725959663213266a6701ce748c56bb1",
+    "owner_receipt_status": "TERMINAL_CLEANUP_VERIFIED",
+    "owned_secret_absent_receipt": true,
+    "retained_restore_and_readback_equal": true,
+    "fixture_identity_and_flag_unchanged": true,
+    "archive_timestamp_same_instant": true,
+    "archive_timestamp_lexically_equal": false,
+    "exact_archive_state_restored_readback": true,
+    "owned_auth_files_absent_independently_checked": true,
+    "limits": "Retained receipts checked; no fresh live database read or secret inventory call by peer. Remote profile/process deletion is unobserved.",
+    "root_complete_secret_inventory_owned_secret_present": false
+  },
+  "behavior_credit": 0,
+  "full_case_pass": false,
+  "defect_closure": false,
+  "release": false,
+  "next_action": "Publish a typed allowlisted projection of this existing BROWSER_STARTUP_FAILURE alongside the native report, preserving exact original log/ZIP hashes and the resource-invalid verdict. No new observer or retry is needed to recover the present failure category; an underlying-cause fix is unsupported by this attempt."
+}
