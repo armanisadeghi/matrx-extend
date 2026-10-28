@@ -753,193 +753,210 @@ async function runScenario(
     const check = () =>
       requireNativeResourceHealth({ repo: item.scratch, leaseRoot: item.leaseRoot, env });
     let actions = 0;
-    if (kind.startsWith('noncpu-attribution')) {
-      await writeFile(item.memoryPhase, '10\n');
+    if (kind === 'healthy-bracket') {
+      await writeFile(item.childPhase, 'exit0\n');
+      const job = await stream.next((event) => event.code === 'RESOURCE_JOB_EXIT');
+      assert.equal(job.childExitCode, 0);
     } else {
-      await writeFile(item.cpuPhase, '0.88\n');
-    }
-    const first = await stream.next((event) => watchCodes.has(event.code));
-    assert.equal(
-      first.code,
-      kind.startsWith('noncpu-attribution') ? 'RESOURCE_WATCH_UNSAFE' : 'RESOURCE_CPU_PENDING',
-      `first watch must block: ${JSON.stringify(first)}`,
-    );
-    assert.deepEqual(
-      first.reasons,
-      kind.startsWith('noncpu-attribution') ? ['RESOURCE_MEMORY_LOW'] : ['RESOURCE_CPU_BUSY'],
-    );
-    await assert.rejects(
-      runNativeResourceAction(check, () => ++actions),
-      kind.startsWith('noncpu-attribution')
-        ? /unsafe_sample|stop_requested|unsafe_hold/
-        : /cpu_pending/,
-    );
-    assert.equal(actions, 0);
-    if (kind === 'attribution-episodes' || kind === 'attribution-alternation') {
-      const nextCpuWatch = async (expectedCode, expectedReasons) => {
-        const watch = await stream.next((event) => watchCodes.has(event.code));
-        assert.equal(watch.code, expectedCode);
-        assert.deepEqual(watch.reasons, expectedReasons);
-        return watch;
-      };
-
-      if (kind === 'attribution-alternation') {
-        // Keep bad/good alternation inside the first pending episode.
-        await writeFile(item.cpuPhase, '0.1\n');
-        await nextCpuWatch('RESOURCE_CPU_PENDING', []);
+      if (kind.startsWith('noncpu-attribution')) {
+        await writeFile(item.memoryPhase, '10\n');
+      } else {
         await writeFile(item.cpuPhase, '0.88\n');
-        await nextCpuWatch('RESOURCE_CPU_PENDING', ['RESOURCE_CPU_BUSY']);
+      }
+      const first = await stream.next((event) => watchCodes.has(event.code));
+      assert.equal(
+        first.code,
+        kind.startsWith('noncpu-attribution') ? 'RESOURCE_WATCH_UNSAFE' : 'RESOURCE_CPU_PENDING',
+        `first watch must block: ${JSON.stringify(first)}`,
+      );
+      assert.deepEqual(
+        first.reasons,
+        kind.startsWith('noncpu-attribution') ? ['RESOURCE_MEMORY_LOW'] : ['RESOURCE_CPU_BUSY'],
+      );
+      await assert.rejects(
+        runNativeResourceAction(check, () => ++actions),
+        kind.startsWith('noncpu-attribution')
+          ? /unsafe_sample|stop_requested|unsafe_hold/
+          : /cpu_pending/,
+      );
+      assert.equal(actions, 0);
+      if (kind === 'attribution-episodes' || kind === 'attribution-alternation') {
+        const nextCpuWatch = async (expectedCode, expectedReasons) => {
+          const watch = await stream.next((event) => watchCodes.has(event.code));
+          assert.equal(watch.code, expectedCode);
+          assert.deepEqual(watch.reasons, expectedReasons);
+          return watch;
+        };
+
+        if (kind === 'attribution-alternation') {
+          // Keep bad/good alternation inside the first pending episode.
+          await writeFile(item.cpuPhase, '0.1\n');
+          await nextCpuWatch('RESOURCE_CPU_PENDING', []);
+          await writeFile(item.cpuPhase, '0.88\n');
+          await nextCpuWatch('RESOURCE_CPU_PENDING', ['RESOURCE_CPU_BUSY']);
+          await writeFile(item.cpuPhase, '0.1\n');
+          await nextCpuWatch('RESOURCE_CPU_PENDING', []);
+          await nextCpuWatch('RESOURCE_CPU_PENDING', []);
+          const expired = await stream.next((event) => watchCodes.has(event.code));
+          assert.equal(expired.code, 'RESOURCE_WATCH_UNSAFE');
+          assert.deepEqual(expired.reasons, ['RESOURCE_CPU_CONFIRMATION_EXPIRED']);
+          await assert.rejects(
+            runNativeResourceAction(check, () => ++actions),
+            /unsafe_sample|stop_requested|unsafe_hold/,
+          );
+        } else {
+          // Full recovery before the deadline permits a new CPU episode.
+          await writeFile(item.cpuPhase, '0.1\n');
+          await nextCpuWatch('RESOURCE_CPU_PENDING', []);
+          await nextCpuWatch('RESOURCE_CPU_PENDING', []);
+          await nextCpuWatch('RESOURCE_CPU_RECOVERED', []);
+          assert.equal(await runNativeResourceAction(check, () => ++actions), 1);
+
+          await writeFile(item.cpuPhase, '0.88\n');
+          await nextCpuWatch('RESOURCE_CPU_PENDING', ['RESOURCE_CPU_BUSY']);
+          await assert.rejects(
+            runNativeResourceAction(check, () => ++actions),
+            /cpu_pending/,
+          );
+          await writeFile(item.cpuPhase, '0.1\n');
+          await nextCpuWatch('RESOURCE_CPU_PENDING', []);
+          await nextCpuWatch('RESOURCE_CPU_PENDING', []);
+          await nextCpuWatch('RESOURCE_CPU_RECOVERED', []);
+          assert.equal(await runNativeResourceAction(check, () => ++actions), 2);
+          await writeFile(item.childPhase, 'exit0\n');
+          const job = await stream.next((event) => event.code === 'RESOURCE_JOB_EXIT');
+          assert.equal(job.childExitCode, 0);
+        }
+      } else if (
+        [
+          'recovered',
+          'completion-recovered',
+          'completion-unsafe',
+          'completion-expired',
+          'completion-memory-unsafe',
+          'completion-stop',
+        ].includes(kind)
+      ) {
         await writeFile(item.cpuPhase, '0.1\n');
-        await nextCpuWatch('RESOURCE_CPU_PENDING', []);
-        await nextCpuWatch('RESOURCE_CPU_PENDING', []);
-        const expired = await stream.next((event) => watchCodes.has(event.code));
-        assert.equal(expired.code, 'RESOURCE_WATCH_UNSAFE');
-        assert.deepEqual(expired.reasons, ['RESOURCE_CPU_CONFIRMATION_EXPIRED']);
+        for (let i = 0; i < 2; i++) {
+          const watch = await stream.next((event) => watchCodes.has(event.code));
+          assert.equal(watch.code, 'RESOURCE_CPU_PENDING');
+          assert.deepEqual(watch.reasons, []);
+          await assert.rejects(
+            runNativeResourceAction(check, () => ++actions),
+            /cpu_pending/,
+          );
+        }
+        if (kind.startsWith('completion-')) {
+          await writeFile(item.childPhase, 'exit0\n');
+          await stream.next((event) => event.code === 'RESOURCE_JOB_EXIT');
+          assert.equal(child.exitCode, null, 'lease holder must remain alive while CPU is pending');
+          const heldOwner = JSON.parse(
+            await readFile(join(item.leaseRoot, 'heavy/owner.json'), 'utf8'),
+          );
+          assert.equal(
+            heldOwner.nonce,
+            owner.nonce,
+            'same lease must remain held after child exit',
+          );
+          await assert.rejects(
+            runNativeResourceAction(check, () => ++actions),
+            /run_stopped/,
+          );
+          if (kind === 'completion-unsafe') await writeFile(item.cpuPhase, '0.88\n');
+          if (kind === 'completion-expired') await writeFile(item.cpuPhase, 'slow-healthy\n');
+          if (kind === 'completion-memory-unsafe') await writeFile(item.memoryPhase, '10\n');
+          if (kind === 'completion-stop') {
+            child.kill('SIGTERM');
+            await stream.next((event) => event.code === 'RESOURCE_STOP_REQUESTED');
+          }
+        }
+        if (kind !== 'completion-stop') {
+          const next = await stream.next((event) => watchCodes.has(event.code));
+          assert.equal(
+            next.code,
+            kind === 'completion-unsafe'
+              ? 'RESOURCE_CPU_PENDING'
+              : kind === 'completion-expired' || kind === 'completion-memory-unsafe'
+                ? 'RESOURCE_WATCH_UNSAFE'
+                : 'RESOURCE_CPU_RECOVERED',
+          );
+          if (kind === 'completion-expired')
+            assert.deepEqual(next.reasons, ['RESOURCE_CPU_CONFIRMATION_EXPIRED']);
+          if (kind === 'completion-memory-unsafe')
+            assert.deepEqual(next.reasons, ['RESOURCE_MEMORY_LOW']);
+          if (kind === 'completion-unsafe') {
+            const unsafe = await stream.next((event) => watchCodes.has(event.code));
+            assert.equal(unsafe.code, 'RESOURCE_WATCH_UNSAFE');
+          }
+          if (
+            !['completion-unsafe', 'completion-expired', 'completion-memory-unsafe'].includes(kind)
+          ) {
+            assert.deepEqual(next.reasons, []);
+            if (kind === 'recovered') {
+              assert.equal(await runNativeResourceAction(check, () => ++actions), 1);
+              await writeFile(item.childPhase, 'exit0\n');
+            }
+          }
+        }
+      } else if (kind.startsWith('eperm-')) {
+        const second = await stream.next((event) => watchCodes.has(event.code));
+        assert.equal(second.code, 'RESOURCE_WATCH_UNSAFE');
+        assert.deepEqual(second.reasons, ['RESOURCE_CPU_BUSY']);
         await assert.rejects(
           runNativeResourceAction(check, () => ++actions),
           /unsafe_sample|stop_requested|unsafe_hold/,
         );
+      } else if (kind === 'confirmed') {
+        const second = await stream.next((event) => watchCodes.has(event.code));
+        assert.equal(second.code, 'RESOURCE_WATCH_UNSAFE');
+        await assert.rejects(
+          runNativeResourceAction(check, () => ++actions),
+          /unsafe_sample|stop_requested|unsafe_hold/,
+        );
+      } else if (kind.startsWith('noncpu-attribution')) {
+        if (kind === 'noncpu-attribution-cleanup-error') {
+          const stop = await stream.next(
+            (event) => event.code === 'RESOURCE_STOP_AT_SAFE_BOUNDARY',
+          );
+          assert.deepEqual(stop.reasons, ['RESOURCE_MEMORY_LOW']);
+          const failure = await stream.next(
+            (event) => event.code === 'RESOURCE_MEASUREMENT_FAILED',
+          );
+          assert.deepEqual(failure.syntheticDiagnostic, {
+            stage: 'owned_process_census',
+            errorClass: 'Error',
+            osCode: 'EIO',
+          });
+        } else {
+          await writeFile(item.childPhase, 'exit0\n');
+        }
       } else {
-        // Full recovery before the deadline permits a new CPU episode.
-        await writeFile(item.cpuPhase, '0.1\n');
-        await nextCpuWatch('RESOURCE_CPU_PENDING', []);
-        await nextCpuWatch('RESOURCE_CPU_PENDING', []);
-        await nextCpuWatch('RESOURCE_CPU_RECOVERED', []);
-        assert.equal(await runNativeResourceAction(check, () => ++actions), 1);
-
-        await writeFile(item.cpuPhase, '0.88\n');
-        await nextCpuWatch('RESOURCE_CPU_PENDING', ['RESOURCE_CPU_BUSY']);
-        await assert.rejects(
-          runNativeResourceAction(check, () => ++actions),
-          /cpu_pending/,
+        await writeFile(
+          item.childPhase,
+          kind === 'pending-failed-child'
+            ? 'exit1\n'
+            : kind === 'pending-child-error'
+              ? 'error\n'
+              : 'exit0\n',
         );
-        await writeFile(item.cpuPhase, '0.1\n');
-        await nextCpuWatch('RESOURCE_CPU_PENDING', []);
-        await nextCpuWatch('RESOURCE_CPU_PENDING', []);
-        await nextCpuWatch('RESOURCE_CPU_RECOVERED', []);
-        assert.equal(await runNativeResourceAction(check, () => ++actions), 2);
-        await writeFile(item.childPhase, 'exit0\n');
-        const job = await stream.next((event) => event.code === 'RESOURCE_JOB_EXIT');
-        assert.equal(job.childExitCode, 0);
-      }
-    } else if (
-      [
-        'recovered',
-        'completion-recovered',
-        'completion-unsafe',
-        'completion-expired',
-        'completion-memory-unsafe',
-        'completion-stop',
-      ].includes(kind)
-    ) {
-      await writeFile(item.cpuPhase, '0.1\n');
-      for (let i = 0; i < 2; i++) {
-        const watch = await stream.next((event) => watchCodes.has(event.code));
-        assert.equal(watch.code, 'RESOURCE_CPU_PENDING');
-        assert.deepEqual(watch.reasons, []);
-        await assert.rejects(
-          runNativeResourceAction(check, () => ++actions),
-          /cpu_pending/,
-        );
-      }
-      if (kind.startsWith('completion-')) {
-        await writeFile(item.childPhase, 'exit0\n');
-        await stream.next((event) => event.code === 'RESOURCE_JOB_EXIT');
-        assert.equal(child.exitCode, null, 'lease holder must remain alive while CPU is pending');
-        const heldOwner = JSON.parse(
-          await readFile(join(item.leaseRoot, 'heavy/owner.json'), 'utf8'),
-        );
-        assert.equal(heldOwner.nonce, owner.nonce, 'same lease must remain held after child exit');
-        await assert.rejects(
-          runNativeResourceAction(check, () => ++actions),
-          /run_stopped/,
-        );
-        if (kind === 'completion-unsafe') await writeFile(item.cpuPhase, '0.88\n');
-        if (kind === 'completion-expired') await writeFile(item.cpuPhase, 'slow-healthy\n');
-        if (kind === 'completion-memory-unsafe') await writeFile(item.memoryPhase, '10\n');
-        if (kind === 'completion-stop') {
-          child.kill('SIGTERM');
-          await stream.next((event) => event.code === 'RESOURCE_STOP_REQUESTED');
+        if (kind === 'pending-failed-child' || kind === 'pending-child-error') {
+          const job = await stream.next((event) => event.code === 'RESOURCE_JOB_EXIT');
+          if (kind === 'pending-failed-child') assert.equal(job.childExitCode, 1);
+          else assert.equal(job.childError, 'synthetic child error');
         }
-      }
-      if (kind !== 'completion-stop') {
-        const next = await stream.next((event) => watchCodes.has(event.code));
-        assert.equal(
-          next.code,
-          kind === 'completion-unsafe'
-            ? 'RESOURCE_CPU_PENDING'
-            : kind === 'completion-expired' || kind === 'completion-memory-unsafe'
-              ? 'RESOURCE_WATCH_UNSAFE'
-              : 'RESOURCE_CPU_RECOVERED',
-        );
-        if (kind === 'completion-expired')
-          assert.deepEqual(next.reasons, ['RESOURCE_CPU_CONFIRMATION_EXPIRED']);
-        if (kind === 'completion-memory-unsafe')
-          assert.deepEqual(next.reasons, ['RESOURCE_MEMORY_LOW']);
-        if (kind === 'completion-unsafe') {
-          const unsafe = await stream.next((event) => watchCodes.has(event.code));
-          assert.equal(unsafe.code, 'RESOURCE_WATCH_UNSAFE');
-        }
-        if (
-          !['completion-unsafe', 'completion-expired', 'completion-memory-unsafe'].includes(kind)
-        ) {
-          assert.deepEqual(next.reasons, []);
-          if (kind === 'recovered') {
-            assert.equal(await runNativeResourceAction(check, () => ++actions), 1);
-            await writeFile(item.childPhase, 'exit0\n');
-          }
-        }
-      }
-    } else if (kind.startsWith('eperm-')) {
-      const second = await stream.next((event) => watchCodes.has(event.code));
-      assert.equal(second.code, 'RESOURCE_WATCH_UNSAFE');
-      assert.deepEqual(second.reasons, ['RESOURCE_CPU_BUSY']);
-      await assert.rejects(
-        runNativeResourceAction(check, () => ++actions),
-        /unsafe_sample|stop_requested|unsafe_hold/,
-      );
-    } else if (kind === 'confirmed') {
-      const second = await stream.next((event) => watchCodes.has(event.code));
-      assert.equal(second.code, 'RESOURCE_WATCH_UNSAFE');
-      await assert.rejects(
-        runNativeResourceAction(check, () => ++actions),
-        /unsafe_sample|stop_requested|unsafe_hold/,
-      );
-    } else if (kind.startsWith('noncpu-attribution')) {
-      if (kind === 'noncpu-attribution-cleanup-error') {
-        const stop = await stream.next((event) => event.code === 'RESOURCE_STOP_AT_SAFE_BOUNDARY');
-        assert.deepEqual(stop.reasons, ['RESOURCE_MEMORY_LOW']);
-        const failure = await stream.next((event) => event.code === 'RESOURCE_MEASUREMENT_FAILED');
-        assert.deepEqual(failure.syntheticDiagnostic, {
-          stage: 'owned_process_census',
-          errorClass: 'Error',
-          osCode: 'EIO',
-        });
-      } else {
-        await writeFile(item.childPhase, 'exit0\n');
-      }
-    } else {
-      await writeFile(
-        item.childPhase,
-        kind === 'pending-failed-child'
-          ? 'exit1\n'
-          : kind === 'pending-child-error'
-            ? 'error\n'
-            : 'exit0\n',
-      );
-      if (kind === 'pending-failed-child' || kind === 'pending-child-error') {
-        const job = await stream.next((event) => event.code === 'RESOURCE_JOB_EXIT');
-        if (kind === 'pending-failed-child') assert.equal(job.childExitCode, 1);
-        else assert.equal(job.childError, 'synthetic child error');
       }
     }
     diagnostic.setStage('awaiting_child_close');
     const exit = await closed;
     finished = true;
     diagnostic.setStage('journal_assertions');
-    const validRecovery = ['recovered', 'completion-recovered', 'attribution-episodes'].includes(
-      kind,
-    );
+    const validRecovery = [
+      'healthy-bracket',
+      'recovered',
+      'completion-recovered',
+      'attribution-episodes',
+    ].includes(kind);
     assert.deepEqual(exit, { code: validRecovery ? 0 : 3, signal: null }, stream.stderr);
     const journal = (await readFile(join(item.docs, 'resource-journals', `${runId}.jsonl`), 'utf8'))
       .trim()
@@ -1517,7 +1534,13 @@ test(
       { bracketMode: 'malformed', guardFlag: true },
       { bracketMode: 'calculation-fail', guardFlag: true },
     ])
-      await runScenario('recovered', process.hrtime.bigint(), options);
+      await runScenario(
+        options.guardFlag && options.bracketMode === 'valid' && !options.oldFlag
+          ? 'recovered'
+          : 'healthy-bracket',
+        process.hrtime.bigint(),
+        options,
+      );
   },
 );
 
@@ -1527,7 +1550,7 @@ test(
   async () => {
     for (const bracketMutation of ['sampling-off', 'emission-off', 'always-on', 'always-off']) {
       await assert.rejects(
-        runScenario('recovered', process.hrtime.bigint(), {
+        runScenario('healthy-bracket', process.hrtime.bigint(), {
           bracketMode: 'valid',
           guardFlag: bracketMutation !== 'always-on',
           bracketMutation,

@@ -311,7 +311,7 @@
     "next_action": "Retained CPU attribution is bounded and renderer/product cause remains unresolved. The independently reviewed guard-only diagnostic source unit now supplies the missing interval observer without changing policy/classification or child startup observers; see guard_only_interval_diagnostic and guard-interval-source-20261028.json. Await exact-current fresh-install CI/artifact before a distinct normally admitted original Theme/adjacent warm/full-reload diagnostic; preserve raw journal/archive provenance. No blind retry, threshold/deadline/runner change or defect closure. D300 stays IN-FIX."
   },
   "guard_only_interval_diagnostic": {
-    "state": "SOURCE_VERIFIED_FRESH_CI_AND_NATIVE_PENDING",
+    "state": "SOURCE_VERIFIED_CI_TIMEOUT_RUNTIME_REPAIR_AWAITING_FRESH_CI",
     "owner": "/root",
     "implementation_lane": "/root/guard_interval_implementation",
     "review_lane": "/root/guard_interval_fresh_review",
@@ -322,6 +322,13 @@
     "source_checks": "25guard tests;1274focusedpass11skip0fail; compile0; lint3509files1040warnings0errors; meaningful REDs and executed mutants independently reviewed.",
     "product_passes": 0,
     "native": "UNVERIFIED; earlier9a remains invalid0criteria",
-    "next_action": "After exact current-source CI/artifact, plan a distinct normally admitted original Settings diagnostic with per-watch raw owned/unowned brackets. Do not infer renderer/product cause or change thresholds/deadlines/runner. D300 remains IN-FIX."
+    "next_action": "After exact current-source CI/artifact, plan a distinct normally admitted original Settings diagnostic with per-watch raw owned/unowned brackets. Do not infer renderer/product cause or change thresholds/deadlines/runner. D300 remains IN-FIX.",
+    "ci_runtime_repair": {
+      "report": "docs/stabilization/reports/guard-ci-runtime-repair-20261028.json",
+      "independent_review": "docs/stabilization/reports/guard-ci-runtime-peer-20261028.json",
+      "historical_ci": 40745105776,
+      "historical_status": "cancelled at unchanged five-minute resource job; CPU25passed, wholeCIineligible",
+      "current_gate": "fresh exact-current CI; no timer/runner/policy relaxation or product credit"
+    }
   }
 }

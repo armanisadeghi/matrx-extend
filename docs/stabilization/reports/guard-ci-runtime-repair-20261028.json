@@ -1,0 +1,56 @@
+{
+  "source_sha256": "f63192af4deff5009056ee43d037ca67e0578eaf2f42d614794c7a320cde883d",
+  "run_id": "wake1755-ci-runtime-repair",
+  "profile_precondition": "existing directory verified",
+  "admission": "literal RESOURCE_ADMITTED; final valid exit 0",
+  "suite": "25 passed, 0 failed, 0 skipped; 125929.816 ms",
+  "flag_matrix_ms": 16019.617,
+  "four_mutants_ms": 6989.147,
+  "ci_baseline_flag_matrix_ms": 32230,
+  "ci_baseline_mutants_ms": 15750,
+  "comparison_note": "Same-host prior full run versus new: combined cases 45.50 to 23.01 seconds; full suite 148.53 to 125.93 seconds. CI runner and unrelated job variance remain unverified.",
+  "log": ".output/stabilization-checkpoints/wake1755/ci-runtime-repair.log",
+  "log_sha256": "ec32c43e70f89b92930908ddc897871007dd11893561995e0caa7d57ea31e368",
+  "journal": "docs/stabilization/resource-journals/wake1755-ci-runtime-repair.jsonl",
+  "journal_sha256": "c612a4b5b08cb4c5c5a28c3a29bc02affa043a9fff186018729658fa39172e57",
+  "limits": "Synthetic source fixtures only. All25 tests still execute, with one new-flag full recovery and original CPU/expiry/native scenarios preserved. Other matrix combinations cover real first healthy watch, bracket sampling/emission/arithmetic/telemetry failures, final journal and cleanup instead of repeating full recovery. Same-host savings do not guarantee identical CI timing. No product/native/Store/closure credit. No CI workflow, timeout, policy, production guard, runner, admission, skip or concurrency change.",
+  "previous_same_host": {
+    "log": ".output/stabilization-checkpoints/wake1755/guard-final.log",
+    "flag_matrix_ms": 30322.69,
+    "four_mutants_ms": 15176.22,
+    "suite_ms": 148529.799
+  },
+  "schema": 1,
+  "status": "SOURCE_RUNTIME_REPAIR_VERIFIED_FRESH_CI_PENDING",
+  "owner": "/root",
+  "implementation_lane": "/root/guard_ci_runtime_repair",
+  "base_commit": "39d576c96b6ad1ca42f6293e93605d0b9c19895a",
+  "ci_failure": {
+    "status": "CI_JOB_TIMEOUT_CONFIRMED_NO_NATIVE_ACCEPTANCE",
+    "source_sha": "39d576c96b6ad1ca42f6293e93605d0b9c19895a",
+    "run": 40745105776,
+    "job": 123016907574,
+    "annotation": "The job has exceeded the maximum execution time of 5m0s",
+    "new_cpu_step_seconds": 153,
+    "base_cpu_step_seconds": 102,
+    "new_added_tests_ci_seconds": { "guard_flag_matrix": 32.23, "four_guard_mutants": 15.75 },
+    "limits": "Late bounded-lanes variability also exists; not proof of sole CPU or product cause. Source25tests passed before job timeout; wholeCI noteligible. No timeout/runner/policy change or job relocation allowed.",
+    "repair_lane": "/root/guard_ci_runtime_repair",
+    "hashes": {
+      "ci-resource-job.log": "f7c018d3b81ee50b9b9a219de94606c7fd1d74223bf9c830bf0edf69efa641c4",
+      "ci-resource-annotations.json": "61c146c6100ac51d9a2438dbd05a36d983bba0d11d784712eb8653c5478ee47f",
+      "ci-resource-job.json": "3f522ec740606ba9adc8df1170c85283fd596333c63e1d49796a824cc13fb575",
+      "base-ci-jobs.json": "d555e166af699821ff838835715b71bc15aa4ce971765043aea68a7ae00700dc"
+    }
+  },
+  "independent_review": "guard-ci-runtime-peer-20261028.json",
+  "private_original_sha256": "29c239d49000c4585f9d77b3dd11b89ee3b5df338ab566cda8a27c4554831667",
+  "next_action": "Require fresh exact-current-source CI to finish within unchanged five-minute resource job before artifact adoption or native diagnosis. Old39d wholeCI remains cancelled/ineligible, not a permanent block for future green source.",
+  "changed_file": "scripts/test-stabilization-resource-cpu-integration.mjs",
+  "unchanged_production_hashes": {
+    "scripts/stabilization-resource.mjs": "84593d55972623a4ad4f8ff2992210f8fd21854dec6b621867ecc52bb774d78a",
+    ".github/workflows/hosted-guest-acceptance.yml": "76e0578aaff6100aa51576036dea55c0028482ea250f2015951b473a98710fd2",
+    ".github/workflows/ci.yml": "3e47185e7f7e4c064174e2efe429cda8bce1971337474f42ae1bde0814dd10cb",
+    "docs/stabilization/resource-policy.json": "8ab675504bc46198109169ccc4cfc4970a30a0db11a069ec4f44d6e22a772afe"
+  }
+}
