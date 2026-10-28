@@ -1,0 +1,90 @@
+{
+  "at": "2026-10-28T12:15:49.335813+00:00",
+  "status": "DONE_WITH_CONCERNS",
+  "A": {
+    "verdict": "PASS_FOR_BOUNDED_CLAIMS",
+    "targets": [
+      {
+        "target": "Published Store guest two-reply behavior",
+        "verdict": "PASS",
+        "evidence": "Original provider output AX supports designated guest profile, Store ID hnfolienncfklkgmdjjmhhegglimlamg version 0.2.577 / Chrome Web Store / enabled / pinned; Settings has Email em dash and Sign in. Blank Chat precedes prompt. Actual Assistant answer READY_20261028, then FOLLOWUP_20261028 with both pairs visible and Send message/no Stop in terminal snapshots. Same visible conversation only; no wire ID."
+      },
+      {
+        "target": "Exact CI DEV owner maintenance",
+        "verdict": "PASS",
+        "evidence": "Owner profile account email is present in private api-41. api-44 and api-46 bind DEV 0.2.630 ID cihdmkcdjjckfhjpgoedmgfpoljebaml to the stable unpacked path, enabled/pinned, actual Reload click and Reloaded toast. api-54 proves Store 0.2.577 preserved enabled/pinned in that profile. Independent current hashReleaseTree reads for imported source and stable destination both equal a87bb8f094a49796ff191d2ea9eea7dabfdbd7d2de541cb4ab7fc8653612c794, matching before/after receipts."
+      },
+      {
+        "target": "CI provenance and executed checks",
+        "verdict": "PASS",
+        "evidence": "Official GitHub run metadata confirms exact source 8592e61af7aa2796b98781431a8eaf37673126e3 for successful runs 40647207929 and 40647207940. Focused logs actually execute check:native-callback-bindings (20 files), then 1280 tests / 1279 pass / 1 skipped / 0 fail. Full CI actually executes compile / tsc --noEmit and lint / biome check . (3508 files). Artifact API and upload log agree ID 12798715617, source/run, and digest e057f5bea5208fa0e1e8f4a679514444be74c23d4b24e246bb224ead8f8a2a1f. Focused binding check is scoped undeclared-variable lint, not full typecheck or live acceptance."
+      },
+      {
+        "target": "Cleanup",
+        "verdict": "PASS_SCOPED",
+        "evidence": "Provider JS closes the owned guest identity/demo and owner maintenance tabs; provider output contains safe owner cleanup projection with ownerProfile=true/vaultSelected=true. Final AX shows original guest New Tab selected; js_reset follows stopped marker."
+      }
+    ],
+    "credit": {
+      "bounded_native_reply_behaviors": 2,
+      "full_case_passes": 0,
+      "defect_closures": 0,
+      "releases": 0,
+      "candidate_acceptance": 0
+    }
+  },
+  "B": {
+    "verdict": "PASS_FOR_LIMITED_TYPED_PROJECTION",
+    "procedure": {
+      "provider_authenticity": "All 43 private original paths match declared size and SHA256. Original Cua extract is 183800 bytes SHA256 13819095dafef6709afb4a71ad656a1f74b43061e4a051dfa0314f95742663c1; all 58 exact lines exist byte-for-byte in mutable parent provider source. There are 29 function calls and 29 matched outputs, with matching call IDs. One filesystem initialization and one reset have zero UI calls.",
+      "actual_API_binding": "Independent provider JS enumeration finds one direct cua.getApp plus 59 chrome API calls. Each of 59 saved callback bodies matches actual provider JS after whitespace normalization, each contains exactly one documented Cua API. Method counts: getAXState 22, pressKey 13, click 13, typeText 6, getAXStateAndScreenshot 4, setValue 1; plus getApp 1 = 60. All 60 ledger begin/end pairs contiguous and returned. These counts are derived from provider bodies, not ledger self-reported counters.",
+      "raw_output_binding": "Saved guest Settings/first answer/followup AX and api-44/46/54/56/60 strings independently found in original matched provider outputs. Separately visually inspected only guest-first-terminal.png and guest-followup-observation.png; both show public demo page, test guest replies, terminal composer, and generic guest avatar, with no visible account email, bookmarks, private tabs, credentials, or Vault contents.",
+      "resource": "Actual-profile Chrome guard CommandExecution receipt confirms profile path. Literal admission 11:55:58.680 precedes first API begin 11:56:06.649885. First getApp is separately manually paired; subsequent calls each guard before and after. All 120 ledger events have healthy/admitted journal codes and watcher ages <=1.945815s. Watch has 351 actual reads, no risk records, reported monotonic max gap 2.009127624973189s (independently recalculated wall timestamp max 2.009146s), valid final exitCode 0. UI stopped 12:05:53.312 before SIGINT 12:06:20.809 and reset 12:06:26.731. Holder and watcher original CommandExecution records both terminal exit 0.",
+      "model": "Provider JS sends exactly two short prompts and no model override; UI reports actual default Matrx Browser Agent / Claude Sonnet 5.5. Catalog AdapterError prevents a cheapest-model or actual-cost claim; nonpremium classification is report/policy context rather than invoice evidence.",
+      "navigation": "Public Store URL typeText produced the observed truncated ome:// search. Corrective setValue and observed full address precede Return; no product defect credit."
+    },
+    "privacy": {
+      "approved": "Typed limited facts plus only the two exact-byte PNG originals explicitly listed in approved_pngs. These two PNGs are visually reviewed as safe to publish.",
+      "not_approved": "Raw provider log, raw AX bundle, all other PNGs, profile/account/bookmark/search details. Vault cleanup call returns only a safe projection and saved api-56 retains that projection rather than Vault contents.",
+      "approved_pngs": [
+        {
+          "path": ".output/stabilization-checkpoints/wake1142/owner-guest/guest-first-terminal.png",
+          "sha256": "7ff887e48cc2e7fa2e990732f429dcd18478f47cfcee65a6f6bcd4f5126a51b4",
+          "bytes": 238904
+        },
+        {
+          "path": ".output/stabilization-checkpoints/wake1142/owner-guest/guest-followup-observation.png",
+          "sha256": "c9321dd66322aa63b001a96cbbfe8db2d65316c84274442913a85cee193100e7",
+          "bytes": 243862
+        }
+      ]
+    }
+  },
+  "remaining_unverified": [
+    "Backend before/after e71ed7a957303bad068a2e35f0a559440ec98d07 is only advertised health/version bracket, not stream identity.",
+    "Wire conversation ID, grounding, reload/third turn, New Chat reset, complete Chat case, DEV product behavior, native fix acceptance, release/candidate suitability.",
+    "No independent live rerun by reviewer, per explicit read-only constraint; original native provider evidence is reviewed instead.",
+    "Standalone verification produced its success object before promotion in the combined shell; combined original process exit 0 verified, but no separate standalone-only process exit receipt exists.",
+    "Cost invoice and cheapest model cannot be verified; catalog attempt failed with AdapterError.",
+    "All other PNGs remain uninspected and private; publication approval is limited to the two exact hashes listed."
+  ],
+  "official_sources": [
+    {
+      "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/40647207929",
+      "log_sha256": "7f895a95b9139e14c666bd2aea34fea025aaf4e9e06347233eaee32ebd478a73",
+      "log_bytes": 737412
+    },
+    {
+      "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/40647207940",
+      "log_sha256": "bbff2868df31a6569de55b3fd8c85a02e765a8ead00716409306d0f902b856f1",
+      "log_bytes": 2064378
+    },
+    {
+      "url": "https://api.github.com/repos/armanisadeghi/matrx-extend/actions/artifacts/12798715617",
+      "digest": "sha256:e057f5bea5208fa0e1e8f4a679514444be74c23d4b24e246bb224ead8f8a2a1f"
+    }
+  ],
+  "original_report_sha256": "eb581ebc09622336e7893a696f9410cbd44e20219bd887df0e7c710e2284ff3c",
+  "original_peer_sha256": "7a9417f3f48066c7c27a872ce2baff022b166fea3cdc29415e9d21107f1e1514",
+  "projection": "Typed limited derivative; rawprovider/AX/profileaccount/bookmark/search data notcopied."
+}

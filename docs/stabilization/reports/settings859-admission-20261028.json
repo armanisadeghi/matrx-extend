@@ -1,0 +1,45 @@
+{
+  "at_utc": "2026-10-28T11:46:28.358906+00:00",
+  "status": "ADMISSION_REFUSED_NO_NATIVE_JOB",
+  "source_sha": "8592e61af7aa2796b98781431a8eaf37673126e3",
+  "full_ci": {
+    "run_id": 40647207940,
+    "conclusion": "success"
+  },
+  "focused_ci": {
+    "run_id": 40647207929,
+    "conclusion": "success"
+  },
+  "artifact": {
+    "id": 12798715617,
+    "digest": "sha256:e057f5bea5208fa0e1e8f4a679514444be74c23d4b24e246bb224ead8f8a2a1f",
+    "expired": false
+  },
+  "plan": {
+    "exit": 0,
+    "lane": "B",
+    "case": "settings-controls",
+    "runner": "macos-15-intel",
+    "requested_by": "extend-stabilization"
+  },
+  "dispatch": {
+    "exit": 1,
+    "refusal": "HOSTED_DISPATCH_SOURCE_NOT_SYNCHRONIZED",
+    "native_run_id": null,
+    "observed_dirty_path": "docs/stabilization/resource-journals/release28-wake1142-20261028-001.pending.jsonl",
+    "owner": "parent release lane",
+    "resource_process_observed": 16114
+  },
+  "preflight": {
+    "remote_matches_source": true,
+    "public_repository": true,
+    "open_ci_breaker_count": 0,
+    "active_hosted_guest_or_diagnostic_runs": 0,
+    "mini_builder_notice": "empty"
+  },
+  "cost": "Existing unchanged public standard runner is documented billed zero; paid work remains held. No job dispatched.",
+  "product_behavior": "Not tested; previous 28a failure cause unknown; no product pass or closure.",
+  "resource_evidence": "No native journals, report, ZIP or browser created by this attempt. Parent pending journal is not ours.",
+  "owned_processes": "Both helper commands terminal; no browser or other process owned.",
+  "next_action": "After parent release resource journal terminates and checkout becomes clean, reassess current source, CI artifact, capacity, notice and spend, then use normal admission; never bypass the refusal."
+}

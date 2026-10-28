@@ -1,6 +1,6 @@
 # Stabilization checklist
 
-Generated 2026-10-28 04:35 UTC from inventory.json, defect records, daily Store records, and the historical coverage audit. Inventory updated 2026-10-28T04:34:06.586578+00:00.
+Generated 2026-10-28 12:23 UTC from inventory.json, defect records, daily Store records, and the historical coverage audit. Inventory updated 2026-10-28T12:19:42.293318+00:00.
 
 ## Current truth
 
@@ -12,10 +12,10 @@ Generated 2026-10-28 04:35 UTC from inventory.json, defect records, daily Store 
 
 ## Current Store release observations
 
-Last observed **2026-10-27T07:30:23.392Z — 2026-10-27T07:30:33.363Z**; [daily Store record](reports/release-daily-20261027.json).
+Last observed **2026-10-28T11:48:20.427Z — 2026-10-28T11:48:39.492Z**; [daily Store record](reports/release-daily-20261028.json).
 **Public listing:** current rendered listing unverified; stale cached listing and historical review mail are not a current listing observation.
-**Authenticated dashboard:** Published - public; Published package 0.2.577; Draft package 0.2.577. Published view: This draft is published and available to the public. Draft view: This draft is unpublished.
-**Private review scope:** No pending/review version displayed in inspected exact-primary status Draft/Published and Package views. No global inference from mail absence/public listing.
+**Authenticated dashboard:** Published - public; bounded current facts only; Published package 0.2.577; Draft package 0.2.577. Published view: This draft is published and available to the public. Draft view: This draft is unpublished.
+**Private review scope:** No pending/reviewer action displayed in inspected exact-primary views; no inference from mail/publiclisting. Operator intervals8/5/5 violate cadence; wholelease notcompliant, Oct27 remains lastfullycompliant dailyrecord. Decisive later reads individuallyguarded.
 These observations are bounded to their recorded times and inspected dashboard views; mail absence does not establish pending state, and neither publication nor installation certifies product acceptance.
 
 ## Historical audit checkpoint (coverage-audit-20261001.json)
@@ -27,7 +27,7 @@ These observations are bounded to their recorded times and inspected dashboard v
 
 ## Inventory freshness review
 
-Since inventory source `e4b5e32b5e6936e302905ec327b3ab60f858c792`, **167 `src/` paths changed** through `28a5187d42b8e5688f3b18f8b10c8f2eac171c70`. A direct path-anchor comparison matched 25 and left 142 without an exact inventory anchor.
+Since inventory source `e4b5e32b5e6936e302905ec327b3ab60f858c792`, **167 `src/` paths changed** through `8592e61af7aa2796b98781431a8eaf37673126e3`. A direct path-anchor comparison matched 25 and left 142 without an exact inventory anchor.
 A direct anchor miss is only a census-review hint. Feature inventory anchors are not an exhaustive dependency graph, so it does not prove an omitted feature or behavior.
 
 ## Next test priorities

@@ -1,0 +1,43 @@
+{
+  "at": "2026-10-28T12:19:42.293318+00:00",
+  "task_id": "release_daily_20261028",
+  "status": "COMPLETE_UI_STOPPED",
+  "claim": "2026-10-28 America/Los_Angeles masterledger, sameautomation",
+  "primary_item": "hnfolienncfklkgmdjjmhhegglimlamg",
+  "published_version": "0.2.577",
+  "published_visibility": "public",
+  "draft_version": "0.2.577",
+  "draft_state": "explicitly unpublished",
+  "pending_review": "No pending/revieweraction displayed in inspected primary views; do not generalize mail absence",
+  "official_mail": "Existing authenticated publisher account; exact official sender/message October23 publication577/Public. Bounded query returned one result; recent absence never establishes pending state.",
+  "procedure": {
+    "whole_lease_compliant": false,
+    "overrun_API_counts": [8, 5, 5],
+    "decisive_reads": "Fresh independent original-provider chronology authenticates later Draft/Published/Package/mail reads inside <=4 API groups after healthy explicit checks.",
+    "resource": "172actualwatchreads,maxgap2.009s,no unsafe event, finalvalid0, holder0/watcher0. Resourcehealth does not erase operatorinterval failures.",
+    "last_fully_compliant_daily_record": "October27; this October28 observation is bounded, not whole-lease acceptance."
+  },
+  "actions": "No upload/submission/baselinechange/PublisherAPI/newOAuthgrant/release dispatch. Existinglogin recovered without credentialrotation; rawauth/provider/mail remainprivate.",
+  "eligibility": "Fullguest/nonadmin acceptance incomplete; no Storecandidateeligible. Paid/publicationholdnotwaived.",
+  "cleanup": "Ownedtabsclosed, originalownerVaultroot/GuestNewTabfocusrestored; Cuareset. ActoroverwroteownTOTPclipboardwithnonsecretURL; priorclipboardnotrestored.",
+  "private_actor_sha256": "08a87e76cf5176d85b9f62c9ca81bb163e5b3e98f90f0c0c7bade6b795181e95",
+  "private_peer_sha256": "79b5d52e9517544d1941b328690d8b4b2ee5f027e662063b48e4c9ee057fd8cd",
+  "peer": "docs/stabilization/reports/release28-peer-20261028.json",
+  "schema": 1,
+  "observation_quality": "BOUNDED_CURRENT_FACTS_WITH_OPERATOR_PROCEDURE_FAILURE; not wholelease compliance",
+  "current_private_observation": {
+    "at_start": "2026-10-28T11:48:20.427Z",
+    "at_end": "2026-10-28T11:48:39.492Z",
+    "time_basis": "Resource-check bracket around decisive original Draft/Published/Package reads, authenticated in peer provider timeline",
+    "publisher": "Matrx",
+    "item_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "published_version": "0.2.577",
+    "draft_version": "0.2.577",
+    "overall_status": "Published - public; bounded current facts only",
+    "draft_status": "This draft is unpublished.",
+    "published_status": "This draft is published and available to the public.",
+    "pending_version": null,
+    "pending_scope": "No pending/reviewer action displayed in inspected exact-primary views; no inference from mail/publiclisting. Operator intervals8/5/5 violate cadence; wholelease notcompliant, Oct27 remains lastfullycompliant dailyrecord. Decisive later reads individuallyguarded.",
+    "rejection_or_reviewer_action": "None displayed in inspected views, bounded scope."
+  }
+}

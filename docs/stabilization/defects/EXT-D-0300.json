@@ -34,7 +34,7 @@
     "docs/stabilization/reports/failure-capture-source-verification-20261027.json",
     "docs/stabilization/reports/failure-capture-source-peer-20261027.json"
   ],
-  "next_action": "Use automatic exact-source full/focused CI as actual final checks. Record any failure and fix after permitted admission; once green and machine notice permits long work, normal exact-source original Settings B first. Preserve guest/member/Store acceptance limits.",
+  "next_action": "Afteralllocaljournalscomplete integrate/pushrecords, obtain authorizedexact-currentmainCItestartifact through existingstandardunpaidCI path ifdocs-onlyCIhasnoartifact; no fabricatedreleasecontext. Rechecksource/spend/capacity andnormalSettingsBhelper only. No directhostedfallback to source refusal.",
   "transition_history": [
     {
       "at": "2026-10-27T19:40:18.049879+00:00",
@@ -223,7 +223,7 @@
     }
   },
   "reload_reopen_diagnostic": {
-    "state": "SOURCE_PRESERVED_STATIC_REVIEW_PASS_FINAL_GATES_AND_NATIVE_PENDING",
+    "state": "EXACT859_SOURCE_CI_GREEN_NATIVE_PENDING",
     "owner_lane": "/root",
     "native_cause": "UNKNOWN; choice_settings_reopen callback includes actual open and mode section/read/compare",
     "diagnosis": "docs/stabilization/reports/settings-reopen-diagnosis-20261028.json",
@@ -241,7 +241,14 @@
       "tests/browser/settings-guest-extension-rechecks.mjs": "a0a2bd1beb4020f83c9977ebbea8a9b77d30d3cc072f03364160c512ace853e2",
       "tests/browser/settings-full-extension-rechecks.test.mjs": "fc09a55d9e6e10a98342037d1a351af53701c8b01b7b3138bcc8098a0e3531f9"
     },
-    "verification": "Qualified semantic RED2; final GREEN/compile/lint and new sentinel guard unexecuted under build notice; static checks only.",
-    "handoff": "docs/stabilization/reports/reopen-diagnostic-source-preservation-20261028.json"
+    "verification": "Exact859 fullCI40647207940/focused40647207929 succeeded; focused1280tests1279pass1skip0fail, actualcompile/lint. Prior14b/c060lint failures supersededbycontributor859import-sort fix, no permanentblock.",
+    "handoff": "docs/stabilization/reports/reopen-diagnostic-source-preservation-20261028.json",
+    "latest_native_admission": {
+      "state": "REFUSED_NO_JOB",
+      "source": "8592e61af7aa2796b98781431a8eaf37673126e3",
+      "code": "HOSTED_DISPATCH_SOURCE_NOT_SYNCHRONIZED",
+      "cause": "Parent started daily localreleaselease before native-first ordering; untrackedownedpendingjournal. No sourceguardbypass/removal/alternate route/retry.",
+      "report": "docs/stabilization/reports/settings859-admission-20261028.json"
+    }
   }
 }

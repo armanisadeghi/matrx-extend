@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-28 04:35 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-28T04:34:06.586578+00:00. 207 features · 833 cases · 1422 controls · 301 linked defect records.
+Generated 2026-10-28 12:23 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-28T12:19:42.293318+00:00. 207 features · 833 cases · 1422 controls · 301 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -59,10 +59,10 @@ Role counts include only case-role combinations listed in each case. The all-rol
 
 ## Current Store release observations
 
-Last observed **2026-10-27T07:30:23.392Z — 2026-10-27T07:30:33.363Z**; [daily Store record](reports/release-daily-20261027.json).
+Last observed **2026-10-28T11:48:20.427Z — 2026-10-28T11:48:39.492Z**; [daily Store record](reports/release-daily-20261028.json).
 **Public listing:** current rendered listing unverified; stale cached listing and historical review mail are not a current listing observation.
-**Authenticated dashboard:** Published - public; Published package 0.2.577; Draft package 0.2.577. Published view: This draft is published and available to the public. Draft view: This draft is unpublished.
-**Private review scope:** No pending/review version displayed in inspected exact-primary status Draft/Published and Package views. No global inference from mail absence/public listing.
+**Authenticated dashboard:** Published - public; bounded current facts only; Published package 0.2.577; Draft package 0.2.577. Published view: This draft is published and available to the public. Draft view: This draft is unpublished.
+**Private review scope:** No pending/reviewer action displayed in inspected exact-primary views; no inference from mail/publiclisting. Operator intervals8/5/5 violate cadence; wholelease notcompliant, Oct27 remains lastfullycompliant dailyrecord. Decisive later reads individuallyguarded.
 These observations are bounded to their recorded times and inspected dashboard views; mail absence does not establish pending state, and neither publication nor installation certifies product acceptance.
 
 ## Historical audit checkpoint (coverage-audit-20261001.json)

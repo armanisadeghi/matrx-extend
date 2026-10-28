@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-28T04:34:06.586578+00:00",
+  "updated_at": "2026-10-28T12:19:42.293318+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -56429,6 +56429,29 @@
               ],
               "verified": "Fresh installed guest transport two replies; independent manager Off→On/new conversation exactH1+Capture two replies and idle controls; guest no-login preserved.",
               "limits": "Not full T10 or D273 closure. Primary final button state unknown; no wire is_new/fingerprint/unpredictable marker proof. Query result row0 is separate confirmed renderer D276, actualtooltotal1."
+            },
+            {
+              "at": "2026-10-28T12:19:42.293318+00:00",
+              "mode": "guest",
+              "status": "bounded-pass",
+              "extension_version": "0.2.577",
+              "install": "actual ChromeWebStore-installed primary item in designatedGuestprofile",
+              "first": "READY_20261028 actualassistant content+terminalSend/noStop",
+              "followup": "FOLLOWUP_20261028 samevisibleconversation actualcontent+terminalSend/noStop",
+              "server_advertised_sha": "e71ed7a957303bad068a2e35f0a559440ec98d07",
+              "server_limit": "health/versionbefore+afterbracket, not streamidentity",
+              "resource_invalid": false,
+              "full_case_pass": false,
+              "evidence": [
+                "docs/stabilization/reports/owner859-store577-20261028.json",
+                "docs/stabilization/reports/owner859-guest-peer-20261028.json"
+              ],
+              "unverified": [
+                "Wireconversation/serveridentity",
+                "Unpredictablepagegrounding",
+                "Reload/newconversationthirdturn/NewChatreset",
+                "WholeChat/currentDEV/candidateacceptance"
+              ]
             }
           ],
           "native_store_observations": [
