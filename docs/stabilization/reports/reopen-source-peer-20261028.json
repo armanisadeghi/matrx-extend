@@ -1,0 +1,65 @@
+{
+  "schema": 1,
+  "task_id": "reopen_diagnostic_source_peer",
+  "at": "2026-10-28T04:55:58.517050+00:00",
+  "review_base": "40756dda7b57899332bb3a46659618b87b24f6e9",
+  "source_hashes": {
+    "tests/browser/settings-full-extension-rechecks.mjs": "878aa4f53409789e44762b28410e50039613073c0fa12ffaad2d879825655df3",
+    "tests/browser/settings-guest-extension-rechecks.mjs": "faaa004e1439f9c40c887ddcb23b699b254eb80b8acc78e43765d6d8373eca35",
+    "tests/browser/settings-full-extension-rechecks.test.mjs": "8a9d161526a146c8aea2285e88708a1aa0b9989637ae0388a8eebb9d14d1378b"
+  },
+  "frozen_frame": {
+    "path": "/Volumes/Samsung2TB/code/matrx-extend/.output/stabilization-checkpoints/wake0439/reopen-green-pre.json",
+    "sha256": "8aa5f81b7150fc62a3e0b20087ddca5f70da42a3de11626010869634f1487d62",
+    "entries": 14,
+    "mismatches": []
+  },
+  "native_retained_original": {
+    "path": "/Volumes/Samsung2TB/code/matrx-extend/.output/stabilization-checkpoints/wake0212/capture-fixed-native/original/matrx-extend/matrx-extend/test-results/settings-local-controls-acceptance.json",
+    "sha256": "b608b02e331241b8b6f8edae9a16c7d6e7fbdb8d388f5758f43dafc1e9713ebf",
+    "scope": "Read retained native JSON for stage context; no fresh browser/official ZIP download performed by this reviewer. Existing official artifact authentication is separately recorded by prior peer.",
+    "status": "fail",
+    "T04_first_stage": "choice_settings_reopen",
+    "T04_restoration_stage": "restore_recovered_settings"
+  },
+  "A": {
+    "verdict": "PARTIAL_SOURCE_CONTRACT; NATIVE_CAUSE_UNVERIFIED",
+    "accepted": [
+      "Source captures compound Settings-open/mode-section/read/compare branch using existing same-sample operands and onStep callback.",
+      "Choice, initial first-restoration and recovered Settings-open diagnostics are separately projected through Theme rewrap/final criteria.",
+      "Initial T10 baseline catch retains the same typed diagnostic.",
+      "No new browser IO/retry/deadline/comparator/baseline/control-order changes found in reviewed diff."
+    ],
+    "missing": [
+      "Typed diagnostic still disappears for restoration-baseline and restoration-management-reload sibling failures."
+    ],
+    "limits": [
+      "Native40631696825 predates source change; current failure suboperation and application cause remain UNKNOWN.",
+      "Representative Theme persistence fixture proves only a discriminating source branch; not actual production or native causal proof.",
+      "GREEN command is owned by implementation lane and not yet independently reviewed as terminal/gate evidence."
+    ]
+  },
+  "B": {
+    "verdict": "REOPEN",
+    "findings": [
+      {
+        "id": "B1",
+        "severity": "Important",
+        "file": "tests/browser/settings-guest-extension-rechecks.mjs",
+        "line": 381,
+        "title": "Restoration sibling failures discard the new same-sample diagnostic",
+        "evidence": "Outer restore catch saves reopenDiagnostic(error) only when failureDetailStage starts restore_recovered_. firstRestorationReopen is assigned solely by initial restore_settings/section/read innercatch. A safeSettingsReopenDiagnostic thrown by restoreBaseline at restore_baseline_select, or by restartAndRead at restore_settings_reopen after management replacement, is therefore omitted from all three final diagnostic slots.",
+        "required": "Preserve the first original restoration reopen/mode diagnostic across these sibling paths without overwriting an earlier first-restoration receipt; retain recovery separately. Add actual-path guards for baseline-restore and post-restoration-replacement failures, all still failing with unchanged operation counts and no raw leakage. No new browser reads."
+      }
+    ],
+    "accepted": [
+      "Canonical classifier and existing finite mode comparison receipt reused; no duplicate pointer geometry projector.",
+      "New final projector admits closed enums and reprojects comparison fields; malformed/getter/frozen/primitive cases cannot expose arbitrary values in inspected paths.",
+      "Aggregate error messages and verdict logic remain generic/failing, rather than converting failures to passes.",
+      "Only three reviewed test-harness paths differ; production, workflow, permissions, source/resource/spend policy untouched."
+    ],
+    "tests_executed_by_reviewer": false,
+    "commands": "Read-only git diff/source reads/hash checks only; no heavy tests/UI/dispatch."
+  },
+  "next": "Parent adjudicates B1 and routes a bounded source fix; fresh review/final guarded evidence remain required before exact-source native dispatch."
+}

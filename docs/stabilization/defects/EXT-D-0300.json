@@ -224,11 +224,15 @@
   },
   "reload_reopen_diagnostic": {
     "state": "SOURCE_REPORTING_GAP_PROVEN; IMPLEMENTATION_AND_NATIVE_PENDING",
-    "owner_lane": "/root/reopen_diagnostic_fix",
+    "owner_lane": "/root/reopen_restoration_fix",
     "native_cause": "UNKNOWN; choice_settings_reopen callback includes actual open and mode section/read/compare",
     "diagnosis": "docs/stabilization/reports/settings-reopen-diagnosis-20261028.json",
     "plan_review": "docs/stabilization/reports/reopen-plan-peer-20261028.json",
     "hypothesis": "Untested native hypothesis: representative real Theme full-state persistence changes shared frozen mode footprint; existing fixture misses shared storage. No appcause proof.",
-    "limits": "Reuse existing finitecode/onStep/same-samplecomparison, distinguish choice/firstrestore/recovery; defer warmrunCase/newgeometry. No operation count/deadline/comparator/verdict changes."
+    "limits": "Reuse existing finitecode/onStep/same-samplecomparison, distinguish choice/firstrestore/recovery; defer warmrunCase/newgeometry. No operation count/deadline/comparator/verdict changes.",
+    "model": "gpt-6.1-terra/medium",
+    "source_review": "docs/stabilization/reports/reopen-source-peer-20261028.json",
+    "owner_repair_decision": "docs/stabilization/reports/reopen-owner-repair-decision-20261028.json",
+    "review_state": "B1 Important restoration-preservation gap remains; first worker terminal, fresh bounded executor, no final passing source/native gates."
   }
 }

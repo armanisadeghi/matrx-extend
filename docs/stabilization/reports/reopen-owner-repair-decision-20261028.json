@@ -1,0 +1,15 @@
+{
+  "at": "2026-10-28T05:05:32.461633+00:00",
+  "target": "One existing B1 finding; do not reset finding/correction history by rotating seat.",
+  "finding": "First restoration diagnostic lost for baseline-restorer and final restoration-reload failures, while recovery can overwrite unknown first failure.",
+  "changed_decision": "Replace ordinal callback-count fault injections with semantic lifecycle triggers, and assert the intended fault was injected and original failed stage was reached BEFORE asserting newly retained fields. No further ordinal tuning.",
+  "implementation_contract": [
+    "Capture first original restoration failure once across all restoration stages, including a null/unavailable receipt; preserve closed original-stage context.",
+    "Keep recovery failure distinct; do not replace the first failure with later diagnostic.",
+    "Use actual source full-recheck paths for baseline restore and final restoration reload; positive control and original generic verdict/action/read/reload counts remain unchanged.",
+    "Existing finite projection/onStep/same-sample comparison only. No new reads, retries, timeout/comparator/baseline/control changes."
+  ],
+  "old_intermediates": "Retain original RED and GREEN attempts with exact qualification limits; firstB1 counter miss is not a qualifying RED. Latest73019 result pending.",
+  "next_executor": "Fresh bounded Terra medium after prior owner allprocessesterminal; oldpreparedpatch is a lead, not approvedproof.",
+  "review": "Independent Sol verifies B1 implementation and original + adjacent actual-path guards; nativecause staysunknown."
+}
