@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-28T12:19:42.293318+00:00",
+  "updated_at": "2026-10-28T15:55:00Z",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -27951,11 +27951,11 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": 40691705584,
-              "source_sha": "5f356e968df6cc71d7af92886d453562fbd8403c",
+              "run_id": 40718090999,
+              "source_sha": "1130f8ecce2c294750748c8705224dee9d346bea",
               "build_version": "0.2.630",
-              "development_ci_run_id": 40688525855,
-              "development_artifact_id": 12817405280,
+              "development_ci_run_id": 40715497456,
+              "development_artifact_id": 12829191435,
               "resource_valid": true,
               "full_case_pass": false,
               "passed_subtargets": [
@@ -27969,13 +27969,12 @@
                 "populatedSEO/Schema/video",
                 "member/admin/otherwidths/Store",
                 "backendSHA/actualhostedprofilepath",
-                "latesthead afterfrozen5f"
+                "source changes after frozen1130 observation"
               ],
               "evidence": [
-                "docs/stabilization/reports/seo5f-native-20261028.json",
-                "docs/stabilization/reports/seo5f-peer-20261028.json"
+                "docs/stabilization/reports/seo1130-native-20261028.json"
               ],
-              "detail": "Original officialZIP/all8members and normalverify-scrape independently authenticated. All3 resourcefinalsvalid0;3CPU_PENDING/1RECOVERED. Actual narrow360px Browser141.0.7390.37 on owned title-onlylocalhost guest fixture. Current5f no-signal/empty subset only; nofullT08/defectclosure/release. Remoteprofiledeletionunknown."
+              "detail": "Official exact-source CI/native ZIPs and all8members authenticated by independent peer; normal verify-scrape actual0/validtrue. All3 resourcefinalsvalid0; zeroCPU_PENDING/recovery. Actual Chrome141, narrow360px owned title-only localhost guest fixture. Same bounded warm no-signal SEO/empty Schema and clipboard invariance subset only; fullT08 remainspartial. --use-mock-keychain OS credential-store flag disclosed; no independent raw clipboard hash recomputation/remote profile deletion/settled identity census. No Settings/Store/closure/release credit."
             },
             "member": {
               "status": "partial",
@@ -28425,6 +28424,37 @@
               },
               "superseded_at": "2026-10-28T04:03:45.460619+00:00",
               "reason": "Exact906 native retest evidence; preserve previous frozen observations, no fullcase pass."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": 40691705584,
+                "source_sha": "5f356e968df6cc71d7af92886d453562fbd8403c",
+                "build_version": "0.2.630",
+                "development_ci_run_id": 40688525855,
+                "development_artifact_id": 12817405280,
+                "resource_valid": true,
+                "full_case_pass": false,
+                "passed_subtargets": [
+                  "warm guest no-signal SEO title/description/groups",
+                  "warm empty Schema metadata/optional groups",
+                  "actual clipboard capture identity/full-payload digest unchanged aftereachpane"
+                ],
+                "unverified": [
+                  "remaining4panes currentbuild",
+                  "fullreload",
+                  "populatedSEO/Schema/video",
+                  "member/admin/otherwidths/Store",
+                  "backendSHA/actualhostedprofilepath",
+                  "latesthead afterfrozen5f"
+                ],
+                "evidence": [
+                  "docs/stabilization/reports/seo5f-native-20261028.json",
+                  "docs/stabilization/reports/seo5f-peer-20261028.json"
+                ],
+                "detail": "Original officialZIP/all8members and normalverify-scrape independently authenticated. All3 resourcefinalsvalid0;3CPU_PENDING/1RECOVERED. Actual narrow360px Browser141.0.7390.37 on owned title-onlylocalhost guest fixture. Current5f no-signal/empty subset only; nofullT08/defectclosure/release. Remoteprofiledeletionunknown."
+              }
             }
           ],
           "attempt_history": [

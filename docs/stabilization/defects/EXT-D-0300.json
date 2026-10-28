@@ -285,7 +285,7 @@
     }
   },
   "theme_mode_materialization_repair": {
-    "state": "F886_FRESH_CI_GREEN_NATIVE_ARGUMENT_REFUSED_LATEST_SOURCE_PENDING",
+    "state": "SOURCE_CI_GREEN_NATIVE_SETTINGS_RESOURCE_INVALID_ACCEPTANCE_OPEN",
     "owner": "/root",
     "implementation_lane": "/root/theme1308_repair",
     "independent_lane": "/root/theme1308_source_review",
@@ -296,15 +296,28 @@
     "source_cause": "Actual production first tested Theme persistence writes the retired local mode default; unchanged comparator separately rejects valid container materialization without any permission field. Probe singleton was initialized; no native first-writer proof.",
     "repair": "Retire Settings-only mode field through v7 migration/persistence, preserve v6 agent/unrelated data and Chat/Pilot explicit Ask carry-over. Compare immutable raw footprints permitting only valid both-mode-field-absent container metadata differences; actual permission changes/malformed/extra fields remain failures. Reuse authoritative predicate in receipt, retaining rawserialization.",
     "verification": "58 final Vitest; final MJS1282total1271pass11skip0fail; compile0; lint3509files1039warnings0errors; sourceRED and meaningful migration/writer/observer mutants. R1 actual observer matrix gap corrected and independently accepted. Refused independent directcommand retained, no bypass/tests.",
-    "limits": "Source checks use installed dependencies preceding contributor lock refresh; exact-main fresh-install CI and actual original+surrounding native full-reload acceptance pending. No product closure/Store/release credit.",
+    "limits": "Fresh-install exact-source CI succeeded on9a and1130. Actual Settings9a guest resource-invalid exit3 before retained criteria; all19 cases unverified. No original+surrounding full-reload acceptance, product cause/closure/Store/release credit. Independent SEO1130 bounded pass is unrelated to Settings acceptance.",
     "fresh_ci": {
-      "run_id": 40703747420,
-      "source_sha": "f886a00137ecd9c69e6ee7f71f42f1e5ba2cfaee",
+      "run_id": 40715497456,
+      "source_sha": "1130f8ecce2c294750748c8705224dee9d346bea",
       "conclusion": "success",
-      "artifact_id": 12824595119,
-      "digest": "sha256:e9149c9aeace5eeb624a870bec385a7a0ed58fb737ff7b4ed7b4cc0f4334a88d",
-      "limit": "Official CI/artifact metadata only; no local import/native adoption. Later e375 skills sync and ae64147a0 Chat-v2 dependency refresh require a new exact-source artifact; dependency drift is material."
+      "artifact_id": 12829191435,
+      "digest": "sha256:01766f1302d24dd6a143bc916812f5e6c19f4e6bb8a32a3c632d1ccd1adb76d1",
+      "limit": "Exact-source fresh-install CI plus normal import/promotion; CI does not supply native Settings credit."
     },
-    "admission_refusal": "docs/stabilization/reports/theme-native-admission-20261028.json"
+    "admission_refusal": "docs/stabilization/reports/theme-native-admission-20261028.json",
+    "native_retest": {
+      "run_id": 40714335249,
+      "report": "docs/stabilization/reports/settings9a-resource-20261028.json",
+      "source_sha": "9a8f715c88bf578ffa5f37ce2bc9bda0d5c9b345",
+      "resource_invalid": true,
+      "exit_code": 3,
+      "criterion_passes": 0,
+      "cases_unverified": 19,
+      "reason": "RESOURCE_CPU_CONFIRMATION_EXPIRED",
+      "last_checkpoint": "case_start EXT-F-1003-T04 sequence23; terminal:false",
+      "cleanup": "Job terminal; exact guest graceful child exit, restoration and profile deletion unverified."
+    },
+    "next_action": "Inspect retained owned/unowned host CPU attribution before future healthy normal admission; do not infer product cause, repeat/relocate invalid job or change thresholds/deadlines. Retest original Theme and adjacent Settings warm/full-reload cases on a freshly eligible exact-source artifact. D300 stays IN-FIX."
   }
 }
