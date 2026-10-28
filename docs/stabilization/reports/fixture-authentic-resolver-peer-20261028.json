@@ -1,0 +1,69 @@
+{
+  "task_id": "fixture_authentic_resolver_peer",
+  "at": "2026-10-28T02:57:57.986114+00:00",
+  "status": "SOURCE_ACCEPTED_FINAL_GATES_AND_NATIVE_PENDING",
+  "scope": "Fresh independent read-only D300 current source review. No suites, heavy jobs, UI, CI, builds, install, auth, source edits, commits or children. Only this private report written.",
+  "prior_findings": [
+    {
+      "id": "authentic-primary-unwrapping",
+      "status": "ADDRESSED",
+      "evidence": "settings-probe-cleanup owns cleanupOriginals WeakMap; only constructor-created SettingsCleanupFailure wrappers map to exact originals. Mutable primary identity is returned unchanged even with its own misleading cause or throwing cause getter. Frozen/primitive wrappers resolve via private identity, never safeCleanupFailed/cause/prototype inference. Both serializeGuestReloadFailure and full safeUnexpectedError call canonical resolver. Local candidate avoids parameter assignment."
+    },
+    {
+      "id": "persist-primary-operation-diagnostic",
+      "status": "ADDRESSED",
+      "evidence": "Actual warm runCase/full recheck retain operationFailure via canonical safeUnexpectedError beside finite fixture receipt, preserve genuine primary throw and cleanup status. New actual producer/controller corpus includes mutable own cause with misleading finite code, throwing cause getter, frozen own cause and primitive; asserts T40 original code/observation and T67 original code/stage/kind plus fixture phase, no CANARY."
+    },
+    {
+      "id": "post-opaque-restore-ui-proof",
+      "status": "ADDRESSED",
+      "evidence": "Lifecycle awaits onRestored after restore, canonical fresh document reload and exact persisted storage verification, before restoredAfterReload/disposal. Actual T40/T67/T37 and forced-absent callbacks check original UI/persisted baseline. These source files equal GREEN3 hashes."
+    },
+    {
+      "id": "snapshot-retention-final-truth",
+      "status": "ADDRESSED",
+      "evidence": "Separate first integrity phase and final cleanupPhase; read-only inspect projects presence/valid ownership/retention or null unknown after failures. Missing/foreign/corrupt do not claim retained original; successful later cleanup updates final facts. Source equals GREEN3 hash."
+    }
+  ],
+  "verdict_A": "PARTIAL: source meets bounded fixture lifecycle and original-primary diagnostic contracts; original native late T10 and surrounding full-extension acceptance remain unverified. No product/fullcase/closure claim.",
+  "verdict_B": "PASS_SOURCE_ONLY: no Critical/Important source gap found in current 11-file unit; canonical resolver repair and actual dependency binding accepted. Final frozen focused/compile/lint not run or certified.",
+  "findings": [],
+  "dependency_binding": "New verifyBrandedPrimaryDiagnostics uses actual withExactSettingsFixture producer with browser expression executed against external storage double; extracted actual runCase receives actual imported fullRechecks.safeUnexpectedError, and actual imported runFullExtensionRecheck runs same marked failure. Mutated full module resolves relative imports to real canonical dependencies. Canonical resolver test imports actual cleanup producer/resolver/serializer and checks identity plus public heuristic/constant negative candidates. Test/mutant execution is not certified by inspection.",
+  "retained_source_contracts": [
+    "Browser-only raw snapshot/storage capture/restore/compare; CDP has only serialized helper, fixed key and opaque backup/owner identifiers; finite errors/receipts do not carry raw Settings. Exact absence/string/Chrome-JSON preservation and owned sealed backup validation remain unchanged.",
+    "Canonical reload requires finite old/new different timeOrigin and complete readyState under existing wait/deadline; original post-restore UI/persistence proof remains before disposal.",
+    "Actual T40/T67/T37 caller wiring, dynamic full-reload getPanel, warm T28/T40/T67/snapshot/T37 order remain. Private authentic fixture brand stops later mutation after recording primary fail/criterion/case_end; inner guest/full recheck/controlled callback and terminal publisher source remain intact.",
+    "Ordinary errors/unmarked cleanup flags continue. Immutable T10 comparator/footprint/order/deadline unchanged by this four-path delta. No production/policy/workflow edits in reviewed unit."
+  ],
+  "freeze": {
+    "manifest": ".output/stabilization-checkpoints/wake0212/fixture-fresh-fix-freeze.sha256",
+    "manifest_sha256": "2f4f62adc187c84288829f53bedadd957c5c91e4a10b3aff59a896561586a91a",
+    "all_11_match": true,
+    "unchanged_from_green3_count": 7,
+    "changed_from_green3": [
+      "tests/browser/settings-probe-cleanup.mjs",
+      "tests/browser/settings-probe-cleanup.test.mjs",
+      "tests/browser/settings-full-extension-rechecks.mjs",
+      "tests/browser/settings-reload-boundary.test.mjs"
+    ]
+  },
+  "source_hashes": {
+    "tests/browser/settings-scrape-mode-baseline.mjs": "40219e988c568f6bde5dbcc724f7e7b84608fbd61b9cf8ec838553f0ae92a785",
+    "tests/browser/settings-probe-cleanup.mjs": "ee948302c98ee4f120ae9fb862a100afbfd2c30f13434054e7715c19729bb666",
+    "tests/browser/settings-probe-cleanup.test.mjs": "bafde7b782bbdd51231737c8974a58685713f79ecd91c18b2e63a8023ccb643a",
+    "tests/browser/settings-guest-scrape-controls.mjs": "a8a2193689a0ba7803a3fbd4d29112a14a6a9c62bf5149533c577c565b7ff782",
+    "tests/browser/settings-local-controls-acceptance.mjs": "5f71444150bab5cbcb3ca87160efa9e9612815b0895c739e1bdae8e68a60bf78",
+    "tests/browser/settings-full-extension-rechecks.mjs": "96c9c5b2b9dc66839f7a91faf5c8aaa6e4b01754151efec89c51df35cd7fb5eb",
+    "tests/browser/settings-guest-scrape-controls.test.mjs": "f136c5c1bc2f6e56e8739335a20b300d66b9fd7e77b7bbb8310a14d74fcfd1e5",
+    "tests/browser/settings-full-extension-rechecks.test.mjs": "33b7f697158772511d41220d8b258cd80f798ad152fe14b9e877123caf477250",
+    "tests/browser/settings-reload-boundary.test.mjs": "552887d75a8015edb754092d54d68d7019d5664c8486df3349363f95d3bf2dde",
+    "tests/browser/settings-guest-preference-batch.test.mjs": "8d269a5083d33c65dda474a2b83d3debedb166f361de1b39e1945a19446fc416",
+    "tests/browser/settings-progress-checkpoint.test.mjs": "051641ab00c9054dc2596ce3362f956d786536c569ddadc5ea446d74f34cec6a"
+  },
+  "limits": [
+    "No suite or mutation executed in reviewer lane. GREEN3 is prior actor evidence for intermediate source only; current final focused/compile/lint remain pending.",
+    "Outer actual suffix guard sets DEV_BUILD_RECEIPT undefined: source/receipt/tree branch unexecuted. Physical native harness teardown/profile/process deletion not proved by callback counter.",
+    "No continuous freeze claim, sourceCI/native/case/Store acceptance or D299/D300 closure. Native original same-sample late initial/final T10 plus surrounding full-extension rechecks remain required."
+  ],
+  "next_action": "Root may authorize one normal admitted final current11 frozen focused/compile/lint. If valid, push and normal actual hosted sourceCI plus independent original/adjacent native retest. No bypass or finalgate/native acceptance granted by this report."
+}

@@ -1,0 +1,197 @@
+{
+  "task_id": "fixture_fresh_fix",
+  "status": "DONE_SOURCE_GUARDS_GATES_PASS_NATIVE_PENDING",
+  "changes": [
+    "module-owned WeakMap cleanup-wrapper resolver used by both canonical serializers; no public flag/cause heuristic",
+    "actual producer/warm+full controller regression covers mutable own cause, throwing getter, frozen own cause and primitive",
+    "in-memory projector heuristic and constant mutations plus canonical resolver constant/heuristic mutations",
+    "queued noParameterAssign corrected using local error candidate"
+  ],
+  "source_hashes": {
+    "tests/browser/settings-scrape-mode-baseline.mjs": "40219e988c568f6bde5dbcc724f7e7b84608fbd61b9cf8ec838553f0ae92a785",
+    "tests/browser/settings-probe-cleanup.mjs": "ee948302c98ee4f120ae9fb862a100afbfd2c30f13434054e7715c19729bb666",
+    "tests/browser/settings-probe-cleanup.test.mjs": "bafde7b782bbdd51231737c8974a58685713f79ecd91c18b2e63a8023ccb643a",
+    "tests/browser/settings-guest-scrape-controls.mjs": "a8a2193689a0ba7803a3fbd4d29112a14a6a9c62bf5149533c577c565b7ff782",
+    "tests/browser/settings-local-controls-acceptance.mjs": "5f71444150bab5cbcb3ca87160efa9e9612815b0895c739e1bdae8e68a60bf78",
+    "tests/browser/settings-full-extension-rechecks.mjs": "96c9c5b2b9dc66839f7a91faf5c8aaa6e4b01754151efec89c51df35cd7fb5eb",
+    "tests/browser/settings-guest-scrape-controls.test.mjs": "f136c5c1bc2f6e56e8739335a20b300d66b9fd7e77b7bbb8310a14d74fcfd1e5",
+    "tests/browser/settings-full-extension-rechecks.test.mjs": "33b7f697158772511d41220d8b258cd80f798ad152fe14b9e877123caf477250",
+    "tests/browser/settings-reload-boundary.test.mjs": "552887d75a8015edb754092d54d68d7019d5664c8486df3349363f95d3bf2dde",
+    "tests/browser/settings-guest-preference-batch.test.mjs": "8d269a5083d33c65dda474a2b83d3debedb166f361de1b39e1945a19446fc416",
+    "tests/browser/settings-progress-checkpoint.test.mjs": "051641ab00c9054dc2596ce3362f956d786536c569ddadc5ea446d74f34cec6a"
+  },
+  "static": {
+    "biome_scoped_exit": 0,
+    "warnings": 7,
+    "git_diff_check_exit": 0
+  },
+  "guards": {
+    "executed": true,
+    "actual_producer_controllers": "fixturePrimaryFailure actual lifecycle -> extracted actual runCase and canonical full recheck -> canonical safeUnexpectedError",
+    "corpus": [
+      "mutable own misleading cause EPIPE/T40",
+      "mutable throwing cause getter EPIPE/T40",
+      "mutable own misleading cause ETIMEDOUT/T67 choice_record/case/choice_wait",
+      "frozen own misleading cause exact primary/T67",
+      "primitive exact original cause/T40 finite fallback"
+    ],
+    "canonical_serializer": "mutable own cause keeps choice_extension_reload; frozen own cause keeps restore_extension_reload",
+    "negative_proof": [
+      "canonical resolver constant return rejected",
+      "canonical resolver structural safeCleanupFailed/cause heuristic rejected",
+      "in-memory actual projector structural unwrap mutant rejected by mutable-primary code assertion",
+      "in-memory actual projector constant candidate rejected by same actual-controller code assertion"
+    ],
+    "proof_limit": "Named tests passed their outer assert.rejects controls; raw child-mutant transcript/exits not individually emitted or claimed."
+  },
+  "limits": [
+    "receipt/tree suffix branch remains unexecuted by current source guard; DEV_BUILD_RECEIPT undefined",
+    "external callback teardown counter does not prove native teardown",
+    "native original and surrounding acceptance remain required; no full-case/Store closure"
+  ],
+  "processes": {
+    "tool_sessions": [
+      {
+        "id": 9166,
+        "exit_code": 0
+      },
+      {
+        "id": 98490,
+        "exit_code": 0
+      },
+      {
+        "id": 93798,
+        "exit_code": 0
+      }
+    ],
+    "all_owned_terminal": true,
+    "owned_running": [],
+    "native_profile_created": false,
+    "authority": "Three exec child terminal returns plus completed final guard journals after owned process cleanup; no native teardown claim."
+  },
+  "commits": [],
+  "at": "2026-10-28T03:05:28.428213+00:00",
+  "source_freeze": {
+    "manifest": ".output/stabilization-checkpoints/wake0212/fixture-fresh-fix-freeze.sha256",
+    "pre_and_post_each_gate_match": true,
+    "lock_sha256": "a509ae55fa034a4663c35c931f8cd067d4e02c3ee25a22db668600e553bd65d5",
+    "post_hashes": {
+      "tests/browser/settings-scrape-mode-baseline.mjs": "40219e988c568f6bde5dbcc724f7e7b84608fbd61b9cf8ec838553f0ae92a785",
+      "tests/browser/settings-probe-cleanup.mjs": "ee948302c98ee4f120ae9fb862a100afbfd2c30f13434054e7715c19729bb666",
+      "tests/browser/settings-probe-cleanup.test.mjs": "bafde7b782bbdd51231737c8974a58685713f79ecd91c18b2e63a8023ccb643a",
+      "tests/browser/settings-guest-scrape-controls.mjs": "a8a2193689a0ba7803a3fbd4d29112a14a6a9c62bf5149533c577c565b7ff782",
+      "tests/browser/settings-local-controls-acceptance.mjs": "5f71444150bab5cbcb3ca87160efa9e9612815b0895c739e1bdae8e68a60bf78",
+      "tests/browser/settings-full-extension-rechecks.mjs": "96c9c5b2b9dc66839f7a91faf5c8aaa6e4b01754151efec89c51df35cd7fb5eb",
+      "tests/browser/settings-guest-scrape-controls.test.mjs": "f136c5c1bc2f6e56e8739335a20b300d66b9fd7e77b7bbb8310a14d74fcfd1e5",
+      "tests/browser/settings-full-extension-rechecks.test.mjs": "33b7f697158772511d41220d8b258cd80f798ad152fe14b9e877123caf477250",
+      "tests/browser/settings-reload-boundary.test.mjs": "552887d75a8015edb754092d54d68d7019d5664c8486df3349363f95d3bf2dde",
+      "tests/browser/settings-guest-preference-batch.test.mjs": "8d269a5083d33c65dda474a2b83d3debedb166f361de1b39e1945a19446fc416",
+      "tests/browser/settings-progress-checkpoint.test.mjs": "051641ab00c9054dc2596ce3362f956d786536c569ddadc5ea446d74f34cec6a"
+    }
+  },
+  "gates": [
+    {
+      "run_id": "d300-fixture-final-focused-20261028a",
+      "command": "pnpm test:focused-acceptance",
+      "journal": "docs/stabilization/resource-journals/d300-fixture-final-focused-20261028a.jsonl",
+      "journal_sha256": "a1160980f16ed030449b9761b1d97c9338f0583afd49932563980ef7ed61f1b2",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-28T03:02:08.601Z",
+        "runId": "d300-fixture-final-focused-20261028a",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "child": {
+        "schema": 1,
+        "at": "2026-10-28T03:02:08.549Z",
+        "runId": "d300-fixture-final-focused-20261028a",
+        "childExitCode": 0,
+        "childSignal": null,
+        "code": "RESOURCE_JOB_EXIT"
+      },
+      "log": ".output/stabilization-checkpoints/wake0212/fixture-final-focused.log",
+      "log_sha256": "6826604b3f234107f448882bd4daea5fce0c950df2669046a2a821fd74ec30c3",
+      "admission_at": "2026-10-28T02:59:38.822Z",
+      "counts": {
+        "tests": 1260,
+        "pass": 1249,
+        "fail": 0,
+        "skipped": 11
+      }
+    },
+    {
+      "run_id": "d300-fixture-final-compile-20261028a",
+      "command": "pnpm compile",
+      "journal": "docs/stabilization/resource-journals/d300-fixture-final-compile-20261028a.jsonl",
+      "journal_sha256": "7df66393799c184c9ef55b012ee4a01f237d4bb22bdee671356ae8f957058c3a",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-28T03:03:49.746Z",
+        "runId": "d300-fixture-final-compile-20261028a",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "child": {
+        "schema": 1,
+        "at": "2026-10-28T03:03:49.688Z",
+        "runId": "d300-fixture-final-compile-20261028a",
+        "childExitCode": 0,
+        "childSignal": null,
+        "code": "RESOURCE_JOB_EXIT"
+      },
+      "log": ".output/stabilization-checkpoints/wake0212/fixture-final-compile.log",
+      "log_sha256": "8f5aafdd67924a8b64965926dbe57ffa97e72efeed0866289820263dae142415",
+      "admission_at": "2026-10-28T03:03:47.460Z"
+    },
+    {
+      "run_id": "d300-fixture-final-lint-20261028a",
+      "command": "pnpm lint",
+      "journal": "docs/stabilization/resource-journals/d300-fixture-final-lint-20261028a.jsonl",
+      "journal_sha256": "a2aafdc6c43fbc2b59dfe51aad366df4ee89e8c4252316d6a2d9f62827440584",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-28T03:05:11.201Z",
+        "runId": "d300-fixture-final-lint-20261028a",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "child": {
+        "schema": 1,
+        "at": "2026-10-28T03:05:11.152Z",
+        "runId": "d300-fixture-final-lint-20261028a",
+        "childExitCode": 0,
+        "childSignal": null,
+        "code": "RESOURCE_JOB_EXIT"
+      },
+      "log": ".output/stabilization-checkpoints/wake0212/fixture-final-lint.log",
+      "log_sha256": "f1b246c5c5d2e7565613099cc4763361e69de8d588ded98f0e92289487391f15",
+      "admission_at": "2026-10-28T03:05:08.359Z",
+      "counts": {
+        "files": 3508,
+        "errors": 0,
+        "warnings": 1039
+      }
+    }
+  ],
+  "diff": {
+    "own_paths": [
+      "tests/browser/settings-probe-cleanup.mjs",
+      "tests/browser/settings-probe-cleanup.test.mjs",
+      "tests/browser/settings-full-extension-rechecks.mjs",
+      "tests/browser/settings-reload-boundary.test.mjs"
+    ],
+    "other_original_seven_hashes_preserved": true,
+    "no_source_changes_during_gates": true
+  },
+  "next_action": "Root integrate reviewed11-path source unit and final journals; native original late T10 plus surrounding acceptance still required."
+}

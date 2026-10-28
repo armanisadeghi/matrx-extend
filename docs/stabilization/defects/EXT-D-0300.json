@@ -34,7 +34,7 @@
     "docs/stabilization/reports/failure-capture-source-verification-20261027.json",
     "docs/stabilization/reports/failure-capture-source-peer-20261027.json"
   ],
-  "next_action": "Fresh Sol fixes authentic cleanup-wrapper resolver (never structural cause/flag unwrap) and lint local-variable correction after round2 review; final source review then frozen guarded focused/compile/lint, synchronized push/fullCI and fresh original/adjacent native B retest. No local build/release, threshold/lease/runner bypass, blind A rerun or baseline relaxation.",
+  "next_action": "Query automatic full/focused CI on latest synchronized main; choose exact-current eligible artifact and dispatch ONE original B Settings controls retest before any metadata/manualjournal dirties checkout. Then serialize same-B SEO/schema-empty using same artifact if still eligible; recheck source drift before each dispatch. Preserve immutable comparator/realUI/read/order/deadlines/verdict. D300 other final-only original/surrounding native gaps remain open; do not close from guards.",
   "transition_history": [
     {
       "at": "2026-10-27T19:40:18.049879+00:00",
@@ -135,7 +135,7 @@
   "fixture_lifecycle_working_tree_checkpoint": {
     "at": "2026-10-28T02:54:47.753288+00:00",
     "owner": "root / fixture_fresh_fix",
-    "status": "IN-FIX, uncommitted owned source; not source-accepted/native-tested",
+    "status": "Historical intermediate checkpoint; source now integrated at fixture_lifecycle_source_fix_sha, current native retest still pending.",
     "base_sha": "306f997dd10baa1757795fd0a19ddc783044bc53",
     "source_packet": "docs/stabilization/reports/fixture-implementation-20261028.json",
     "plan": "docs/stabilization/reports/fixture-design-20261028.json",
@@ -143,5 +143,35 @@
     "review": "docs/stabilization/reports/fixture-final-source-peer-20261028.json",
     "verification": "Original native7f receipt remains authoritative RED. Local RED1218/1206pass/1fail/11skip valid but original RED tool transcript not separately retained; actor-transcribed output only. IntermediateGREEN1 invalid-resource+6seamfail; GREEN2 valid1253/1242pass/0fail/11skip; GREEN3 valid1259/1248pass/0fail/11skip. These do not certify final source: remaining Important authentic primary/cause unwrap + queued lint correction handed to fresh Sol before final gates.",
     "scope": "Opaque browser-only backup, exact restored container and postreload UI predicates, document identity barrier, narrow fixture-integrity stop. No comparator/deadline/production API/policy change. No fullcase/product/Store/release credit."
+  },
+  "fixture_lifecycle_source_fix_sha": "1671721b10dd4015d87cef67a687a5cf9dfa96fe",
+  "fixture_lifecycle_source_verification": {
+    "at": "2026-10-28T03:09:59.056953+00:00",
+    "status": "SOURCE_REVIEW_AND_LOCAL_GATES_PASS; exact-sourceCI/nativepending",
+    "source_sha": "1671721b10dd4015d87cef67a687a5cf9dfa96fe",
+    "source_hashes": {
+      "tests/browser/settings-scrape-mode-baseline.mjs": "40219e988c568f6bde5dbcc724f7e7b84608fbd61b9cf8ec838553f0ae92a785",
+      "tests/browser/settings-probe-cleanup.mjs": "ee948302c98ee4f120ae9fb862a100afbfd2c30f13434054e7715c19729bb666",
+      "tests/browser/settings-probe-cleanup.test.mjs": "bafde7b782bbdd51231737c8974a58685713f79ecd91c18b2e63a8023ccb643a",
+      "tests/browser/settings-guest-scrape-controls.mjs": "a8a2193689a0ba7803a3fbd4d29112a14a6a9c62bf5149533c577c565b7ff782",
+      "tests/browser/settings-local-controls-acceptance.mjs": "5f71444150bab5cbcb3ca87160efa9e9612815b0895c739e1bdae8e68a60bf78",
+      "tests/browser/settings-full-extension-rechecks.mjs": "96c9c5b2b9dc66839f7a91faf5c8aaa6e4b01754151efec89c51df35cd7fb5eb",
+      "tests/browser/settings-guest-scrape-controls.test.mjs": "f136c5c1bc2f6e56e8739335a20b300d66b9fd7e77b7bbb8310a14d74fcfd1e5",
+      "tests/browser/settings-full-extension-rechecks.test.mjs": "33b7f697158772511d41220d8b258cd80f798ad152fe14b9e877123caf477250",
+      "tests/browser/settings-reload-boundary.test.mjs": "552887d75a8015edb754092d54d68d7019d5664c8486df3349363f95d3bf2dde",
+      "tests/browser/settings-guest-preference-batch.test.mjs": "8d269a5083d33c65dda474a2b83d3debedb166f361de1b39e1945a19446fc416",
+      "tests/browser/settings-progress-checkpoint.test.mjs": "051641ab00c9054dc2596ce3362f956d786536c569ddadc5ea446d74f34cec6a"
+    },
+    "final_gates": {
+      "focused": "1260 tests/1249pass/0fail/11skip",
+      "compile": "child0/wrapper0/validresource",
+      "lint": "3508files/0errors/1039warnings",
+      "all_three_journals": "completedvalid0",
+      "freeze_scope": "Actor attestation supported by selected11filehash/lock endpoint files and mtime before admission; not independent continuous/providerprocess transcript."
+    },
+    "review": "docs/stabilization/reports/fixture-gate-peer-20261028.json",
+    "implementation": "docs/stabilization/reports/fixture-fresh-fix-20261028.json",
+    "quality": "Round2 primary-owncause residual fixed by fresh Sol with private canonical WeakMap resolver; authentic producer/controller/mutant guards and fresh source review pass.",
+    "limits": "Recorded guard/log outcomes independently hash-checked; raw mutant child transcripts not emitted. Receipt/tree branch and native physical teardown still unverified. No current native/artifact/Store/product closure."
   }
 }

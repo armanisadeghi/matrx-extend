@@ -1,0 +1,311 @@
+{
+  "task_id": "fixture_gate_peer",
+  "at": "2026-10-28T03:07:55.194434+00:00",
+  "status": "ACCEPTED_BOUNDED_SOURCE_AND_RECORDED_FINAL_GATES_NATIVE_PENDING",
+  "scope": "Fresh independent source/diff/hash/original saved log+resource-journal review. No suites, heavy jobs, UI/native, CI dispatch, build, install, auth, source edit, child or commit. Only this private report written.",
+  "verdict_A": "PARTIAL: implementation addresses original fixture-shape contamination and safe failure/stop contracts at source seams; original late T10 and surrounding native full-extension acceptance remain unverified. No product/fullcase/Store or D299/D300 closure.",
+  "verdict_B": "PASS_SOURCE_AND_RECORDED_FINAL_GATES: no Critical/Important defect or material count/hash mismatch found in final11-file unit. Eligible for exact-path source integration and normal immutable exact-source CI, then separately admitted independent native retest.",
+  "findings": [],
+  "references": {
+    "CLAUDE.md": "b44cc28763d0c3138221094630eec7ac33533ba3e1ae7cd2785779d847ba255e",
+    "docs/stabilization/PLAN.md": "53a8876f0f6adbd5f7a055c595d1f9134b32b115127521b46b0e3fef33c2e040",
+    "docs/stabilization/COORDINATOR.md": "496ffc9aa8a6d59037d07de4b1d9f274c86a231f2d7308a1ec473c5e656eb5f0",
+    "docs/stabilization/reports/settings7f-failure-peer-20261028.json": "62611979641e0fb453e4806053c6c4a5a5cbed9061bdd6fa61215b11d0b8988d",
+    ".output/stabilization-checkpoints/wake0212/fixture-design.json": "2bf355c8b17578211def6e5905d8c263b03ee89531b02c3b18b5370d1ae7d858",
+    ".output/stabilization-checkpoints/wake0212/fixture-concrete-plan-peer.json": "bc56630206a565152f644cfbd9400005049835c9268c49e6255e223e085ef561",
+    ".output/stabilization-checkpoints/wake0212/fixture-core-peer.json": "1e42f43098591da4476a6049e9b632330f3968ca35a0cc0e0c225d7d7ab99789",
+    ".output/stabilization-checkpoints/wake0212/fixture-final-source-peer.json": "c554be61517069fd467d0f8d54f2445b338ec14dd5c8d4bd67f923885cc6f045",
+    ".output/stabilization-checkpoints/wake0212/fixture-authentic-resolver-peer.json": "3079da318c83872541a93a87994b117fd6d6b71dd05b145035a919b286c13a22",
+    ".output/stabilization-checkpoints/wake0212/fixture-fresh-fix.json": "fab18f551c65bedd847dec668c69b38e1fd32aa5e7949ebb26a965d12c6041bc",
+    ".output/stabilization-checkpoints/wake0212/fixture-implementation.json": "3fc2b7db092dc324892c89675314ae2a34c6e4569f7165b56fbe315588a5c96c",
+    ".output/stabilization-checkpoints/wake0212/fixture-fresh-fix-freeze.sha256": "2f4f62adc187c84288829f53bedadd957c5c91e4a10b3aff59a896561586a91a"
+  },
+  "source": {
+    "tests/browser/settings-scrape-mode-baseline.mjs": {
+      "sha256": "40219e988c568f6bde5dbcc724f7e7b84608fbd61b9cf8ec838553f0ae92a785",
+      "expected_sha256": "40219e988c568f6bde5dbcc724f7e7b84608fbd61b9cf8ec838553f0ae92a785",
+      "match": true,
+      "mtime_utc": "2026-10-28T02:47:26.105845+00:00"
+    },
+    "tests/browser/settings-probe-cleanup.mjs": {
+      "sha256": "ee948302c98ee4f120ae9fb862a100afbfd2c30f13434054e7715c19729bb666",
+      "expected_sha256": "ee948302c98ee4f120ae9fb862a100afbfd2c30f13434054e7715c19729bb666",
+      "match": true,
+      "mtime_utc": "2026-10-28T02:55:39.919297+00:00"
+    },
+    "tests/browser/settings-probe-cleanup.test.mjs": {
+      "sha256": "bafde7b782bbdd51231737c8974a58685713f79ecd91c18b2e63a8023ccb643a",
+      "expected_sha256": "bafde7b782bbdd51231737c8974a58685713f79ecd91c18b2e63a8023ccb643a",
+      "match": true,
+      "mtime_utc": "2026-10-28T02:56:00.539693+00:00"
+    },
+    "tests/browser/settings-guest-scrape-controls.mjs": {
+      "sha256": "a8a2193689a0ba7803a3fbd4d29112a14a6a9c62bf5149533c577c565b7ff782",
+      "expected_sha256": "a8a2193689a0ba7803a3fbd4d29112a14a6a9c62bf5149533c577c565b7ff782",
+      "match": true,
+      "mtime_utc": "2026-10-28T02:47:26.106535+00:00"
+    },
+    "tests/browser/settings-local-controls-acceptance.mjs": {
+      "sha256": "5f71444150bab5cbcb3ca87160efa9e9612815b0895c739e1bdae8e68a60bf78",
+      "expected_sha256": "5f71444150bab5cbcb3ca87160efa9e9612815b0895c739e1bdae8e68a60bf78",
+      "match": true,
+      "mtime_utc": "2026-10-28T02:47:26.109830+00:00"
+    },
+    "tests/browser/settings-full-extension-rechecks.mjs": {
+      "sha256": "96c9c5b2b9dc66839f7a91faf5c8aaa6e4b01754151efec89c51df35cd7fb5eb",
+      "expected_sha256": "96c9c5b2b9dc66839f7a91faf5c8aaa6e4b01754151efec89c51df35cd7fb5eb",
+      "match": true,
+      "mtime_utc": "2026-10-28T02:55:39.919694+00:00"
+    },
+    "tests/browser/settings-guest-scrape-controls.test.mjs": {
+      "sha256": "f136c5c1bc2f6e56e8739335a20b300d66b9fd7e77b7bbb8310a14d74fcfd1e5",
+      "expected_sha256": "f136c5c1bc2f6e56e8739335a20b300d66b9fd7e77b7bbb8310a14d74fcfd1e5",
+      "match": true,
+      "mtime_utc": "2026-10-28T02:47:26.113078+00:00"
+    },
+    "tests/browser/settings-full-extension-rechecks.test.mjs": {
+      "sha256": "33b7f697158772511d41220d8b258cd80f798ad152fe14b9e877123caf477250",
+      "expected_sha256": "33b7f697158772511d41220d8b258cd80f798ad152fe14b9e877123caf477250",
+      "match": true,
+      "mtime_utc": "2026-10-28T02:34:53.835568+00:00"
+    },
+    "tests/browser/settings-reload-boundary.test.mjs": {
+      "sha256": "552887d75a8015edb754092d54d68d7019d5664c8486df3349363f95d3bf2dde",
+      "expected_sha256": "552887d75a8015edb754092d54d68d7019d5664c8486df3349363f95d3bf2dde",
+      "match": true,
+      "mtime_utc": "2026-10-28T02:56:00.555781+00:00"
+    },
+    "tests/browser/settings-guest-preference-batch.test.mjs": {
+      "sha256": "8d269a5083d33c65dda474a2b83d3debedb166f361de1b39e1945a19446fc416",
+      "expected_sha256": "8d269a5083d33c65dda474a2b83d3debedb166f361de1b39e1945a19446fc416",
+      "match": true,
+      "mtime_utc": "2026-10-28T02:47:26.116602+00:00"
+    },
+    "tests/browser/settings-progress-checkpoint.test.mjs": {
+      "sha256": "051641ab00c9054dc2596ce3362f956d786536c569ddadc5ea446d74f34cec6a",
+      "expected_sha256": "051641ab00c9054dc2596ce3362f956d786536c569ddadc5ea446d74f34cec6a",
+      "match": true,
+      "mtime_utc": "2026-10-28T02:41:49.204822+00:00"
+    }
+  },
+  "freeze": {
+    "manifest": ".output/stabilization-checkpoints/wake0212/fixture-fresh-fix-freeze.sha256",
+    "sha256": "2f4f62adc187c84288829f53bedadd957c5c91e4a10b3aff59a896561586a91a",
+    "all11_match": true,
+    "lock_path": "pnpm-lock.yaml",
+    "lock_sha256": "a509ae55fa034a4663c35c931f8cd067d4e02c3ee25a22db668600e553bd65d5",
+    "lock_matches_actor": true,
+    "latest_selected_source_mtime_utc": "2026-10-28T02:56:00.555781+00:00",
+    "first_actual_gate_admission_utc": "2026-10-28T02:59:38.822Z",
+    "no_edits_during_gates": "ACTOR_ATTESTATION supported by current11 hashes matching frozen manifest/post hashes and all source mtimes preceding actual first admission. Separate per-run original hash frames are not retained in this reviewer packet; this is not independent continuous-write monitoring or independently authenticated provider-tool exits."
+  },
+  "gates": [
+    {
+      "run_id": "d300-fixture-final-focused-20261028a",
+      "command": "pnpm test:focused-acceptance",
+      "journal": "docs/stabilization/resource-journals/d300-fixture-final-focused-20261028a.jsonl",
+      "log": ".output/stabilization-checkpoints/wake0212/fixture-final-focused.log",
+      "journal_sha256": "a1160980f16ed030449b9761b1d97c9338f0583afd49932563980ef7ed61f1b2",
+      "log_sha256": "6826604b3f234107f448882bd4daea5fce0c950df2669046a2a821fd74ec30c3",
+      "matches_actor_hashes": true,
+      "admission": "2026-10-28T02:59:38.822Z",
+      "job_exit": [
+        {
+          "schema": 1,
+          "at": "2026-10-28T03:02:08.549Z",
+          "runId": "d300-fixture-final-focused-20261028a",
+          "childExitCode": 0,
+          "childSignal": null,
+          "code": "RESOURCE_JOB_EXIT"
+        }
+      ],
+      "final": [
+        {
+          "schema": 1,
+          "at": "2026-10-28T03:02:08.601Z",
+          "runId": "d300-fixture-final-focused-20261028a",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      ],
+      "resource_invalid_events": [],
+      "observed_summary": {
+        "tests": 1260,
+        "pass": 1249,
+        "fail": 0,
+        "skipped": 11
+      }
+    },
+    {
+      "run_id": "d300-fixture-final-compile-20261028a",
+      "command": "pnpm compile",
+      "journal": "docs/stabilization/resource-journals/d300-fixture-final-compile-20261028a.jsonl",
+      "log": ".output/stabilization-checkpoints/wake0212/fixture-final-compile.log",
+      "journal_sha256": "7df66393799c184c9ef55b012ee4a01f237d4bb22bdee671356ae8f957058c3a",
+      "log_sha256": "8f5aafdd67924a8b64965926dbe57ffa97e72efeed0866289820263dae142415",
+      "matches_actor_hashes": true,
+      "admission": "2026-10-28T03:03:47.460Z",
+      "job_exit": [
+        {
+          "schema": 1,
+          "at": "2026-10-28T03:03:49.688Z",
+          "runId": "d300-fixture-final-compile-20261028a",
+          "childExitCode": 0,
+          "childSignal": null,
+          "code": "RESOURCE_JOB_EXIT"
+        }
+      ],
+      "final": [
+        {
+          "schema": 1,
+          "at": "2026-10-28T03:03:49.746Z",
+          "runId": "d300-fixture-final-compile-20261028a",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      ],
+      "resource_invalid_events": [],
+      "observed_summary": {
+        "compile": "tsc --noEmit; no diagnostics; childExitCode0"
+      }
+    },
+    {
+      "run_id": "d300-fixture-final-lint-20261028a",
+      "command": "pnpm lint",
+      "journal": "docs/stabilization/resource-journals/d300-fixture-final-lint-20261028a.jsonl",
+      "log": ".output/stabilization-checkpoints/wake0212/fixture-final-lint.log",
+      "journal_sha256": "a2aafdc6c43fbc2b59dfe51aad366df4ee89e8c4252316d6a2d9f62827440584",
+      "log_sha256": "f1b246c5c5d2e7565613099cc4763361e69de8d588ded98f0e92289487391f15",
+      "matches_actor_hashes": true,
+      "admission": "2026-10-28T03:05:08.359Z",
+      "job_exit": [
+        {
+          "schema": 1,
+          "at": "2026-10-28T03:05:11.152Z",
+          "runId": "d300-fixture-final-lint-20261028a",
+          "childExitCode": 0,
+          "childSignal": null,
+          "code": "RESOURCE_JOB_EXIT"
+        }
+      ],
+      "final": [
+        {
+          "schema": 1,
+          "at": "2026-10-28T03:05:11.201Z",
+          "runId": "d300-fixture-final-lint-20261028a",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      ],
+      "resource_invalid_events": [],
+      "observed_summary": {
+        "files": 3508,
+        "errors": 0,
+        "warnings": 1039
+      }
+    }
+  ],
+  "processes": {
+    "recorded_tool_sessions_actor_only": [
+      {
+        "id": 9166,
+        "exit_code": 0
+      },
+      {
+        "id": 98490,
+        "exit_code": 0
+      },
+      {
+        "id": 93798,
+        "exit_code": 0
+      }
+    ],
+    "original_journals_each_child_and_final_terminal": true,
+    "current_relevant_processes": [],
+    "interpretation": "Original resource journals/logs contain terminal childExit0 and final valid0 for all3 sequential jobs. Reviewer ps snapshot finds no matching guard/focused/compile/lint process. Session IDs are not PIDs; no native profile/process teardown claim."
+  },
+  "source_contracts": [
+    "Own-cause residual addressed: module-private cleanupOriginals WeakMap maps only actual SettingsCleanupFailure constructor wrappers to exact primary. Canonical serializeGuestReloadFailure and safeUnexpectedError both use resolver; mutable primary with own misleading cause or throwing getter remains itself, frozen/primitive wrapper resolves by authentic identity.",
+    "Real withExactSettingsFixture producer feeds extracted actual warm runCase and actual imported full recheck/projector. Tests assert original finite code/T40 last observation/T67 category-stage-kind plus fixture receipt and cleanup flag, rejecting raw CANARY. Canonical resolver identity test covers mutable/frozen/falsey primitive originals and forged public flags.",
+    "Opaque whole Settings container lives only inside browser local backup, sealed and owner-validated. No raw settings crosses evaluate return or Node error/report boundary. Original absence, exact strings and supported Chrome JSON shape retained; backup key is owned and narrowly disposed.",
+    "Restore retires old document, restores exact storage, reloads and verifies exact storage, awaits original caller UI/persisted predicate, then marks restored and disposes. Actual T40/T67/T37 and forced-absent full T67 callback implement original UI proof before delete.",
+    "Separate first integrity phase and final cleanupPhase/current backup presence, owned state, retention booleans or null unknown; missing/foreign/corrupt never claim valid retained original. Body failure followed by successful cleanup retains first failure and truthful final disposition.",
+    "Private fixture WeakMap brand authorizes stop. Actual warm runCase records originating failure/criterion and case_end before rethrow; full recheck records then rethrows; inner guest catch preserves bounded stage and rethrows; outer exercise controls return only for authentic fixture brand. Ordinary assertions and public cleanup flags preserve existing continuation. Outer actual verification/enforcement/final publisher remain reachable.",
+    "Warm order T28/T40/T67/snapshot/T37 retained. T37 extracted original callback uses canonical deep-clean runner. Full T40 uses same runner; full T67 outer lifecycle resolves dynamic activePanel/getPanel across actual manager-reload callback. Canonical matcher passed to avoid cycle.",
+    "Canonical panel reload observes finite previous timeOrigin then a different finite origin AND readyState complete, retaining existing wait label/deadline. Comparator/footprint/sample ordering/deadlines/verdict rules remain unchanged. All modified source paths are tests/browser; no src/policy/workflow/package change."
+  ],
+  "guard_execution": {
+    "authority": "Final original focused stdout names the outer tests as PASS, matching immutable inspected source. Reviewer did not execute suite or mutants.",
+    "covered_outer_tests": [
+      "actual T40 caller leaves immutable T10 footprint unchanged",
+      "T40/T67/T37 absent-partial-explicit preservation",
+      "opaque string/object lifecycle",
+      "capture/ownership/restore/reload/verify/dispose uncertainty",
+      "late hydration and lifecycle mutations",
+      "actual T37 original callback sequence",
+      "canonical caller omission",
+      "wrong hydrated UI before disposal",
+      "awaited verification before delete",
+      "first phase versus final disposition",
+      "actual canonical fresh-document reload",
+      "actual warm/full stop and safe-primary diagnostics",
+      "actual controlled callback and final publisher",
+      "authentic resolver identity and constant/heuristic mutants"
+    ],
+    "negative_guard_limit": "Negative candidates execute inside outer assert.rejects/assertion tests, including constant/no-op, omitted restore/reload/dispose/caller/stop, wrong owner, unknown-sibling loss, raw leak and own-cause heuristic/constant projector. This packet does not claim independent raw child-mutant traces or individually emitted mutant exits."
+  },
+  "history": {
+    "original_red": "Strongest original-class RED remains frozen7f official-native40615716489 reviewed in settings7f-failure-peer-20261028.json (reviewer did not repeat official API/ZIP review).",
+    "local_red": "1218 total/1206 pass/1 intended fail/11 skip, recorded valid; original stdout retained only as actor transcription, not original file in this packet.",
+    "green1": "INVALID: six test-seam failures and final resourceInvalid exit3; never a pass.",
+    "green2_green3": "Valid intermediate source increments only, not final11 proof. Final3 logs/journals above bind current11 hash packet."
+  },
+  "diff": {
+    "base": "working tree versus current HEAD",
+    "head": "d83ce86f50b31690567217bef6d349717ff17a3e",
+    "whitespace_insensitive_sha256": "aa5eb7d685197d7032e446ab9cf707d0adb26bcc48d6032a46ba2746c2658235",
+    "paths": [
+      "tests/browser/settings-scrape-mode-baseline.mjs",
+      "tests/browser/settings-probe-cleanup.mjs",
+      "tests/browser/settings-probe-cleanup.test.mjs",
+      "tests/browser/settings-guest-scrape-controls.mjs",
+      "tests/browser/settings-local-controls-acceptance.mjs",
+      "tests/browser/settings-full-extension-rechecks.mjs",
+      "tests/browser/settings-guest-scrape-controls.test.mjs",
+      "tests/browser/settings-full-extension-rechecks.test.mjs",
+      "tests/browser/settings-reload-boundary.test.mjs",
+      "tests/browser/settings-guest-preference-batch.test.mjs",
+      "tests/browser/settings-progress-checkpoint.test.mjs"
+    ],
+    "numstat": [
+      "41\t7\ttests/browser/settings-full-extension-rechecks.mjs",
+      "17\t3\ttests/browser/settings-full-extension-rechecks.test.mjs",
+      "2\t0\ttests/browser/settings-guest-preference-batch.test.mjs",
+      "154\t6\ttests/browser/settings-guest-scrape-controls.mjs",
+      "650\t11\ttests/browser/settings-guest-scrape-controls.test.mjs",
+      "61\t70\ttests/browser/settings-local-controls-acceptance.mjs",
+      "9\t1\ttests/browser/settings-probe-cleanup.mjs",
+      "60\t0\ttests/browser/settings-probe-cleanup.test.mjs",
+      "27\t10\ttests/browser/settings-progress-checkpoint.test.mjs",
+      "510\t6\ttests/browser/settings-reload-boundary.test.mjs",
+      "247\t46\ttests/browser/settings-scrape-mode-baseline.mjs"
+    ]
+  },
+  "limits": [
+    "No independent continuous freeze or separately authenticated provider tool-session transcript; root acknowledged this limitation and will bind committed source through normal automatic exact-source CI.",
+    "Actual outer suffix guard has DEV_BUILD_RECEIPT undefined; version/receipt/tree branch not executed by this guard, though source remains intact.",
+    "External callback teardown counter proves callback boundary only, not actual browser teardown/profile deletion.",
+    "External storage/DOM/CDP doubles beneath actual orchestration do not certify live hydration, actual extension-manager reload or native original/adjacent cases.",
+    "No new native acceptance, product/fullcase pass, release, Store action or D299/D300 closure."
+  ],
+  "next_action": "Root integrate only reviewed11 source paths plus intended original final journals, run normal immutable exact-source CI, then freshly admitted independent original late T10 and surrounding full-extension native B with original evidence; preserve all source/native limits."
+}
