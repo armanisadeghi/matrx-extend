@@ -78,7 +78,6 @@ vi.mock('@/state/settings', () => ({
   useSettingsStore: () => ({
     theme: 'system',
     defaultAgentId: null,
-    defaultPermissionMode: 'ask',
     defaultChatSpeed: 'fast',
     scrapeDeepClean: false,
     scrapeAutoOnLoad: false,
@@ -89,7 +88,6 @@ vi.mock('@/state/settings', () => ({
     credentialAssistancePresentation: 'quiet',
     setTheme: vi.fn(),
     setDefaultAgentId: vi.fn(),
-    setDefaultPermissionMode: vi.fn(),
     setDefaultChatSpeed: vi.fn(),
     setScrapeDeepClean: vi.fn(),
     setScrapeAutoOnLoad: vi.fn(),

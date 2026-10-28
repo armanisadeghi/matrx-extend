@@ -234,13 +234,35 @@ export function guestModeShadowMatches(observed, baseline) {
     value.stores.length === 3 &&
     value.stores.every(
       (entry, index) =>
-        entry.store === ['settings', 'chat', 'pilot'][index] &&
+        entry?.store === ['settings', 'chat', 'pilot'][index] &&
         ['valid', 'absent'].includes(entry.parseStatus) &&
         typeof entry.storagePresent === 'boolean' &&
-        typeof entry.fieldPresent === 'boolean',
+        typeof entry.fieldPresent === 'boolean' &&
+        ((entry.storagePresent && entry.parseStatus === 'valid') ||
+          (!entry.storagePresent && entry.parseStatus === 'absent' && !entry.fieldPresent)) &&
+        (!entry.fieldPresent
+          ? entry.mode === null && entry.fingerprint === null && entry.count === null
+          : index === 0
+            ? ['ask', 'act'].includes(entry.mode) &&
+              entry.fingerprint === null &&
+              entry.count === null
+            : entry.mode === null &&
+              typeof entry.fingerprint === 'string' &&
+              /^[a-f0-9]{64}$/.test(entry.fingerprint) &&
+              Number.isSafeInteger(entry.count) &&
+              entry.count >= 0),
     );
+  if (!valid(observed) || !valid(baseline)) return false;
+  const normalize = (value, other) => ({
+    ...value,
+    stores: value.stores.map((entry, index) =>
+      !entry.fieldPresent && !other.stores[index].fieldPresent
+        ? { ...entry, storagePresent: false, parseStatus: 'absent' }
+        : entry,
+    ),
+  });
   return (
-    valid(observed) && valid(baseline) && JSON.stringify(observed) === JSON.stringify(baseline)
+    JSON.stringify(normalize(observed, baseline)) === JSON.stringify(normalize(baseline, observed))
   );
 }
 

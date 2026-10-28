@@ -2236,7 +2236,7 @@ Every entry follows this shape:
 - **What it does:** Settings reports a rejected preference save and offers Retry save. Overlapping changes are written in choice order so the latest selection survives reload.
 - **Where to test:** Settings → Appearance, Chat, Privacy, or Scrape in an unpacked development extension.
 - **Steps:** Change Theme, then immediately change it again. Close and reopen Settings; the second choice remains. In a controlled test with `chrome.storage.local.set` rejecting `matrx.settings.v1`, change Theme and observe the error; restore storage and select Retry save, then reload.
-- **Expected:** Failed storage shows “Could not save preferences” and Retry save. After retry, the error clears and the chosen Theme survives reload. A rapid earlier choice cannot overwrite a later one.
+- **Expected:** Failed storage shows “Could not save preferences” and Retry save. After retry, the error clears and the chosen Theme survives reload. A rapid earlier choice cannot overwrite a later one. With fresh and previously saved preferences, Theme and other preference changes preserve the platform permission mode and do not create the retired local mode field.
 
 ### Auto-scrape mode — Scroll & capture
 - **What it does:** Settings → Scrape → "Auto-scrape mode" = *Scroll & capture*

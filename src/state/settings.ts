@@ -12,7 +12,6 @@ import { createJSONStorage, persist } from 'zustand/middleware';
  * under their own keys (see src/config/backend.ts) so every MV3 context
  * (sidepanel, SW, offscreen) reads the same source of truth.
  */
-export type PermissionMode = 'ask' | 'act';
 export type ChatSpeed = 'fast' | 'thinking';
 export type ScrapeAutoMode = 'capture' | 'scroll-capture';
 export type CredentialAssistancePresentation = 'quiet' | 'on_page';
@@ -40,8 +39,6 @@ interface SettingsState {
    * through the system/org/user Binding ladder at run time.
    */
   defaultAgentId: string | null;
-  /** Fallback for the per-agent ask/act mode when an agent has no override. */
-  defaultPermissionMode: PermissionMode;
   /** Composer speed default. NOT WIRED YET — placeholder UI only. */
   defaultChatSpeed: ChatSpeed;
   /**
@@ -104,7 +101,6 @@ interface SettingsState {
   setTheme: (t: SettingsState['theme']) => void;
   setScrapeDeepClean: (b: boolean) => void;
   setDefaultAgentId: (id: string | null) => void;
-  setDefaultPermissionMode: (m: PermissionMode) => void;
   setDefaultChatSpeed: (s: ChatSpeed) => void;
   setAutoFullScrollOnFirstSubmit: (b: boolean) => void;
   setModelOverrideId: (id: string | null) => void;
@@ -122,7 +118,6 @@ export const useSettingsStore = create<SettingsState>()(
       theme: 'system',
       scrapeDeepClean: false,
       defaultAgentId: DEFAULT_CHAT_MANDATE_REF,
-      defaultPermissionMode: 'ask',
       defaultChatSpeed: 'fast',
       autoFullScrollOnFirstSubmit: false,
       modelOverrideId: null,
@@ -136,7 +131,6 @@ export const useSettingsStore = create<SettingsState>()(
       setTheme: (theme) => set({ theme }),
       setScrapeDeepClean: (scrapeDeepClean) => set({ scrapeDeepClean }),
       setDefaultAgentId: (defaultAgentId) => set({ defaultAgentId }),
-      setDefaultPermissionMode: (defaultPermissionMode) => set({ defaultPermissionMode }),
       setDefaultChatSpeed: (defaultChatSpeed) => set({ defaultChatSpeed }),
       setAutoFullScrollOnFirstSubmit: (autoFullScrollOnFirstSubmit) =>
         set({ autoFullScrollOnFirstSubmit }),
@@ -163,6 +157,13 @@ export const useSettingsStore = create<SettingsState>()(
       //     scope pills were this repo's own picker; the ONE package picker
       //     (@ai-matrx/agents/catalog) owns tabs and filters now, per consumer
       //     id, so the persisted key is dropped rather than left as dead data.
+      // Exclude hydrated retired data even if a current-version blob contains it.
+      partialize: (state) => {
+        const { defaultPermissionMode: _retired, ...rest } = state as SettingsState & {
+          defaultPermissionMode?: unknown;
+        };
+        return rest;
+      },
       version: SETTINGS_PERSIST_VERSION,
       migrate: (persisted, fromVersion) => {
         const state = (persisted ?? {}) as Partial<SettingsState>;

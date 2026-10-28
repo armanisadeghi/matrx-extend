@@ -1171,6 +1171,8 @@ test('compound Theme reopen distinguishes successful Settings open from exact-sa
   assert.equal(result.firstChoiceReopen.failureCode, 'mode_baseline_mismatch');
   assert.equal(result.firstChoiceReopen.modeComparison.stage, 'full_recheck');
   assert.equal(result.firstChoiceReopen.modeComparison.serialization, 'unequal');
+  assert.equal(result.firstChoiceReopen.modeComparison.predicates.permissionComparison, false);
+  assert.equal(result.firstChoiceReopen.modeComparison.firstFalse, 'permissionComparison');
   assert.equal(result.firstRestorationReopen.operation, 'mode_compare');
   assert.equal(result.recoveryReopen.operation, 'mode_compare');
   assert.equal(result.firstChoiceReopen.modeComparison.stores[0].storagePresent, 'unequal');

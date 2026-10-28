@@ -6,26 +6,18 @@
  * `chromeLocalStorage` as a JSON *string* of the shape
  * `{ "state": { ...fields }, "version": N }`.
  *
- * Non-React contexts (the SW bootstrap, the frontend-bridge handler) can't
- * mount the zustand store and hydrate it asynchronously, so they read the raw
- * blob here. Two bugs used to live in the inlined copies of this logic:
- *   1. they read the wrong key (`matrx.settings`, never written), and
- *   2. they treated the value as an already-parsed object rather than the
- *      JSON string zustand actually stores.
- * Both meant a user's `defaultPermissionMode: 'act'` was silently ignored on
- * the WebMCP and frontend-bridge tool-execution paths — they always fell back
- * to `'ask'`. This is the single source of truth so that can't drift again.
+ * Non-React contexts read local preferences here. Permission mode comes from
+ * the shared platform setting through readActModeInWorker.
  */
 
-import type { CredentialAssistancePresentation, PermissionMode } from '@/state/settings';
-import { readActModeInWorker } from './act-without-asking';
+import type { CredentialAssistancePresentation } from '@/state/settings';
+import { type ActMode, readActModeInWorker } from './act-without-asking';
 
 /** Must match `name:` in the settings store's persist config. */
 const SETTINGS_PERSIST_KEY = 'matrx.settings.v1';
 
 interface PersistedSettingsBlob {
   state?: {
-    defaultPermissionMode?: PermissionMode;
     captureLoginsEnabled?: boolean;
     offerSavedLoginsEnabled?: boolean;
     credentialAssistancePresentation?: CredentialAssistancePresentation;
@@ -53,10 +45,9 @@ async function readPersistedSettingsState(): Promise<PersistedSettingsBlob['stat
 }
 
 /**
- * The user's default permission mode, read from the persisted store. Falls
- * back to `'ask'` (the safe default) when the setting is absent or unreadable.
+ * The user's permission mode from the shared platform setting.
  */
-export async function readDefaultPermissionMode(): Promise<PermissionMode> {
+export async function readDefaultPermissionMode(): Promise<ActMode> {
   // ONE setting (`chat.act_without_asking`, platform default Act — Arman 2026-10-22).
   return readActModeInWorker();
 }
@@ -86,12 +77,12 @@ export async function readCredentialAssistancePresentation(): Promise<Credential
  * A synchronous view of the person's default permission mode for the service worker's
  * dispatcher. The dispatcher falls back to it when a run opens without a latched mode; a
  * hard-coded 'ask' there ignored "Act without asking" for exactly those runs. Kept current
- * from the persisted blob (read once, then on every settings change).
+ * from the platform snapshot.
  */
-export function watchDefaultPermissionMode(): () => PermissionMode {
+export function watchDefaultPermissionMode(): () => ActMode {
   // The platform default is Act; the person's setting refreshes on every read (the snapshot is
   // cached briefly, so this is one fetch per cache window, never per call).
-  let current: PermissionMode = 'act';
+  let current: ActMode = 'act';
   const refresh = () =>
     void readDefaultPermissionMode().then((m) => {
       current = m;

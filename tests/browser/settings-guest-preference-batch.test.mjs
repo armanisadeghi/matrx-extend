@@ -1580,4 +1580,167 @@ test('mode footprint matcher gut rejects constant equality on a changed actual f
   };
   check(guestModeShadowMatches);
   assert.throws(() => check(() => true), assert.AssertionError);
+  assert.throws(() => check(() => false), assert.AssertionError);
+});
+
+test('mode matcher permits only valid non-mode container materialization', () => {
+  const baseline = emptyModeFootprint();
+  for (let i = 0; i < 3; i++) {
+    const materialized = structuredClone(baseline);
+    Object.assign(materialized.stores[i], { storagePresent: true, parseStatus: 'valid' });
+    assert.equal(guestModeShadowMatches(materialized, baseline), true);
+    const extra = structuredClone(materialized);
+    extra.stores[i].unknown = 'changed';
+    assert.equal(guestModeShadowMatches(extra, baseline), false);
+    const inconsistent = structuredClone(materialized);
+    inconsistent.stores[i].parseStatus = 'absent';
+    assert.equal(guestModeShadowMatches(inconsistent, baseline), false);
+    const permission = structuredClone(materialized);
+    Object.assign(
+      permission.stores[i],
+      i === 0
+        ? { fieldPresent: true, mode: 'ask' }
+        : { fieldPresent: true, fingerprint: '0'.repeat(64), count: 0 },
+    );
+    assert.equal(guestModeShadowMatches(permission, baseline), false);
+  }
+});
+
+test('actual observer preserves permission footprints through non-mode writes and rejects permission changes', async () => {
+  const preference = GUEST_PREFERENCES.find((item) => item.caseId === 'T10');
+  const keys = ['matrx.settings.v1', 'matrx.chat.v1', 'matrx.pilot-chat.v1'];
+  const blob = (state) => JSON.stringify({ state, version: 6 });
+  const observe = async (fixture) =>
+    (await observeGuestPreference({}, preference, fixture.driver)).shadowFootprint;
+  const compare = async (before, after, expected, label, mutate = (source) => source) => {
+    const fixture = modeStorageFixture({ ...before });
+    const evaluate = fixture.driver.evaluate;
+    fixture.driver.evaluate = (panel, expression) => evaluate(panel, mutate(expression));
+    const baseline = await observe(fixture);
+    const original = JSON.stringify(baseline);
+    baseline.stores.forEach(Object.freeze);
+    Object.freeze(baseline.stores);
+    Object.freeze(baseline);
+    for (const key of keys) delete fixture.storage[key];
+    Object.assign(fixture.storage, after);
+    const current = await observe(fixture);
+    assert.equal(guestModeShadowMatches(current, baseline), expected, label);
+    assert.equal(JSON.stringify(baseline), original, `${label}: baseline changed`);
+  };
+  for (const key of keys) {
+    await compare({}, { [key]: blob({ theme: 'dark' }) }, true, `${key}: non-mode creation`);
+    const field = key === keys[0] ? 'defaultPermissionMode' : 'permissionMode';
+    const mode = (value) => (key === keys[0] ? value : { browserAgent: value });
+    for (const value of ['ask', 'act']) {
+      const populated = { [key]: blob({ [field]: mode(value) }) };
+      await compare({}, populated, false, `${key}: add ${value}`);
+      await compare(populated, {}, false, `${key}: remove ${value}`);
+      const other = value === 'ask' ? 'act' : 'ask';
+      await compare(
+        populated,
+        { [key]: blob({ [field]: mode(other) }) },
+        false,
+        `${key}: change ${value}`,
+      );
+    }
+    if (key !== keys[0]) {
+      const one = { [key]: blob({ permissionMode: { browserAgent: 'ask' } }) };
+      await compare(
+        {},
+        { [key]: blob({ permissionMode: {} }) },
+        false,
+        `${key}: present empty map`,
+      );
+      await compare(
+        one,
+        { [key]: blob({ permissionMode: { pageAgent: 'ask' } }) },
+        false,
+        `${key}: key change`,
+      );
+      await compare(
+        one,
+        { [key]: blob({ permissionMode: { browserAgent: 'ask', pageAgent: 'act' } }) },
+        false,
+        `${key}: count change`,
+      );
+    }
+    await compare({}, { [key]: '{' }, false, `${key}: malformed JSON`);
+    await compare({}, { [key]: blob([]) }, false, `${key}: malformed state`);
+    await compare(
+      {},
+      { [key]: blob({ [field]: key === keys[0] ? 'invalid' : [] }) },
+      false,
+      `${key}: malformed permission`,
+    );
+  }
+  await compare(
+    {},
+    {
+      [keys[0]]: blob({ theme: 'light' }),
+      [keys[1]]: blob({ permissionMode: { browserAgent: 'act' } }),
+    },
+    false,
+    'mixed allowed and forbidden',
+  );
+
+  const one = { [keys[1]]: blob({ permissionMode: { browserAgent: 'ask' } }) };
+  const renamed = { [keys[1]]: blob({ permissionMode: { pageAgent: 'ask' } }) };
+  const enlarged = {
+    [keys[1]]: blob({ permissionMode: { browserAgent: 'ask', pageAgent: 'ask' } }),
+  };
+  // Suppress fingerprint alone to prove count is the deciding field in this case.
+  await compare(one, enlarged, false, 'count remains observable without fingerprint', (source) => {
+    const changed = source.replace(
+      "result.fingerprint = [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, '0')).join('');",
+      "result.fingerprint = '0'.repeat(64);",
+    );
+    assert.notEqual(changed, source);
+    return changed;
+  });
+  const mutants = [
+    [
+      'fingerprint',
+      one,
+      renamed,
+      (source) =>
+        source.replace(
+          "result.fingerprint = [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, '0')).join('');",
+          "result.fingerprint = '0'.repeat(64);",
+        ),
+    ],
+    [
+      'count',
+      one,
+      enlarged,
+      (source) =>
+        source
+          .replace('result.count = entries.length;', 'result.count = 0;')
+          .replace(
+            "result.fingerprint = [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, '0')).join('');",
+            "result.fingerprint = '0'.repeat(64);",
+          ),
+    ],
+    [
+      'field presence',
+      {},
+      one,
+      (source) =>
+        source.replace(
+          'result.fieldPresent = Object.hasOwn(parsed.state, field);',
+          'result.fieldPresent = false;',
+        ),
+    ],
+  ];
+  for (const [name, before, after, mutate] of mutants) {
+    await assert.rejects(
+      () =>
+        compare(before, after, false, `mutant ${name}`, (source) => {
+          const changed = mutate(source);
+          assert.notEqual(changed, source, `${name} mutation must reach observer`);
+          return changed;
+        }),
+      (error) => error instanceof assert.AssertionError && error.message.includes(`mutant ${name}`),
+      `${name} observer mutant must be killed`,
+    );
+  }
 });
