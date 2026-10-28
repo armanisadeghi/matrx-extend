@@ -1,0 +1,45 @@
+{
+  "task_id": "theme1308_causal_probe",
+  "status": "diagnostic_complete",
+  "summary": "Real store first Theme write from absent Chrome settings persisted defaultPermissionMode ask without reload; actual generated observer and unchanged comparator rejected independently created valid theme-only container against absent baseline.",
+  "predictions": {
+    "first_write": "confirmed: assertion no permission shadow RED; observed theme dark, field present ask",
+    "reload_only": "not necessary for observed first-write materialization; no reload executed",
+    "container_only": "confirmed: observed baseline absent and valid theme-only present, both field absent, comparator false"
+  },
+  "limits": [
+    "Source diagnostic only; no native product acceptance.",
+    "Absent baseline reconstructed by observer from empty mocked Chrome storage, not original native raw baseline replay.",
+    "Store was already initialized by existing test suite; Chrome storage was cleared before first tested write.",
+    "No production repair, independent review, commit or push."
+  ],
+  "runs": [
+    {
+      "id": "wake1308-causal-probe-20261028",
+      "log": ".output/stabilization-checkpoints/wake1308/probe/run.log",
+      "journal": "docs/stabilization/resource-journals/wake1308-causal-probe-20261028.jsonl",
+      "resource": "valid",
+      "exit": 1
+    },
+    {
+      "id": "wake1308-causal-probe-confirm-20261028",
+      "log": ".output/stabilization-checkpoints/wake1308/probe/confirm.log",
+      "journal": "docs/stabilization/resource-journals/wake1308-causal-probe-confirm-20261028.jsonl",
+      "resource": "valid",
+      "exit": 1,
+      "tests": "1 expected diagnostic assertion failure, 4 passed"
+    }
+  ],
+  "hashes_sha256": {
+    "original_and_restored_test": "2c42ef159abac040b0fdfac26bce1b3675d91e3059e7ce826494e91276957323",
+    "executed_confirm_test": "c9d0aaf6d75c26e03d760bb91f1ce2fa66d3a3d5c110915b26d7d415ebf100f1",
+    "settings": "adc6f3483e4fab8374f807de0ad823238ef3923a4d064a28d6b758ebdb8a96ad",
+    "observer": "bf832a773eb27669e0fd9eaaed8f34f46fcaf5c69d6f3cc9bf557484e4a5d6b7",
+    "lock": "53a9169891b1cab571157b4b4e70b236050e1e21374d112d81ecdb7f9bd0293a",
+    "confirm_log": "b5d6bd680f9410847727d79da74a7914d37955848ad7da8721b1dd830fa6c1e2",
+    "patch": "e7184288687c8c0566eadf14a6c98634a0a137fd99eeb2c7cc13949bc5321c82"
+  },
+  "cleanup": "Temporary source removed; test file hash restored and git status clean for that file. Both guarded processes terminal with completed journals.",
+  "next_action": "Owner review and repair decision; preserve original native baseline.",
+  "private_original_sha256": "c9a2c68d4b6ed097f8db2ae81bcc32eff03323aac6b3dcc5de939bc39d1dca5d"
+}

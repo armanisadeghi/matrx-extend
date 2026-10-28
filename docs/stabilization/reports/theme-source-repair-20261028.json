@@ -1,0 +1,326 @@
+{
+  "schema": 1,
+  "status": "SOURCE_REVIEWED_FRESH_CI_NATIVE_PENDING",
+  "owner_lane": "/root",
+  "implementation_lane": "/root/theme1308_repair",
+  "review_lane": "/root/theme1308_source_review",
+  "model": "gpt-6.1-terra/medium",
+  "base_source_sha": "e46d5be537a4eace766ef62c318dc7efeb537393",
+  "files_sha256": {
+    "src/features/settings/SettingsView.about.test.tsx": "43e83f80b20d1b16ae298e87fb82224ced79557cf2ae1c11b0dc1886038b3482",
+    "src/lib/settings/act-without-asking.test.ts": "39c5aca6e81d6ebfc813887365fd082948b24e4852884ce7a03d26e04318bb97",
+    "src/lib/settings/migrate.ts": "555270c744faacd4485997a1322eac64268b7ab12789ece17a8ebc5f43afa449",
+    "src/lib/settings/persisted.ts": "f841bcb6c74cf118992a7e410724a0838993c77e6e61c3dde0e0d0258ad0f661",
+    "src/state/settings.ts": "5999cf598a89727d8bb0de4ca4bc245597dc8c1fbd542cd9d04c9ce7acd6fb28",
+    "src/state/settings.shadow.test.ts": "9a887530a2ea5a9c1c65fa7eed15d07d4247e6ec3263d600f15772e198089a91",
+    "tests/browser/settings-full-extension-rechecks.mjs": "91166e1c4540f688dfa831d597713e2a448f363c49992197cb406e0d39dba528",
+    "tests/browser/settings-full-extension-rechecks.test.mjs": "5e79963c2394c8d9bb337a20c868098df05c60ccea8c9aca4165012b524c2a88",
+    "tests/browser/settings-guest-preference-batch.mjs": "d965dffdb7f3b86e8571eeb3c8f902c53d53dd9011abd852147ed49d01d47c03",
+    "tests/browser/settings-guest-preference-batch.test.mjs": "9a3fd10d1c96e7ae206d24a2ef2528b28102a3f5eac4bf568413c31b57024654",
+    "tests/browser/settings-reload-boundary.test.mjs": "6f70838d87d26fe85436d9ab349af7382391ac6012cf9f1bcb29908a08c89d01",
+    "tests/unit/browser-dom-permission-mode.test.ts": "fdb19a1e24333b0131f8bd641921b529a8a487beba0fe6a50c8ac31a60ed9b16",
+    "tests/unit/permission-mode-resolver.test.ts": "a57670ed5e828a1dde043152e30a0288e39f97a95e3c315a90f535309554e498",
+    "tests/unit/settings-migration.test.ts": "07694805d1383ad41b12557e001f88ed7292df65627924551ea272b38c280531",
+    "docs/feature-tests.md": "d63139f008f6d3b8579542053add44d14ad3d085dbff05f4521d3f54accc0df9"
+  },
+  "source_changes": [
+    "Retire unused Settings permission mode state/setter; reuse versioned migration and persistence exclusion while preserving version6 agent choices/unrelated preferences.",
+    "Preserve explicit Chat/Pilot Ask carry-over and canonical platform knob consumers.",
+    "Compare original raw permission footprints with only valid both-field-absent container metadata exception. Actual permission additions/removals/changes, malformed data and extra metadata remain observable failures.",
+    "Reuse authoritative matcher in finite receipt predicate; retain raw serialization information and immutable original samples."
+  ],
+  "checks": {
+    "final_vitest": "58 passed",
+    "final_focused": "1282 total, 1271 passed, 11 skipped, 0 failed",
+    "compile": "exit0",
+    "lint": "exit0; existing warnings",
+    "red_original_writer": "3 expected failing cases",
+    "red_skip_migration": "10 failures",
+    "red_noop_writer": "4 failures",
+    "comparator_constant_guards": "Executed injected comparator replacements within focused test; not whole-source-file sabotage.",
+    "observer_mutants": "Actual generated-observer expression-level fingerprint, combined fingerprint/count and field-presence replacements fail the named comparison. Fingerprint-held-constant positive control proves count still detects dictionary growth."
+  },
+  "original_log_hashes": {
+    ".output/stabilization-checkpoints/wake1308/compile.log": "431f434f6fa89e58db69d04c7266571a297d19d52c21bc9ab5bd4ba5db542081",
+    ".output/stabilization-checkpoints/wake1308/final-vitest.log": "15ba862db026c088d50000101e4e8d111fc0e583bb8e32d60428104a1cbe13d1",
+    ".output/stabilization-checkpoints/wake1308/focused-rerun.log": "d9c1470f13957015b0f4a59dfbfc7a6b861c71a97e674bcdaca64f27c44690b8",
+    ".output/stabilization-checkpoints/wake1308/focused.log": "37db7eadb34e46551848eeb06797f2665b5f0d485cdad8fd9c2bcc10eb764ecc",
+    ".output/stabilization-checkpoints/wake1308/green.log": "cf8802c49e2655d1781e9964382db33be52a57fbffdf4bad772f33f7436a0f41",
+    ".output/stabilization-checkpoints/wake1308/lint.log": "66aa1a10e99bc7ab94c1c853fee3cb49328e4491c1a218933af83292d86ad56e",
+    ".output/stabilization-checkpoints/wake1308/mutant-migration.log": "3ad68eb58f4f8af0b9551971629ea4e2cdafa62e2f867098096e999b8c7fabc5",
+    ".output/stabilization-checkpoints/wake1308/mutant-writer.log": "97b0b2db3996dde859b69031400f6e878c32e0f88a089c7d2b63ee46a3c9fa7e",
+    ".output/stabilization-checkpoints/wake1308/r1-final.log": "5038131ae12f1a970be3283a6df1c8d326039914c5e032512162cca08b7e9f23",
+    ".output/stabilization-checkpoints/wake1308/r1-final2.log": "8ac19ad9d5d2460ba68ab620a53a7fcb5b41fdc0dcaa71044392b5141babdfa4",
+    ".output/stabilization-checkpoints/wake1308/r1-focused.log": "a1bbc1976d7435bb13e8f2e5f5f44dfe1b142c51ecaf0b96baa8e118fd3a8892",
+    ".output/stabilization-checkpoints/wake1308/r1-lint-final.log": "3e38431498e62f333bff110e164991a4f0a22343b5da695bf868484486c2e675",
+    ".output/stabilization-checkpoints/wake1308/r1-lint.log": "badac90e26a072bfba71cdf9ff802ee3e653475d5b156a42d7426dde60875843",
+    ".output/stabilization-checkpoints/wake1308/red.log": "c1f40515a70011c017306a983a13a2d066edddc15b2e2b1e2874c5efb6ac5649"
+  },
+  "resource": [
+    {
+      "path": "docs/stabilization/resource-journals/wake1308-causal-probe-20261028.jsonl",
+      "sha256": "aeae42001b0bf1d4befd49dba1e705eabf309d1f7502f2b995a627e550e5525a",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-28T13:12:50.683Z",
+        "runId": "wake1308-causal-probe-20261028",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 1,
+        "decision": "child_failed",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "path": "docs/stabilization/resource-journals/wake1308-causal-probe-confirm-20261028.jsonl",
+      "sha256": "06d401405a4a9b64336ef8514ff7484cadae533c841f21792478a8d8cb937985",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-28T13:14:08.697Z",
+        "runId": "wake1308-causal-probe-confirm-20261028",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 1,
+        "decision": "child_failed",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "path": "docs/stabilization/resource-journals/wake1308-compile.jsonl",
+      "sha256": "c372f343aeb3412d9af5cd3e8d079cbce0c1b9fd6f10d410f18cf897e78ab808",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-28T13:28:30.371Z",
+        "runId": "wake1308-compile",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "path": "docs/stabilization/resource-journals/wake1308-final-vitest.jsonl",
+      "sha256": "2a9c756b60c91193299d461c40c3402496845ae843bb2038304d7e8c1be6bcc1",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-28T13:23:38.094Z",
+        "runId": "wake1308-final-vitest",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "path": "docs/stabilization/resource-journals/wake1308-focused-rerun.jsonl",
+      "sha256": "db3b92ba06e9e3e870dc71f45db5b85ca0b550966f2cbfe857f77cfd4a851c5b",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-28T13:27:17.522Z",
+        "runId": "wake1308-focused-rerun",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "path": "docs/stabilization/resource-journals/wake1308-focused.jsonl",
+      "sha256": "d4330feeca3e16a5f9a655ec978c044bdf8eaaf13f755296341c0fe5c9596bb9",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-28T13:22:10.269Z",
+        "runId": "wake1308-focused",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 1,
+        "decision": "child_failed",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "path": "docs/stabilization/resource-journals/wake1308-green.jsonl",
+      "sha256": "aa05972983ca29cc205c750c90745448c673e1c6b02fe756abc8412fc6f14075",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-28T13:18:31.324Z",
+        "runId": "wake1308-green",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "path": "docs/stabilization/resource-journals/wake1308-lint.jsonl",
+      "sha256": "22dbfffbfe3419ebdffd7a1ca5177e6176a02eb4e662d0cfe9d8ec92dda5a6fd",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-28T13:29:43.970Z",
+        "runId": "wake1308-lint",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "path": "docs/stabilization/resource-journals/wake1308-mutant-migration.jsonl",
+      "sha256": "2df994c4ebb1f4ee150ea576fbcd93acc0e828d3a9ec51509a024be9ec59da35",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-28T13:30:57.151Z",
+        "runId": "wake1308-mutant-migration",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 1,
+        "decision": "child_failed",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "path": "docs/stabilization/resource-journals/wake1308-mutant-writer.jsonl",
+      "sha256": "087a1ab38ab52a4a90c5507a1cb4da6db07134de38195b0137c02e6f800363f4",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-28T13:32:56.602Z",
+        "runId": "wake1308-mutant-writer",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 1,
+        "decision": "child_failed",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "path": "docs/stabilization/resource-journals/wake1308-r1-final.jsonl",
+      "sha256": "90c127fe8d9973ce3f1caccaf262f5a99ffd19a3185dacceb197ef157ac59f80",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-28T13:45:32.765Z",
+        "runId": "wake1308-r1-final",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 1,
+        "decision": "child_failed",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "path": "docs/stabilization/resource-journals/wake1308-r1-final2.jsonl",
+      "sha256": "3d45e655f7257541f9389ed105370a619f84836290ad4ddbb7d44bb8b8656f95",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-28T13:49:25.530Z",
+        "runId": "wake1308-r1-final2",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "path": "docs/stabilization/resource-journals/wake1308-r1-focused.jsonl",
+      "sha256": "58598d0b648c3169163bb9884b365453bf6d1869a0164c930e6265ba8072f3d0",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-28T13:40:40.203Z",
+        "runId": "wake1308-r1-focused",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "path": "docs/stabilization/resource-journals/wake1308-r1-lint-final.jsonl",
+      "sha256": "6cf59c28535079c350ab9a9fec2f3749d2077b37e15c561f044092c9e2d511a4",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-28T13:50:39.370Z",
+        "runId": "wake1308-r1-lint-final",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "path": "docs/stabilization/resource-journals/wake1308-r1-lint.jsonl",
+      "sha256": "e1d84f4e2056cc01896a542708d202613dd957f26795df60fda2d9d2ef46726c",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-28T13:41:53.990Z",
+        "runId": "wake1308-r1-lint",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "path": "docs/stabilization/resource-journals/wake1308-red.jsonl",
+      "sha256": "65c7d4dcbe9c221dd5ae40f70a6070d49a1c30bb249a15ef23651ca8392117ad",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-28T13:17:13.576Z",
+        "runId": "wake1308-red",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 1,
+        "decision": "child_failed",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "path": "docs/stabilization/resource-journals/wake1308-source-peer-focused.jsonl",
+      "sha256": "136b23cf9945d4f2ae26e7a5c286f0b0e127d1571908edbe78061c9babfab445",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-28T13:34:35.160Z",
+        "runId": "wake1308-source-peer-focused",
+        "admitted": false,
+        "resourceInvalid": false,
+        "exitCode": 2,
+        "decision": "refused",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    }
+  ],
+  "intermediate_limits": [
+    "Earlier47-test green precedes final type/migration/current-version edits; final58 is separately retained.",
+    "First focused1266pass4fail11skip retained; four old-contract sibling expectations were revised and finalfocused independently reviewed.",
+    "Local installed dependencies predate refreshed contributor925 lock; final exact-main fresh-installCI remains mandatory."
+  ],
+  "acceptance_limits": [
+    "Source-class reproduction, not native first-writer proof.",
+    "No native original/surrounding, full-case closure, Store acceptance, upload, submission or deployment credit.",
+    "No localbuild/install/release, no resource/source admission changes, no auth/fixture/secret mutation."
+  ],
+  "next_action": "Fresh independent source review then commit/push exact unit and completed evidence; actual exact-main CI with refreshed lock, then only normal guarded hosted original+surrounding acceptance. No local Chrome lease/metadata changes before actual hosted dispatches.",
+  "review_round1": {
+    "finding": "R1 actual generated-observer matrix gap; corrected without production changes",
+    "evidence": "theme-source-peer-round1-20261028.json"
+  },
+  "review_correction": {
+    "previous_test_sha256": "ac8189b0a520490d36eee2cca557c8d254a8bfb29d75d5bd194b3daad6ca6a0a",
+    "final_test_sha256": "9a3fd10d1c96e7ae206d24a2ef2528b28102a3f5eac4bf568413c31b57024654",
+    "first_green": "wake1308-r1-focused: 1271 pass, 11 skip; before count control",
+    "failed": "wake1308-r1-final: 1 failure, test fixture reused input by reference; sha256 5038131ae12f1a970be3283a6df1c8d326039914c5e032512162cca08b7e9f23",
+    "final": "wake1308-r1-final2: 1271 pass, 11 skip, admitted valid; sha256 8ac19ad9d5d2460ba68ab620a53a7fcb5b41fdc0dcaa71044392b5141babdfa4",
+    "lint": "wake1308-r1-lint-final: exit 0, admitted valid; sha256 3e38431498e62f333bff110e164991a4f0a22343b5da695bf868484486c2e675",
+    "mutants": "observer expression fingerprint, fingerprint+count and field-presence replacements rejected at named real-fixture comparison; fingerprint-held-constant control proves count matters",
+    "journals": "docs/stabilization/resource-journals/wake1308-{r1-focused,r1-final,r1-final2,r1-lint-final}.jsonl"
+  },
+  "independent_review": "theme-source-peer-final-20261028.json",
+  "independent_execution_limit": "Peer refused unsupported direct three-file command before admission; no tests/retry/bypass. Fresh source review and original builder gate/hash/journal authentication accepted separately."
+}

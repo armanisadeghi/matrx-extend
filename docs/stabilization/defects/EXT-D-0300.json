@@ -34,7 +34,7 @@
     "docs/stabilization/reports/failure-capture-source-verification-20261027.json",
     "docs/stabilization/reports/failure-capture-source-peer-20261027.json"
   ],
-  "next_action": "Reproduce fresh absent Settings store to first real Theme full-state persist using actual shared persistence and harness baseline/comparator. Independently review fixture-lifecycle remedy before changing comparison or fixture. Preserve immutable original and categorical diagnostics.",
+  "next_action": "Push reviewed exact source/evidence, wait exact-main fresh-install CI with refreshed lock; normal guarded hosted SettingsB original+surrounding reload retest, then same-frozen artifact Scrape only if normal source/capacity admission passes. Keep local Chrome lease/journal and metadata changes until actual dispatch boundaries.",
   "transition_history": [
     {
       "at": "2026-10-27T19:40:18.049879+00:00",
@@ -48,6 +48,13 @@
       "to": "in-fix",
       "reason": "Exact5f native finite diagnostics localize compound reopen failure to mode serialization absent-to-present Settings footprint; cause/repair/full acceptance still open. No product closure.",
       "evidence": "docs/stabilization/reports/source5f-native-20261028.json"
+    },
+    {
+      "at": "2026-10-28T13:53:13.221888+00:00",
+      "from": "in-fix",
+      "to": "in-fix",
+      "reason": "Combined Settings retired-mode persistence and narrow permission-footprint class repair independently accepted at source scope; native original and surrounding acceptance remains pending.",
+      "evidence": "docs/stabilization/reports/theme-source-peer-final-20261028.json"
     }
   ],
   "bounded_source_fix_files": {
@@ -269,5 +276,19 @@
       "report": "docs/stabilization/reports/source5f-native-20261028.json",
       "resource_invalid": false
     }
+  },
+  "theme_mode_materialization_repair": {
+    "state": "SOURCE_REVIEWED_FRESH_CI_NATIVE_PENDING",
+    "owner": "/root",
+    "implementation_lane": "/root/theme1308_repair",
+    "independent_lane": "/root/theme1308_source_review",
+    "plan": "docs/stabilization/reports/theme-owner-decision-20261028.json",
+    "causal_source_probe": "docs/stabilization/reports/theme-causal-probe-20261028.json",
+    "source_report": "docs/stabilization/reports/theme-source-repair-20261028.json",
+    "peer": "docs/stabilization/reports/theme-source-peer-final-20261028.json",
+    "source_cause": "Actual production first tested Theme persistence writes the retired local mode default; unchanged comparator separately rejects valid container materialization without any permission field. Probe singleton was initialized; no native first-writer proof.",
+    "repair": "Retire Settings-only mode field through v7 migration/persistence, preserve v6 agent/unrelated data and Chat/Pilot explicit Ask carry-over. Compare immutable raw footprints permitting only valid both-mode-field-absent container metadata differences; actual permission changes/malformed/extra fields remain failures. Reuse authoritative predicate in receipt, retaining rawserialization.",
+    "verification": "58 final Vitest; final MJS1282total1271pass11skip0fail; compile0; lint3509files1039warnings0errors; sourceRED and meaningful migration/writer/observer mutants. R1 actual observer matrix gap corrected and independently accepted. Refused independent directcommand retained, no bypass/tests.",
+    "limits": "Source checks use installed dependencies preceding contributor lock refresh; exact-main fresh-install CI and actual original+surrounding native full-reload acceptance pending. No product closure/Store/release credit."
   }
 }
