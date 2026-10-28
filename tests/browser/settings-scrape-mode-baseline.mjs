@@ -10,53 +10,176 @@ export function settingsFixtureIntegrityFailure(error) {
     error !== null && (typeof error === 'object' || typeof error === 'function')
       ? integrityFailures.get(error)
       : null;
-  return value ? { ...value } : null;
+  return value ? { ...value, ...(value.capture && { capture: { ...value.capture } }) } : null;
+}
+
+const CAPTURE_STAGES = new Set([
+  'backup_read',
+  'source_read',
+  'source_validation',
+  'backup_write',
+  'readback',
+  'comparison',
+  'unavailable',
+]);
+function safeCaptureDiagnostic(value) {
+  const stage = value?.stage;
+  const outcome = value?.outcome;
+  const bool = (key) => {
+    const candidate = value?.[key];
+    return typeof candidate === 'boolean' ? candidate : null;
+  };
+  return {
+    stage: CAPTURE_STAGES.has(stage) ? stage : 'unavailable',
+    outcome: ['matched', 'mismatch', 'unsupported', 'collision', 'exception_unavailable'].includes(
+      outcome,
+    )
+      ? outcome
+      : 'exception_unavailable',
+    envelopeMatches: bool('envelopeMatches'),
+    sourcePresenceMatches: bool('sourcePresenceMatches'),
+    sourceValueMatches: bool('sourceValueMatches'),
+    sourceSupported: bool('sourceSupported'),
+  };
 }
 
 // This function executes entirely in the extension. No source value leaves the browser.
 async function fixtureStoragePhase(backupKey, owner, phase) {
   const sourceKey = 'matrx.settings.v1';
   const local = chrome.storage.local;
-  const equal = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+  const plainRecord = (value) => {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+    const prototype = Object.getPrototypeOf(value);
+    if (prototype === null) return true;
+    const recordConstructor = Object.getOwnPropertyDescriptor(prototype, 'constructor')?.value;
+    return (
+      Object.getPrototypeOf(prototype) === null &&
+      typeof recordConstructor === 'function' &&
+      recordConstructor.prototype === prototype &&
+      Function.prototype.toString.call(recordConstructor) ===
+        Function.prototype.toString.call(Object)
+    );
+  };
+  const ownFields = (value, keys) =>
+    plainRecord(value) &&
+    Reflect.ownKeys(value).length === keys.length &&
+    keys.every((key) => {
+      const descriptor = Object.getOwnPropertyDescriptor(value, key);
+      return descriptor?.enumerable === true && Object.hasOwn(descriptor, 'value');
+    });
+  const nativeArray = (value) => {
+    const prototype = Object.getPrototypeOf(value);
+    if (!prototype || !Array.isArray(prototype)) return false;
+    const arrayConstructor = Object.getOwnPropertyDescriptor(prototype, 'constructor')?.value;
+    return (
+      typeof arrayConstructor === 'function' &&
+      arrayConstructor.prototype === prototype &&
+      Function.prototype.toString.call(arrayConstructor) === Function.prototype.toString.call(Array)
+    );
+  };
+  const jsonValue = (value, ancestors = new Set()) => {
+    if (value === null || typeof value === 'string' || typeof value === 'boolean') return true;
+    if (typeof value === 'number') return Number.isFinite(value) && !Object.is(value, -0);
+    if (typeof value !== 'object' || ancestors.has(value)) return false;
+    const array = Array.isArray(value);
+    if (array && !nativeArray(value)) return false;
+    if (!array && !plainRecord(value)) return false;
+    const keys = Reflect.ownKeys(value);
+    if (array) {
+      if (keys.length !== value.length + 1 || !keys.includes('length')) return false;
+      for (let index = 0; index < value.length; index++)
+        if (!Object.hasOwn(value, String(index))) return false;
+    }
+    ancestors.add(value);
+    for (const key of keys) {
+      if (array && key === 'length') continue;
+      const descriptor = Object.getOwnPropertyDescriptor(value, key);
+      if (
+        typeof key !== 'string' ||
+        descriptor?.enumerable !== true ||
+        !Object.hasOwn(descriptor, 'value') ||
+        !jsonValue(descriptor.value, ancestors)
+      ) {
+        ancestors.delete(value);
+        return false;
+      }
+    }
+    ancestors.delete(value);
+    return true;
+  };
+  // Strings stay opaque; only JSON record field order is immaterial.
+  const equal = (a, b) => {
+    if (Object.is(a, b)) return true;
+    if (typeof a !== typeof b || a === null || b === null || typeof a !== 'object') return false;
+    if (Array.isArray(a) !== Array.isArray(b)) return false;
+    if (Array.isArray(a))
+      return a.length === b.length && a.every((value, index) => equal(value, b[index]));
+    const keys = Object.keys(a);
+    return (
+      keys.length === Object.keys(b).length &&
+      keys.every((key) => Object.hasOwn(b, key) && equal(a[key], b[key]))
+    );
+  };
+  const envelopeFields = ['schema', 'sourceKey', 'owner', 'payload', 'seal'];
   const digest = async (payload) =>
     Array.from(
       new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(payload))),
     )
       .map((byte) => byte.toString(16).padStart(2, '0'))
       .join('');
+  const validEnvelope = async (envelope) =>
+    ownFields(envelope, envelopeFields) &&
+    envelope.schema === 1 &&
+    envelope.sourceKey === sourceKey &&
+    envelope.owner === owner &&
+    typeof envelope.payload === 'string' &&
+    envelope.seal === (await digest(envelope.payload));
+  const capture = {
+    stage: 'backup_read',
+    outcome: 'exception_unavailable',
+    envelopeMatches: null,
+    sourcePresenceMatches: null,
+    sourceValueMatches: null,
+    sourceSupported: null,
+  };
   try {
     if (phase === 'capture') {
       const existing = await local.get(backupKey);
-      if (Object.hasOwn(existing, backupKey)) return { ok: false };
+      if (Object.hasOwn(existing, backupKey))
+        return { ok: false, capture: { ...capture, outcome: 'collision' } };
+      capture.stage = 'source_read';
       const source = await local.get(sourceKey);
       const present = Object.hasOwn(source, sourceKey);
+      capture.stage = 'source_validation';
+      capture.sourceSupported = !present || jsonValue(source[sourceKey]);
+      if (!capture.sourceSupported)
+        return { ok: false, capture: { ...capture, outcome: 'unsupported' } };
       const payload = JSON.stringify({ present, ...(present && { raw: source[sourceKey] }) });
-      // Unsupported Chrome values must fail before the first source mutation.
       const decoded = JSON.parse(payload);
-      if (present && (!Object.hasOwn(decoded, 'raw') || !equal(decoded.raw, source[sourceKey])))
-        return { ok: false };
       const envelope = { schema: 1, sourceKey, owner, payload, seal: await digest(payload) };
+      capture.stage = 'backup_write';
       await local.set({ [backupKey]: envelope });
+      capture.stage = 'readback';
       const readback = await local.get([backupKey, sourceKey]);
-      return {
-        ok:
-          equal(readback[backupKey], envelope) &&
-          Object.hasOwn(readback, sourceKey) === present &&
-          (!present || equal(readback[sourceKey], decoded.raw)),
-      };
+      capture.stage = 'comparison';
+      capture.envelopeMatches =
+        (await validEnvelope(readback[backupKey])) &&
+        envelopeFields.every((field) => readback[backupKey][field] === envelope[field]);
+      capture.sourcePresenceMatches = Object.hasOwn(readback, sourceKey) === present;
+      capture.sourceValueMatches =
+        !present ||
+        (Object.hasOwn(readback, sourceKey) &&
+          jsonValue(readback[sourceKey]) &&
+          equal(readback[sourceKey], decoded.raw));
+      const ok =
+        capture.envelopeMatches && capture.sourcePresenceMatches && capture.sourceValueMatches;
+      return { ok, capture: { ...capture, outcome: ok ? 'matched' : 'mismatch' } };
     }
     const entries = await local.get(backupKey);
     const envelope = entries[backupKey];
     if (phase === 'inspect' && !Object.hasOwn(entries, backupKey))
       return { ok: true, backupPresent: false, backupOwned: false, snapshotRetained: false };
-    if (
-      !envelope ||
-      envelope.schema !== 1 ||
-      envelope.sourceKey !== sourceKey ||
-      envelope.owner !== owner ||
-      typeof envelope.payload !== 'string' ||
-      envelope.seal !== (await digest(envelope.payload))
-    )
+    if (!envelope || envelope.owner !== owner || !(await validEnvelope(envelope)))
       return phase === 'inspect'
         ? {
             ok: true,
@@ -66,7 +189,11 @@ async function fixtureStoragePhase(backupKey, owner, phase) {
           }
         : { ok: false };
     const saved = JSON.parse(envelope.payload);
-    if (typeof saved.present !== 'boolean' || (saved.present && !Object.hasOwn(saved, 'raw')))
+    if (
+      typeof saved.present !== 'boolean' ||
+      !ownFields(saved, saved.present ? ['present', 'raw'] : ['present']) ||
+      (saved.present && !jsonValue(saved.raw))
+    )
       return { ok: false };
     if (phase === 'inspect')
       return { ok: true, backupPresent: true, backupOwned: true, snapshotRetained: true };
@@ -80,7 +207,8 @@ async function fixtureStoragePhase(backupKey, owner, phase) {
       return {
         ok:
           Object.hasOwn(current, sourceKey) === saved.present &&
-          (!saved.present || equal(current[sourceKey], saved.raw)),
+          (!saved.present ||
+            (jsonValue(current[sourceKey]) && equal(current[sourceKey], saved.raw))),
       };
     }
     if (phase === 'absent') {
@@ -94,7 +222,7 @@ async function fixtureStoragePhase(backupKey, owner, phase) {
     }
     return { ok: false };
   } catch {
-    return { ok: false };
+    return phase === 'capture' ? { ok: false, capture } : { ok: false };
   }
 }
 
@@ -123,6 +251,7 @@ export async function withExactSettingsFixture({
     throw new Error('settings_fixture_integrity_failed');
   };
   const storage = async (operation) => {
+    if (operation === 'capture') receipt.capture = safeCaptureDiagnostic(null);
     let result;
     try {
       result = await driver.evaluate(
@@ -132,7 +261,15 @@ export async function withExactSettingsFixture({
     } catch {
       fail();
     }
-    if (result?.ok !== true) fail();
+    let ok;
+    try {
+      if (operation === 'capture') receipt.capture = safeCaptureDiagnostic(result?.capture);
+      ok = result?.ok === true;
+    } catch {
+      if (operation === 'capture') receipt.capture = safeCaptureDiagnostic(null);
+      fail();
+    }
+    if (!ok) fail();
   };
   const reload = async () => {
     try {

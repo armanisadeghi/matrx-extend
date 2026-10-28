@@ -1042,3 +1042,577 @@ test('fixture failure phase remains separate from successful later restoration a
   assert.equal(receipt.snapshotRetained, false);
   assert.equal(receipt.backupPresent, false);
 });
+
+// Chrome's storage backend may return the same record fields in a different order.
+function reorderStorageRecords(fixture) {
+  const sort = (value, reverse) => {
+    if (Array.isArray(value)) return value.map((entry) => sort(entry, reverse));
+    if (value && typeof value === 'object') {
+      const keys = Object.keys(value).sort();
+      if (reverse) keys.reverse();
+      return Object.fromEntries(keys.map((key) => [key, sort(value[key], reverse)]));
+    }
+    return value;
+  };
+  let reads = 0;
+  const get = fixture.local.get;
+  fixture.local.get = async (keys) => sort(await get(keys), ++reads % 2 === 0);
+  const set = fixture.local.set;
+  fixture.local.set = async (values) => set(sort(values, true));
+}
+
+test('actual T40 accepts reordered backend envelope fields and restores the unchanged original footprint', async () => {
+  const raw = '{ "state": { "theme": "dark", "unknownSibling": "CANARY_dental" }, "version": 0 }';
+  const f = simulatedPanel(raw);
+  reorderStorageRecords(f);
+  try {
+    await runGuestAutoScrapeCase(null, f.reload, () => {}, f.driver);
+  } catch (error) {
+    const receipt = settingsFixtureIntegrityFailure(error);
+    assert.equal(receipt?.phase, 'capture');
+    assert.equal(receipt?.backupOwned, true);
+    assert.equal(f.state.clicks.length, 0);
+    assert.equal(f.state.reloads, 0);
+    assert.equal(f.entries['matrx.settings.v1'], raw);
+    assert.fail('order-only backend envelope reserialization must allow actual T40 body');
+  }
+  assert.ok(f.state.clicks.length > 0);
+  assert.equal(f.entries['matrx.settings.v1'], raw);
+  assert.deepEqual(Object.keys(f.entries), ['matrx.settings.v1']);
+});
+
+async function modeFootprintReader(local) {
+  const source = await readFile(
+    new URL('./settings-guest-preference-batch.mjs', import.meta.url),
+    'utf8',
+  );
+  const start = source.indexOf('function guestModeShadowExpression() {');
+  const end = source.indexOf('\nexport function guestModeShadowMatches', start);
+  const expression = new Function(
+    `${source.slice(start, end)}; return guestModeShadowExpression();`,
+  )();
+  return () =>
+    runInNewContext(expression, { chrome: { storage: { local } }, crypto: webcrypto, TextEncoder });
+}
+
+for (const [id, runner] of [
+  ['T40', runGuestAutoScrapeCase],
+  ['T67', runGuestAutoScrapeModeCase],
+  ['T37', runGuestDeepCleanCase],
+]) {
+  test(`${id} actual control with sorted backend preserves absent partial and explicit immutable footprints`, async () => {
+    for (const raw of [
+      undefined,
+      '{ "state": { "unknownSibling": "CANARY_dental", "theme": "dark" }, "version": 0 }',
+      '{"version":0,"state":{"scrapeDeepClean":false,"scrapeAutoOnLoad":false,"scrapeAutoMode":"capture","unknownSibling":{"z":2,"a":1}}}',
+    ]) {
+      const f = simulatedPanel(raw);
+      reorderStorageRecords(f);
+      const read = await modeFootprintReader(f.local);
+      const baseline = await read();
+      await runner(null, f.reload, () => {}, f.driver);
+      assert.ok(f.state.clicks.length > 0);
+      assert.equal(guestModeShadowMatches(await read(), baseline), true);
+      assert.equal(f.entries['matrx.settings.v1'], raw);
+      assert.equal(Object.hasOwn(f.entries, 'matrx.settings.v1'), raw !== undefined);
+      assert.deepEqual(Object.keys(f.entries), raw === undefined ? [] : ['matrx.settings.v1']);
+    }
+  });
+}
+
+async function captureOutcome(
+  raw,
+  {
+    transformReadback,
+    configure,
+    variant = { withExactSettingsFixture, settingsFixtureIntegrityFailure },
+  } = {},
+) {
+  const f = simulatedPanel(raw);
+  // Preserve the external operand's actual types, including values Chrome cannot serialize.
+  const writes = [];
+  let reads = 0;
+  let body = false;
+  f.local.get = async (keys) => {
+    reads++;
+    const entries = Object.fromEntries(
+      (Array.isArray(keys) ? keys : [keys])
+        .filter((key) => Object.hasOwn(f.entries, key))
+        .map((key) => [key, f.entries[key]]),
+    );
+    return Array.isArray(keys) && transformReadback ? transformReadback(entries, f) : entries;
+  };
+  const set = f.local.set;
+  f.local.set = async (values) => {
+    writes.push(Object.keys(values));
+    return set(values);
+  };
+  if (configure) configure(f);
+  let failure;
+  try {
+    await variant.withExactSettingsFixture({
+      getPanel: () => null,
+      driver: f.driver,
+      reloadSettings: f.reload,
+      execute: async () => {
+        body = true;
+        f.entries['matrx.settings.v1'] = 'owned body change';
+      },
+    });
+  } catch (error) {
+    failure = error;
+  }
+  return {
+    f,
+    reads,
+    writes,
+    body,
+    failure,
+    receipt: variant.settingsFixtureIntegrityFailure(failure),
+  };
+}
+
+async function verifySupportedJson(variant) {
+  const nullRecord = Object.assign(Object.create(null), { z: 3, a: true });
+  for (const raw of [
+    null,
+    false,
+    7,
+    '',
+    '{malformed CANARY_dental',
+    nullRecord,
+    { z: [3, { z: true, a: null }], a: { unknownSibling: 'CANARY_dental', intake: [1, '1'] } },
+    [null, { z: false, a: 'CANARY_array' }, 4],
+  ]) {
+    const result = await captureOutcome(raw, {
+      variant,
+      ...(raw !== nullRecord && { configure: reorderStorageRecords }),
+    });
+    assert.equal(
+      result.failure,
+      undefined,
+      'supported opaque JSON source must survive reordered storage',
+    );
+    assert.equal(result.body, true);
+    assert.deepEqual(
+      result.f.entries['matrx.settings.v1'],
+      raw === nullRecord ? { z: 3, a: true } : raw,
+    );
+    assert.deepEqual(Object.keys(result.f.entries), ['matrx.settings.v1']);
+  }
+}
+
+test('actual lifecycle preserves opaque strings and typed JSON trees when only record key order changes', async () => {
+  await verifySupportedJson();
+});
+
+async function verifyUnsupportedJson(variant) {
+  const cycle = {};
+  cycle.intake = cycle;
+  const sparse = [];
+  sparse.length = 2;
+  sparse[1] = 3;
+  class IntakeArray extends Array {}
+  const customArray = [1, 2];
+  Object.setPrototypeOf(customArray, Object.create(Array.prototype));
+  const extraArray = [1];
+  extraArray.extra = true;
+  const hidden = Object.defineProperty({}, 'intake', { value: true });
+  const accessor = Object.defineProperty({}, 'intake', {
+    enumerable: true,
+    get() {
+      throw new Error('CANARY_getter');
+    },
+  });
+  const symbol = { intake: true };
+  symbol[Symbol('CANARY_symbol')] = 1;
+  for (const raw of [
+    { intake: undefined },
+    undefined,
+    () => {},
+    Symbol('CANARY'),
+    Number.NaN,
+    Number.POSITIVE_INFINITY,
+    -0,
+    BigInt(4),
+    sparse,
+    extraArray,
+    new IntakeArray(1, 2),
+    customArray,
+    cycle,
+    new Date(0),
+    new Map(),
+    Object.create({ intake: true }),
+    Object.create(Object.create(null)),
+    hidden,
+    accessor,
+    symbol,
+  ]) {
+    const result = await captureOutcome(raw, {
+      variant,
+      configure: (f) => {
+        f.entries['matrx.settings.v1'] = raw;
+      },
+    });
+    assert.equal(result.body, false, 'unsupported JSON may not reach body');
+    assert.deepEqual(result.writes, [], 'unsupported JSON must fail before the backup write');
+    assert.equal(result.receipt?.capture?.stage, 'source_validation');
+    assert.equal(result.receipt?.capture?.sourceSupported, false);
+    assert.equal(result.receipt?.capture?.outcome, 'unsupported');
+    assert.equal(result.f.entries['matrx.settings.v1'], raw);
+    assert.doesNotMatch(JSON.stringify(result.receipt), /CANARY|intake|payload|seal/);
+  }
+}
+
+test('unsupported JSON is rejected before serialization can erase or coerce it', async () => {
+  await verifyUnsupportedJson();
+});
+
+async function verifyCaptureDrift(variant) {
+  const originals = [
+    ['{ "state": {"theme":"dark"}, "version": 0 }', '{"state":{"theme":"dark"},"version":0}'],
+    ['{malformed', '{malformed '],
+    [
+      { intake: [1, '2'], unknownSibling: true },
+      { intake: [1, 2], unknownSibling: true },
+    ],
+    [
+      { intake: [1, 2], unknownSibling: true },
+      { intake: [2, 1], unknownSibling: true },
+    ],
+    [
+      { intake: [1, 2], unknownSibling: true },
+      { intake: [1], unknownSibling: true },
+    ],
+    [{ intake: true, unknownSibling: 2 }, { intake: true }],
+    [{ intake: true }, { intake: true, unknownSibling: 2 }],
+    [null, 'null'],
+    [false, 0],
+  ];
+  for (const [raw, changed] of originals) {
+    const result = await captureOutcome(raw, {
+      variant,
+      transformReadback: (entries) => ({ ...entries, 'matrx.settings.v1': changed }),
+    });
+    assert.equal(result.body, false, 'source value drift must refuse ownership');
+    assert.equal(result.receipt?.capture?.envelopeMatches, true);
+    assert.equal(result.receipt?.capture?.sourcePresenceMatches, true);
+    assert.equal(result.receipt?.capture?.sourceValueMatches, false);
+    assert.equal(result.receipt?.snapshotRetained, true);
+    assert.equal(result.f.state.reloads, 0);
+    assert.equal(result.reads, 4, 'capture uses existing three reads plus failure inspection');
+  }
+  for (const raw of [undefined, null]) {
+    const result = await captureOutcome(raw, {
+      variant,
+      transformReadback: (entries) => {
+        if (raw === undefined) return { ...entries, 'matrx.settings.v1': null };
+        Reflect.deleteProperty(entries, 'matrx.settings.v1');
+        return entries;
+      },
+    });
+    assert.equal(result.body, false);
+    assert.equal(result.receipt?.capture?.sourcePresenceMatches, false);
+  }
+}
+
+test('capture distinguishes presence and every typed source value change without extra storage reads', async () => {
+  await verifyCaptureDrift();
+});
+
+async function verifyEnvelopeFields(variant) {
+  for (const alteration of [
+    'extra',
+    'missing',
+    'schema',
+    'sourceKey',
+    'owner',
+    'payload',
+    'seal',
+  ]) {
+    const result = await captureOutcome('{"state":{},"version":0}', {
+      variant,
+      configure: (f) => {
+        const set = f.local.set;
+        f.local.set = async (values) => {
+          await set(values);
+          const key = Object.keys(values)[0];
+          if (!key.startsWith('matrx.qa.')) return;
+          if (alteration === 'extra') f.entries[key].extra = 'CANARY_extra';
+          else if (alteration === 'missing') Reflect.deleteProperty(f.entries[key], 'seal');
+          else f.entries[key][alteration] = alteration === 'schema' ? 2 : 'CANARY_corrupt';
+        };
+      },
+    });
+    assert.equal(result.body, false, 'invalid envelope must refuse capture and restore');
+    assert.equal(result.receipt?.capture?.envelopeMatches, false);
+    assert.equal(result.receipt?.backupOwned, false);
+    assert.equal(result.receipt?.snapshotRetained, false);
+    assert.equal(result.f.entries['matrx.settings.v1'], '{"state":{},"version":0}');
+    assert.doesNotMatch(JSON.stringify(result.receipt), /CANARY|extra|payload|seal/);
+  }
+}
+
+test('capture and shared inspection require exactly the five authentic envelope fields', async () => {
+  await verifyEnvelopeFields();
+});
+
+test('capture diagnostics expose fixed predicates and unavailable exceptions without raw evaluate extras', async () => {
+  for (const failureAt of ['source_read', 'backup_write', 'readback', 'transport', 'projection']) {
+    const result = await captureOutcome('CANARY_private_raw', {
+      configure: (f) => {
+        const get = f.local.get;
+        let count = 0;
+        f.local.get = async (keys) => {
+          count++;
+          if (
+            (failureAt === 'source_read' && count === 2) ||
+            (failureAt === 'readback' && count === 3)
+          )
+            throw new Error('CANARY_storage');
+          return get(keys);
+        };
+        if (failureAt === 'backup_write')
+          f.local.set = async () => {
+            throw new Error('CANARY_storage');
+          };
+        const evaluate = f.driver.evaluate;
+        f.driver.evaluate = async (...args) => {
+          const value = await evaluate(...args);
+          if (!args[1].endsWith(',"capture")')) return value;
+          if (failureAt === 'transport') throw new Error('CANARY_transport');
+          if (failureAt === 'projection')
+            return {
+              ok: false,
+              raw: 'CANARY_raw',
+              capture: {
+                stage: 'CANARY_stage',
+                outcome: 'CANARY_outcome',
+                envelopeMatches: 'CANARY_bool',
+                sourcePresenceMatches: {},
+                sourceValueMatches: [],
+                sourceSupported: null,
+                payload: 'CANARY_payload',
+              },
+            };
+          return value;
+        };
+      },
+    });
+    assert.equal(result.body, false);
+    const diagnostic = result.receipt.capture;
+    assert.equal(
+      diagnostic.stage,
+      ['transport', 'projection'].includes(failureAt) ? 'unavailable' : failureAt,
+    );
+    assert.equal(diagnostic.outcome, 'exception_unavailable');
+    assert.equal(diagnostic.envelopeMatches, null);
+    assert.doesNotMatch(
+      JSON.stringify(result.receipt) + result.failure.message,
+      /CANARY|payload|seal/,
+    );
+    assert.deepEqual(Object.keys(diagnostic), [
+      'stage',
+      'outcome',
+      'envelopeMatches',
+      'sourcePresenceMatches',
+      'sourceValueMatches',
+      'sourceSupported',
+    ]);
+  }
+});
+
+async function captureVariant(mutation) {
+  let source = await readFile(
+    new URL('./settings-scrape-mode-baseline.mjs', import.meta.url),
+    'utf8',
+  );
+  const original = source;
+  if (mutation === 'envelope_order')
+    source = source.replace(
+      'envelopeFields.every((field) => readback[backupKey][field] === envelope[field])',
+      'JSON.stringify(readback[backupKey]) === JSON.stringify(envelope)',
+    );
+  if (mutation === 'record_order') {
+    const start = source.indexOf('  const equal = (a, b) => {');
+    const end = source.indexOf('  const envelopeFields =', start);
+    source = `${source.slice(0, start)}  const equal = (a, b) => JSON.stringify(a) === JSON.stringify(b);\n${source.slice(end)}`;
+  }
+  if (mutation === 'array_domain')
+    source = source.replace('if (array && !nativeArray(value)) return false;', '');
+  if (mutation === 'record_prototype')
+    source = source.replace('recordConstructor.prototype === prototype &&', '');
+  if (mutation === 'array_prototype')
+    source = source.replace('arrayConstructor.prototype === prototype &&', '');
+  if (mutation === 'domain_bypass')
+    source = source.replace(
+      'capture.sourceSupported = !present || jsonValue(source[sourceKey]);',
+      'capture.sourceSupported = true;',
+    );
+  if (mutation === 'source_drift')
+    source = source.replace(
+      /capture\.sourceValueMatches =[^;]+;/,
+      'capture.sourceValueMatches = true;',
+    );
+  if (mutation === 'extra_fields')
+    source = source.replace('Reflect.ownKeys(value).length === keys.length &&', 'true &&');
+  if (mutation === 'raw_leak')
+    source = source.replace('return { ok, capture:', 'return { raw: decoded.raw, ok, capture:');
+  assert.notEqual(source, original, `${mutation} must alter canonical expression`);
+  source = source.replace(
+    /from '(\.\/[^']+)'/g,
+    (_match, relative) => `from '${new URL(relative, import.meta.url).href}'`,
+  );
+  const url = `data:text/javascript;base64,${Buffer.from(source).toString('base64')}`;
+  return { module: await import(url), url };
+}
+
+test('in-memory capture regressions fail the real caller and typed-domain forcing oracles', async () => {
+  const { module: variant, url } = await captureVariant('envelope_order');
+  let source = await readFile(
+    new URL('./settings-guest-scrape-controls.mjs', import.meta.url),
+    'utf8',
+  );
+  source = source.replace("'./settings-scrape-mode-baseline.mjs'", JSON.stringify(url));
+  source = source.replace(
+    /from '(\.\/[^']+)'/g,
+    (_match, relative) => `from '${new URL(relative, import.meta.url).href}'`,
+  );
+  const controls = await import(
+    `data:text/javascript;base64,${Buffer.from(source).toString('base64')}`
+  );
+  const f = simulatedPanel('{"state":{"theme":"dark"},"version":0}');
+  reorderStorageRecords(f);
+  await assert.rejects(
+    controls.runGuestAutoScrapeCase(null, f.reload, () => {}, f.driver),
+    (error) => {
+      const receipt = variant.settingsFixtureIntegrityFailure(error);
+      assert.equal(receipt.phase, 'capture');
+      assert.equal(receipt.capture.envelopeMatches, false);
+      assert.equal(receipt.snapshotRetained, true);
+      assert.equal(f.state.clicks.length, 0);
+      assert.equal(f.state.reloads, 0);
+      return true;
+    },
+  );
+  await assert.rejects(
+    verifySupportedJson((await captureVariant('record_order')).module),
+    /supported opaque JSON/,
+  );
+  await assert.rejects(
+    verifyUnsupportedJson((await captureVariant('domain_bypass')).module),
+    /backup write/,
+  );
+  await assert.rejects(
+    verifyUnsupportedJson((await captureVariant('array_domain')).module),
+    /unsupported JSON|backup write/,
+  );
+  for (const mutation of ['record_prototype', 'array_prototype']) {
+    await assert.rejects(
+      verifyAuthenticPrototypes((await captureVariant(mutation)).module),
+      /prototype hooks must never run/,
+    );
+  }
+  await assert.rejects(
+    verifyCaptureDrift((await captureVariant('source_drift')).module),
+    /source value drift/,
+  );
+  await assert.rejects(
+    verifyEnvelopeFields((await captureVariant('extra_fields')).module),
+    /invalid envelope/,
+  );
+  const raw = 'CANARY_never_transport';
+  const leak = (await captureVariant('raw_leak')).module;
+  const leaked = await captureOutcome(raw, {
+    variant: leak,
+    configure: (fixture) => {
+      const evaluate = fixture.driver.evaluate;
+      fixture.driver.evaluate = async (...args) => {
+        const value = await evaluate(...args);
+        assert.doesNotMatch(
+          JSON.stringify(value),
+          /CANARY_never_transport/,
+          'raw source must never cross evaluate',
+        );
+        return value;
+      };
+    },
+  });
+  assert.equal(leaked.body, false);
+  assert.equal(leaked.receipt.capture.stage, 'unavailable');
+});
+
+test('post-reload typed verification rejects changed strings records and arrays before disposing backup', async () => {
+  for (const [raw, changed] of [
+    ['{ "state": {} }', '{"state":{}}'],
+    [
+      { unknownSibling: true, intake: [1, '2'] },
+      { unknownSibling: true, intake: [1, 2] },
+    ],
+    [{ unknownSibling: true }, {}],
+    [
+      [1, 2],
+      [2, 1],
+    ],
+    [[1, 2], [1]],
+    [null, false],
+  ]) {
+    const result = await captureOutcome(raw, {
+      configure: (f) => {
+        const reload = f.reload;
+        f.reload = async () => {
+          await reload();
+          if (f.state.reloads === 2) f.entries['matrx.settings.v1'] = changed;
+        };
+      },
+    });
+    assert.equal(result.body, true);
+    assert.equal(result.receipt.phase, 'verify');
+    assert.equal(result.receipt.backupOwned, true);
+    assert.equal(result.receipt.snapshotRetained, true);
+    assert.deepEqual(result.f.entries['matrx.settings.v1'], changed);
+  }
+});
+
+async function verifyAuthenticPrototypes(variant) {
+  for (const shape of ['record', 'array']) {
+    for (const hook of ['method', 'accessor']) {
+      let hooks = 0;
+      const prototype = shape === 'record' ? Object.create(null) : [];
+      Object.defineProperty(prototype, 'constructor', {
+        value: shape === 'record' ? Object : Array,
+      });
+      const toJSON = () => {
+        hooks++;
+        return { normalized: 'CANARY_toJSON' };
+      };
+      Object.defineProperty(
+        prototype,
+        'toJSON',
+        hook === 'method'
+          ? { value: toJSON }
+          : {
+              get() {
+                hooks++;
+                throw new Error('CANARY_accessor');
+              },
+            },
+      );
+      const raw = shape === 'record' ? { intake: true } : [1, 2];
+      Object.setPrototypeOf(raw, prototype);
+      const result = await captureOutcome(raw, { variant });
+      assert.equal(hooks, 0, 'prototype hooks must never run before domain rejection');
+      assert.equal(result.body, false);
+      assert.deepEqual(result.writes, [], 'non-authentic prototype cannot reach backup write');
+      assert.equal(result.f.state.reloads, 0);
+      assert.equal(result.f.entries['matrx.settings.v1'], raw);
+      assert.equal(result.receipt.capture.sourceSupported, false);
+      assert.equal(result.receipt.capture.outcome, 'unsupported');
+      assert.doesNotMatch(JSON.stringify(result.receipt), /CANARY|normalized|toJSON/);
+    }
+  }
+}
+
+test('forged native constructor prototypes reject inherited serialization methods and accessors without running them', async () => {
+  await verifyAuthenticPrototypes();
+});
