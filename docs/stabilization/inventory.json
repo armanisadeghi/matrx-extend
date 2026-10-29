@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-29T20:49:41.120112+00:00",
+  "updated_at": "2026-10-29T21:30:52.736483+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -50737,46 +50737,64 @@
             "EXT-D-0270",
             "EXT-D-0271",
             "EXT-D-0272",
-            "EXT-D-0274"
+            "EXT-D-0274",
+            "EXT-D-0303"
           ],
           "verification_note": "Selected member T03 lifecycle PASS on e157 development artifact: real save/list/refresh, pre/post-reload run and TSV/JSON/AI clipboard, Cancel; normal certificate and fresh independent raw peer pass. Not admin/special-cell/whole-Data/Store577 acceptance.",
           "results": {
             "member": {
-              "status": "pass",
-              "run_id": 39476062252,
-              "build_version": "0.2.577",
-              "source_sha": "e157ebe9e3b1d7eef3a53e95698b2906ee2fc4e7",
+              "status": "partial",
+              "run_id": 40954051355,
+              "build_version": "0.2.631",
+              "source_sha": "f922fc1f4bebedc4c4c8074a77cee372c8e3d626",
+              "workflow_source_sha": "336c62406e36ad18989031c518bc59de2f95ca17",
+              "development_ci_run_id": 40951157258,
+              "development_artifact_id": 12930753901,
+              "result_artifact_id": 12933132076,
               "resource_invalid": false,
-              "automation_exit": "success",
-              "native_report": "pass/stage complete",
-              "formal_verifier": "Normal CLI exit0 valid=true; correlated_panel_materialization; all3resource journals valid. Fresh independent A/B scoped PASS.",
-              "verified_subtargets": [
-                "actual member/non-admin and approved-org proof",
-                "org-matched HTTP201 save/list/refresh",
-                "pre/post-reload saved-pattern run",
-                "pre/post-reload native TSV/JSON/AI clipboard matching chosen fixture fields",
-                "unsaved Cancel clears state",
-                "replacement exact panel/context/request after old-panel destruction"
-              ],
+              "automation_exit": 1,
+              "raw_case_status": "fail",
+              "full_case_pass": false,
+              "new_lifecycle_pass": false,
+              "scope": "Actual canonical member/org and pre-reload pattern UI/service positives; full post-reload active Data pane not observed. Product-versus-driver cause unknown; no full current lifecycle acceptance.",
+              "verified_subtargets": {
+                "picker_field_clicks_landed": true,
+                "two_distinct_previews": true,
+                "save_pattern_visible": true,
+                "pattern_name_visible": true,
+                "pattern_write_requests": 1,
+                "pattern_write_status": 201,
+                "saved_row_lookup_verified": true,
+                "request_body_organization_present": true,
+                "request_body_organization_matched_selected": true,
+                "request_header_organization_matched_body": true,
+                "request_header_organization_matched_selected": true,
+                "saved_pattern_refreshed": true,
+                "saved_pattern_run_before_reload": true,
+                "cancel_cleared_unsaved_selection": true,
+                "reload_replacement_adopted": true
+              },
               "unverified": [
-                "admin and other Data cases/special-cell D54 outside selected member lifecycle",
-                "Store-installed acceptance",
-                "backend SHA and exact Chrome PID/profile exit not independently persisted"
+                "Post-reload active Data pane and remaining lifecycle",
+                "Last active-pane wait state/category missing from original report",
+                "Product versus driver causal attribution",
+                "Independent browser replay/closure after fresh diagnostic artifact"
               ],
-              "cleanup": "Exact owned-row DELETE1/active0 lookup verified; independent remote secret-name/local-link absence. Tombstone status not independently checked; no independently persisted exact process/profile exit.",
-              "new_lifecycle_pass": true,
-              "backend_sha": "not recorded in raw Data bundle; no server source attribution",
+              "cleanup": {
+                "native_owned_pattern_rows_deleted": 1,
+                "active_owned_rows_after_delete": 0,
+                "canonical_fixture_archive_restored_and_read_back": true,
+                "owned_secret_absent_complete_inventory": true,
+                "auth_files_absent": true
+              },
+              "backend_sha": {
+                "advertised_post_run": "429a7d2037506982eb7bf28658debcafb6ad2994",
+                "scope": "API-only /health/version after run, not per-request deployment proof"
+              },
               "evidence": [
-                "docs/stabilization/reports/data274-clock-native-final-20261020.json",
-                "docs/stabilization/reports/data274-clock-native-final-39476062252-certificate.json",
-                "docs/stabilization/reports/data274-final-certificate-peer-20261020.json",
-                "docs/stabilization/evidence/member-data-behavior/run39476062252/native-report.sanitized.json",
-                "docs/stabilization/evidence/member-data-behavior/run39476062252/receipt.json"
-              ],
-              "workflow_source_sha": "0201d36bf317db69141828849f2c3991e35cecf1",
-              "development_ci_run_id": 39474432457,
-              "development_artifact_id": 12288703340,
-              "result_artifact_id": 12289074514
+                "docs/stabilization/reports/member-lifecycle-f922-20261029.json",
+                "docs/stabilization/reports/owner-member-peer-20261029.json"
+              ]
             },
             "admin": {
               "status": "partial",
@@ -51074,6 +51092,47 @@
               },
               "superseded_at": "2026-10-20T18:47:45Z",
               "reason": "Current e157 normal lifecycle certificate and fresh independent raw peer pass."
+            },
+            {
+              "at": "2026-10-29T21:30:52.736483+00:00",
+              "mode": "member",
+              "result": {
+                "status": "pass",
+                "run_id": 39476062252,
+                "build_version": "0.2.577",
+                "source_sha": "e157ebe9e3b1d7eef3a53e95698b2906ee2fc4e7",
+                "resource_invalid": false,
+                "automation_exit": "success",
+                "native_report": "pass/stage complete",
+                "formal_verifier": "Normal CLI exit0 valid=true; correlated_panel_materialization; all3resource journals valid. Fresh independent A/B scoped PASS.",
+                "verified_subtargets": [
+                  "actual member/non-admin and approved-org proof",
+                  "org-matched HTTP201 save/list/refresh",
+                  "pre/post-reload saved-pattern run",
+                  "pre/post-reload native TSV/JSON/AI clipboard matching chosen fixture fields",
+                  "unsaved Cancel clears state",
+                  "replacement exact panel/context/request after old-panel destruction"
+                ],
+                "unverified": [
+                  "admin and other Data cases/special-cell D54 outside selected member lifecycle",
+                  "Store-installed acceptance",
+                  "backend SHA and exact Chrome PID/profile exit not independently persisted"
+                ],
+                "cleanup": "Exact owned-row DELETE1/active0 lookup verified; independent remote secret-name/local-link absence. Tombstone status not independently checked; no independently persisted exact process/profile exit.",
+                "new_lifecycle_pass": true,
+                "backend_sha": "not recorded in raw Data bundle; no server source attribution",
+                "evidence": [
+                  "docs/stabilization/reports/data274-clock-native-final-20261020.json",
+                  "docs/stabilization/reports/data274-clock-native-final-39476062252-certificate.json",
+                  "docs/stabilization/reports/data274-final-certificate-peer-20261020.json",
+                  "docs/stabilization/evidence/member-data-behavior/run39476062252/native-report.sanitized.json",
+                  "docs/stabilization/evidence/member-data-behavior/run39476062252/receipt.json"
+                ],
+                "workflow_source_sha": "0201d36bf317db69141828849f2c3991e35cecf1",
+                "development_ci_run_id": 39474432457,
+                "development_artifact_id": 12288703340,
+                "result_artifact_id": 12289074514
+              }
             }
           ],
           "retest_status": "D268/D271/D272/D274 prerequisite defects narrowly closed. Selected member lifecycle independently PASS run39476062252; admin and other Data cases remain explicitly incomplete."
@@ -51732,7 +51791,8 @@
         "EXT-D-0270",
         "EXT-D-0271",
         "EXT-D-0272",
-        "EXT-D-0274"
+        "EXT-D-0274",
+        "EXT-D-0303"
       ]
     },
     {

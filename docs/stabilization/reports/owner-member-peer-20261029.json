@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "status": "INDEPENDENT_BOUNDED_ORIGINAL_REVIEW",
+  "A": {
+    "owner": "Retained-original PASS: correct owner Chrome identity precedes actual DEV reload/path/ID/version/enabled/pin.",
+    "member": "Full lifecycle expectation failed; actual member/org verification and pre-reload UI/service positives retained separately. Product-versus-driver cause unresolved."
+  },
+  "B_privacy_scope": {
+    "whole_archive_or_private_report_publish": false,
+    "raw_auth_values_copied": false,
+    "owner_profile_identity": "Keep profile popover AX private: owner account plus other personal profile list. DEV/Store AX and PNG contain incidental Vault tab title/avatar/local path; no Vault content or credential values observed.",
+    "member_private_material": "Do not copy full member JSON/log/ZIP; private report contains auth-related diagnostic structures. Publish only selected booleans, stage/error, source/resource metadata and cleanup comparisons.",
+    "safe_originals_to_copy": [
+      "owner-profile-repair/owner-dev-reloaded.original.ax.txt",
+      "owner-profile-repair/owner-dev-reloaded.original.png",
+      "owner-profile-repair/owner-dev-before.original.ax.txt",
+      "owner-profile-repair/owner-store.original.ax.txt",
+      "owner-profile-repair/owner-store-restored.original.ax.txt",
+      "owner-profile-repair/original-guest-restored.original.ax.txt",
+      "archive:matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-40954051355-1.jsonl",
+      "archive:matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-40954051355-1.jsonl",
+      "archive:matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-40954051355-1.jsonl",
+      "archive:_temp/guest-acceptance/native-sidepanel-qa-Vt0jeg/native-side-panel.png",
+      "archive:_temp/guest-acceptance/native-sidepanel-qa-Vt0jeg/normal-target-after-open.png"
+    ],
+    "safe_copy_scope": "Only extension evidence, with incidental owner metadata acknowledged; no owner-profile popover, private auth report, complete log, complete ZIP or fixture IDs copied."
+  },
+  "source_review_sha256": "2e3fb441974944a31fe4cdda4a2dd857e0be337e73eb5c1ca1473421337302fb",
+  "parent_followthrough": "Normalpromoter97136 receiptretained; normalfailed-run verifierreturnedHOSTED_RUN_NOT_SUCCESSFUL. Canonical memberreceiptupdated terminalfailure/cleanup. No freshDBmutation or nativeindependentreplay bypeer."
+}

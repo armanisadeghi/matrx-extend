@@ -1,0 +1,88 @@
+{
+  "id": "EXT-D-0303",
+  "feature_id": "EXT-F-2005",
+  "case_ids": [
+    "EXT-F-2005-T03"
+  ],
+  "title": "Member Data pane activation is not observed after a dispatched full-reload Data click",
+  "surface": "Native member Data lifecycle / post-extension-reload navigation",
+  "auth_mode": "member",
+  "role_org_permissions": "Canonical approved ordinary non-admin member and selected organization verified through actual web/extension UI and service requests; no principal/auth values published.",
+  "severity": "S2",
+  "priority": "P1",
+  "state": "triaged",
+  "owner": "root",
+  "source_sha": "f922fc1f4bebedc4c4c8074a77cee372c8e3d626",
+  "workflow_source_sha": "336c62406e36ad18989031c518bc59de2f95ca17",
+  "build_receipt": {
+    "ci_run_id": 40951157258,
+    "artifact_id": 12930753901,
+    "version": "0.2.631",
+    "tree_sha256": "b749fd7c68ea8c3a25f92cb0084e32220133fcac9c0bcfe1955e473a5f1e25a6",
+    "native_run_id": 40954051355,
+    "native_result_artifact_id": 12933132076
+  },
+  "preconditions": [
+    "Normal source/artifact plan and matching dispatch pass; approved canonical member link staged after plan; one isolated hosted lane A/profile.",
+    "Actual member web/extension sign-in, non-admin identity and selected canonical organization verification pass.",
+    "Pattern picker/name/save and one201 scoped pattern write succeed; saved pattern run and cancel clearing observed before reload."
+  ],
+  "reproduction": [
+    "Run the normal member Data lifecycle on the frozen source/artifact with the approved owned fixture.",
+    "Create/save and run the owned pattern, retaining real membership and scoped service-request evidence.",
+    "Perform actual management reload; retire old contexts and adopt the exact replacement panel.",
+    "Observe one visible unique Data trigger ready in1705ms, dispatch the trusted Data click, then wait for the active Data pane."
+  ],
+  "expected": "The owned member Data pane activates after the actual reload and Data click, allowing the remaining lifecycle/persistence checks.",
+  "actual": "Native failure extension_reload_reopen_data / data_member_reloaded_data_tab_ready_not_observed. Replacement readiness and click dispatch succeeded, but final active-pane state/category was discarded; failure cannot yet be attributed to product versus driver.",
+  "cause": {
+    "status": "unknown",
+    "confirmed_failure_boundary": "Post-click active Data pane predicate, not initial replacement readiness.",
+    "confirmed_reporting_gap": "Existing final wait sample/category was not serialized by outer catch.",
+    "not_established": [
+      "Missed activation versus tab reset",
+      "Pane linkage/rendering versus context loss",
+      "Product regression versus driver fault",
+      "Any relation to old auto-extract CDP startup timeout"
+    ]
+  },
+  "reproducibility": {
+    "native_attempts": 1,
+    "post_reload_assertion_failures": 1,
+    "confirmed_product_cause": false
+  },
+  "evidence": [
+    "docs/stabilization/reports/member-lifecycle-f922-20261029.json",
+    "docs/stabilization/reports/owner-member-peer-20261029.json"
+  ],
+  "cleanup": {
+    "native_owned_pattern_rows_deleted": 1,
+    "active_owned_rows_after_delete": 0,
+    "canonical_fixture_archive_restored_and_read_back": true,
+    "owned_secret_absent_complete_inventory": true,
+    "auth_files_absent": true
+  },
+  "diagnostic_source_fix_sha": "2629de30a0b9cfd435bb15d6aa09a9b6ae793010",
+  "diagnostic_fix_scope": "Reporting-only: safe final wait evidence and same-evaluation Data selection/link state, preserving predicates/deadlines/lifecycle/auth/failed verdict. Reviewed guarded9/9 and mutation checks are source support only.",
+  "diagnostic_ci": {
+    "full": 40957816232,
+    "focused": 40957816228,
+    "status": "in_progress"
+  },
+  "product_fix_sha": null,
+  "next_action": "Wait new exact-source successful CI/artifact, normal plan before one canonical fixture mint, then one diagnostic replay of original and surrounding lifecycle. Use retained post-click state to establish cause; no blind retry, timeout relaxation or closure from source checks.",
+  "transition_history": [
+    {
+      "at": "2026-10-29T21:30:52.736483+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "One real member lifecycle attempt cannot complete post-reload activation; product versus driver unknown."
+    },
+    {
+      "at": "2026-10-29T21:30:52.736483+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Independent original-packet/source diagnosis locates post-click failure and confirms missing terminal wait evidence; reporting-only repair is not a product fix."
+    }
+  ]
+}
