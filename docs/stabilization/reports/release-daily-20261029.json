@@ -34,8 +34,9 @@
     "uploads": 0,
     "submissions": 0,
     "baseline_changes": 0,
-    "guest_ai_calls": 2,
-    "source_product_changes": 0
+    "source_product_changes": 0,
+    "guest_ui_sends": 2,
+    "provider_calls": "unobserved"
   },
   "cleanup": {
     "owned_jobs": 0,
