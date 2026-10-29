@@ -1,0 +1,401 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/settings5e_independent_review",
+  "status": "FINAL_BOUNDED_PACKET_REVIEW",
+  "observedAt": "2026-10-29T19:35:17.780Z",
+  "sourceSha": "5e198305b2f54df244a91b81ca7cba6de06e4db1",
+  "appCi": {
+    "runId": 40934394304,
+    "artifactId": 12924249329,
+    "metadataVerified": true,
+    "expired": false,
+    "digest": "sha256:7bb90fe54f6a0fa0f25f1d38c61c2af3983d49c6e9e9be7d0a44ad32c4b20866"
+  },
+  "disk": {
+    "method": "existing hashReleaseTree read-only, separate file counts and manifests",
+    "sourceAndDestinationMatch": true,
+    "treeSha256": "b0fad43d2a783d0cb8ae2fc837c268e2a335a265b372ebba15ed06fce7edc5f5",
+    "fileCountEach": 3252,
+    "versionEach": "0.2.631",
+    "receiptConsistent": true,
+    "sourceDir": "test-results/ci-artifacts/5e198305b2f54df244a91b81ca7cba6de06e4db1/40934394304-1/chrome-mv3",
+    "destinationDir": ".output/chrome-mv3-dev"
+  },
+  "nativeRunId": 40940843759,
+  "A": {
+    "verdict": "PARTIAL_BOUNDED_NATIVE_OBSERVATIONS_SUPPORTED_FULL_ACCEPTANCE_OPEN",
+    "scope": "Independent original-packet review, no independent browser replay. Frozen5e guest only.",
+    "supported": [
+      "T04:21 criteria, Dark/Light/System warm/panel reload and full extension replacement; rendered background token/body match; original absent System preference restored.",
+      "T10:7 criteria, guest Ask refused with guidance and Act restored, actual new Chat mode consumer count1 warm and after extension replacement. All three sampled shadow mode fields absent; not continuous all-write census.",
+      "T28:89 criteria,88 section observations across11headings warm/panel/full-extension reload, count1 and one settingsDigest throughout.",
+      "T40:13 criteria support persisted switch on/off and restoration before/after reload; background page-load capture explicitly unverified.",
+      "T67:15 criteria support Capture/Scroll & capture selector persistence and extension replacement; final exactBaselineRestored/originalModeRestored true, no downstream capture claim.",
+      "Surrounding warm/panel controls include model selector, guest admin absence, deep-clean coming-soon state, desktop port and guest identity. Desktop rediscovery uses debugger breakpoints and controlled health endpoint; no real desktop-engine availability claim."
+    ],
+    "originalRepro": {
+      "D299": "Guest obsolete Tools/mode lookup no longer fails in warm/full-reload sampled paths; original ordinary-member organization context not attempted. Defect class closure unsupported.",
+      "D300": "Healthy terminal report retained with final extension_rechecks_end sequence78; original SIGTERM interruption-progress boundary not exercised, therefore full closure unsupported."
+    },
+    "gaps": [
+      "Seven raw cases remain unverified;12 raw passes do not prove full inventory-case closure.",
+      "Member/admin/current Store behavior untested.",
+      "T16/T19/T31/T34 downstream consumers untested;T63 ordinary member denial unknown;T70 unavailable/update edge branches unknown.",
+      "No native first-writer or product/renderer CPU cause established."
+    ]
+  },
+  "B": {
+    "verdict": "PARTIAL_EVIDENCE_PROCEDURE",
+    "supported": [
+      "Official originalZIP digest,6members,3 resource finals admitted=true/resourceInvalid=false/exitCode0 agree.",
+      "Guest child exit0/nullsignal and report terminal=true/status=unverified are consistent; workflow success does not turn report green.",
+      "Original PNGs independently viewed: startup Chat greeting and controlled research page only. Original structured per-phase/case observations retained in JSON.",
+      "CPU pending recovered under existing guard;19 sampled process brackets imply no causal attribution.",
+      "App official metadata/import/promotion receipts/direct disk hashes match exact5e/version631/treeb0fad43d."
+    ],
+    "gaps": [
+      "Important: decisive Settings-state raw accessibility/UI captures missing; startup PNGs do not satisfy PLAN visual capture requirement for closure.",
+      "No normal guest Settings verification certificate supplied; no fabricated alternate CLI/mode used.",
+      "Actual fixture-restoration observations are bounded; remote profile deletion not independently read back.",
+      "Complete frozen-source/lock/runtime/environment/login/data-origin/interception declarations not independently audited by this packet review.",
+      "Parent reports51second status-poll gap against required cadence; retained as procedure exception, no blanket compliance claim or resource invalidation inferred.",
+      "Parent redundant import55372 generic failure exact cause unknown; existing independently matched import is not attributed to that failed attempt."
+    ],
+    "ownerReload": "Separately parent-reported local5e reload proof not independently examined in this native-packet review; disk and native hosted identity are independently supported."
+  },
+  "procedure": {
+    "read": [
+      "docs/stabilization/PLAN.md resource/evidence clauses",
+      "docs/stabilization/COORDINATOR.md",
+      "docs/stabilization/defects/EXT-D-0299.json original repro",
+      "docs/stabilization/defects/EXT-D-0300.json original repro"
+    ],
+    "noTests": true,
+    "noGui": true,
+    "noDispatch": true,
+    "noFixtures": true,
+    "noSecrets": true,
+    "noStatusPolling": true,
+    "noSubagents": true
+  },
+  "completedAt": "2026-10-29T19:44:24.595747+00:00",
+  "nativeArtifact": {
+    "id": 12927926511,
+    "runId": 40940843759,
+    "officialMetadataVerified": true,
+    "sourceSha": "5e198305b2f54df244a91b81ca7cba6de06e4db1",
+    "name": "hosted-guest-40940843759-1",
+    "zip": ".output/stabilization-checkpoints/wake1930-20261029/settings-original.zip",
+    "sha256": "2da565024376c7abb5ce0e30ab03fce81e467f4caaffecc584099cc7901e585c",
+    "officialDigestMatches": true,
+    "members": [
+      {
+        "path": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-40940843759-1.jsonl",
+        "bytes": 977,
+        "sha256": "1464848b5445ef5852760732c3c0da507ef2bfb899d1eab171f38433e0dcaa67"
+      },
+      {
+        "path": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-40940843759-1.jsonl",
+        "bytes": 986,
+        "sha256": "a58675be0e503e9cdb31a1741235ffaed7f837815d65c73f1d524fe97008cdae"
+      },
+      {
+        "path": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-40940843759-1.jsonl",
+        "bytes": 56658,
+        "sha256": "36a8fdd0188434a0e15c987b4e0aacda9a897560b80b572ef4b7f178f96c84fa"
+      },
+      {
+        "path": "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-cprlj5/native-side-panel.png",
+        "bytes": 20739,
+        "sha256": "12974e53a0ecc5532f2da87b9ae4b974277a60755b0b8c957f166a19dd27a39c"
+      },
+      {
+        "path": "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-cprlj5/normal-target-after-open.png",
+        "bytes": 27046,
+        "sha256": "b40fd4bba1a54c1403ccecf49f36bc9de1cb5f67ef081a74294abfef37e8ef5c"
+      },
+      {
+        "path": "matrx-extend/matrx-extend/test-results/settings-local-controls-acceptance.json",
+        "bytes": 436806,
+        "sha256": "2b366883d5b99d00f9f88397ef488921dc076aff05efc3520499340951670ade"
+      }
+    ]
+  },
+  "resourceJournals": [
+    {
+      "path": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-40940843759-1.jsonl",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-29T19:34:02.968Z",
+        "runId": "hosted-package-40940843759-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "codes": {
+        "RESOURCE_JOURNAL_OPENED": 1,
+        "RESOURCE_ADMITTED": 1,
+        "RESOURCE_JOB_EXIT": 1,
+        "RESOURCE_FINAL_DECISION": 1
+      }
+    },
+    {
+      "path": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-40940843759-1.jsonl",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-29T19:35:53.577Z",
+        "runId": "hosted-browser-40940843759-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "codes": {
+        "RESOURCE_JOURNAL_OPENED": 1,
+        "RESOURCE_ADMITTED": 1,
+        "RESOURCE_JOB_EXIT": 1,
+        "RESOURCE_FINAL_DECISION": 1
+      }
+    },
+    {
+      "path": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-40940843759-1.jsonl",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-29T19:42:53.354Z",
+        "runId": "hosted-guest-40940843759-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "codes": {
+        "RESOURCE_JOURNAL_OPENED": 1,
+        "RESOURCE_ADMITTED": 1,
+        "RESOURCE_WATCH_HEALTHY": 15,
+        "RESOURCE_STARTUP_INTERVAL_BRACKET": 19,
+        "RESOURCE_CPU_PENDING": 3,
+        "RESOURCE_PROCESS_ATTRIBUTION": 1,
+        "RESOURCE_CPU_RECOVERED": 1,
+        "RESOURCE_JOB_EXIT": 1,
+        "RESOURCE_FINAL_DECISION": 1
+      }
+    }
+  ],
+  "nativeReport": {
+    "member": "matrx-extend/matrx-extend/test-results/settings-local-controls-acceptance.json",
+    "terminal": true,
+    "status": "unverified",
+    "build": {
+      "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+      "kind": "local_dev_unpacked",
+      "publishState": "not_published",
+      "version": "0.2.631",
+      "treeSha256": "b0fad43d2a783d0cb8ae2fc837c268e2a335a265b372ebba15ed06fce7edc5f5",
+      "verified": true
+    },
+    "progress": {
+      "kind": "guest_phase",
+      "label": "extension_rechecks_end",
+      "sequence": 78,
+      "at": "2026-10-29T19:42:51.781Z"
+    },
+    "guestExtensionReload": {
+      "managementReloadClicked": true,
+      "oldTargetsRetired": true,
+      "workerReplaced": true,
+      "panelReplaced": true
+    },
+    "guestReloadBoundary": {
+      "status": "settings_opened",
+      "panel": {
+        "sampled": true,
+        "runtimeIdMatches": true,
+        "documentReady": true,
+        "visible": true,
+        "settingsTabCount": 1,
+        "settingsActiveCount": 1,
+        "guestBannerPresent": false,
+        "guestOrganizationGuidancePresent": true
+      }
+    },
+    "rawCaseCounts": {
+      "pass": 12,
+      "unverified": 7
+    },
+    "rawCriterionCounts": {
+      "pass": 199,
+      "unverified": 11
+    },
+    "cases": [
+      {
+        "id": "EXT-F-1003-T04",
+        "rawStatus": "pass",
+        "criteria": {
+          "pass": 21
+        },
+        "unknownCriteria": []
+      },
+      {
+        "id": "EXT-F-1003-T10",
+        "rawStatus": "pass",
+        "criteria": {
+          "pass": 7
+        },
+        "unknownCriteria": []
+      },
+      {
+        "id": "EXT-F-1003-T13",
+        "rawStatus": "pass",
+        "criteria": {
+          "pass": 6
+        },
+        "unknownCriteria": []
+      },
+      {
+        "id": "EXT-F-1003-T16",
+        "rawStatus": "unverified",
+        "criteria": {
+          "pass": 4,
+          "unverified": 1
+        },
+        "unknownCriteria": ["preference changes its downstream browser behavior"]
+      },
+      {
+        "id": "EXT-F-1003-T19",
+        "rawStatus": "unverified",
+        "criteria": {
+          "pass": 4,
+          "unverified": 1
+        },
+        "unknownCriteria": ["preference changes its downstream browser behavior"]
+      },
+      {
+        "id": "EXT-F-1003-T22",
+        "rawStatus": "pass",
+        "criteria": {
+          "pass": 2
+        },
+        "unknownCriteria": []
+      },
+      {
+        "id": "EXT-F-1003-T28",
+        "rawStatus": "pass",
+        "criteria": {
+          "pass": 89
+        },
+        "unknownCriteria": []
+      },
+      {
+        "id": "EXT-F-1003-T31",
+        "rawStatus": "unverified",
+        "criteria": {
+          "pass": 4,
+          "unverified": 1
+        },
+        "unknownCriteria": ["preference changes its downstream browser behavior"]
+      },
+      {
+        "id": "EXT-F-1003-T34",
+        "rawStatus": "unverified",
+        "criteria": {
+          "pass": 4,
+          "unverified": 1
+        },
+        "unknownCriteria": ["preference changes its downstream browser behavior"]
+      },
+      {
+        "id": "EXT-F-1003-T37",
+        "rawStatus": "pass",
+        "criteria": {
+          "pass": 4
+        },
+        "unknownCriteria": []
+      },
+      {
+        "id": "EXT-F-1003-T40",
+        "rawStatus": "unverified",
+        "criteria": {
+          "pass": 13,
+          "unverified": 1
+        },
+        "unknownCriteria": ["background capture follows the persisted switch"]
+      },
+      {
+        "id": "EXT-F-1003-T46",
+        "rawStatus": "pass",
+        "criteria": {
+          "pass": 8
+        },
+        "unknownCriteria": []
+      },
+      {
+        "id": "EXT-F-1003-T63",
+        "rawStatus": "unverified",
+        "criteria": {
+          "pass": 2,
+          "unverified": 1
+        },
+        "unknownCriteria": ["ordinary member denial"]
+      },
+      {
+        "id": "EXT-F-1003-T64",
+        "rawStatus": "pass",
+        "criteria": {
+          "pass": 5
+        },
+        "unknownCriteria": []
+      },
+      {
+        "id": "EXT-F-1003-T67",
+        "rawStatus": "pass",
+        "criteria": {
+          "pass": 15
+        },
+        "unknownCriteria": []
+      },
+      {
+        "id": "EXT-F-1003-T70",
+        "rawStatus": "unverified",
+        "criteria": {
+          "pass": 5,
+          "unverified": 5
+        },
+        "unknownCriteria": [
+          "password-flow API unavailable branch",
+          "update available branch",
+          "throttled branch",
+          "update error branch",
+          "update API unavailable branch"
+        ]
+      },
+      {
+        "id": "EXT-F-1003-T73",
+        "rawStatus": "pass",
+        "criteria": {
+          "pass": 2
+        },
+        "unknownCriteria": []
+      },
+      {
+        "id": "EXT-F-1003-T76",
+        "rawStatus": "pass",
+        "criteria": {
+          "pass": 2
+        },
+        "unknownCriteria": []
+      },
+      {
+        "id": "EXT-F-1003-T92",
+        "rawStatus": "pass",
+        "criteria": {
+          "pass": 2
+        },
+        "unknownCriteria": []
+      }
+    ]
+  }
+}

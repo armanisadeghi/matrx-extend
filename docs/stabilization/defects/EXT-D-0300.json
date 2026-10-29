@@ -36,7 +36,7 @@
     "docs/stabilization/reports/wake1858-settings223-native-20261028.json",
     "docs/stabilization/reports/wake1858-settings223-peer-20261028.json"
   ],
-  "next_action": "Current0620 CI/artifact adoption belongs to root. Native223 bounded observations require normal certificate/decisive visual/full T40 evidence before full acceptance; actual owner reload held during external Chrome activity. D300 remains in-fix.",
+  "next_action": "Frozen5e terminal native report is healthy and bounded; original interruption-progress reproduction was not exercised. Preserve current partial Theme/mode/section/selector observations; independently retest original interruption and missing surrounding/visual/certificate dimensions before closure.",
   "transition_history": [
     {
       "at": "2026-10-27T19:40:18.049879+00:00",
@@ -383,6 +383,16 @@
     "evidence": [
       "docs/stabilization/reports/wake1858-settings223-native-20261028.json",
       "docs/stabilization/reports/wake1858-settings223-peer-20261028.json"
+    ]
+  },
+  "wake1930_native_checkpoint": {
+    "run_id": 40940843759,
+    "source_sha": "5e198305b2f54df244a91b81ca7cba6de06e4db1",
+    "verdict": "partial",
+    "full_case_or_defect_closed": false,
+    "evidence": [
+      "docs/stabilization/reports/wake1930-settings5e-20261029.json",
+      "docs/stabilization/reports/wake1930-settings5e-peer-20261029.json"
     ]
   }
 }

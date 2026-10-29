@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "reviewer": "/root/wake1930_publication_peer",
+  "at": "2026-10-29T19:48:56.346518+00:00",
+  "scope": "Independent evidence-publication review against HEAD e692b123235ff1430cc2f40346359a72ec0018fd; no product authorship, browser replay, tests, jobs, Git mutations or source edits.",
+  "A": {
+    "verdict": "PASS_WITHIN_BOUNDED_PUBLICATION_SCOPE_PRODUCT_ACCEPTANCE_PARTIAL",
+    "supported": [
+      "Original producer terminal=true/status=unverified. Counted exactly12pass/7unverified raw cases and199pass/11unverified raw criteria; no distinct-behavior/full-case/defect-closure inference.",
+      "Selected projection exactly matches original build/scope/status/terminal and all19 case IDs/statuses/step phase-action labels/criterion name-status labels.",
+      "Original T10 observations support actual new Chat consumer Act count1 warm and after extension replacement and sampled absent settings/chat/pilot mode fields.",
+      "Original T67 final exactBaselineRestored/originalModeRestored true supports bounded restoration. Theme/full-extension replacements and section observations align with fresh Settings peer; original interruption and member coverage remain untested.",
+      "All19 refreshed guest inventory statuses remain partial; D299 andD300 stay in-fix. Generated Markdown retains all19 Partial labels; checklist/HTML counts remain unchanged."
+    ],
+    "remaining_gaps": [
+      "Normal guest Settings certificate and decisive Settings visuals",
+      "T40 actual background capture; T16/T19/T31/T34 downstream consumers",
+      "Ordinary member denial, original member organization repro, member/admin/current Store coverage",
+      "Update/API unavailable/error/throttling branches",
+      "D300 original interruption-progress reproduction",
+      "Independent browser replay and remote profile-deletion readback"
+    ]
+  },
+  "B": {
+    "verdict": "MINOR_TEXTUAL_SCOPE_CORRECTION_REQUIRED_OTHERWISE_PASS_WITHIN_BOUNDS",
+    "supported": [
+      "Independently hashed originalZIP to2da565024376c7abb5ce0e30ab03fce81e467f4caaffecc584099cc7901e585c; all6 recorded member bytes/hashes match. Official API metadata itself not refetched by this publication reviewer; fresh Settings peer records official verification.",
+      "All3 original resource journals final admitted=true/resourceInvalid=false/exitCode0/decision=valid; resource validity does not establish product acceptance.",
+      "Exactly19 changed inventory cases match original native IDs. Every old history is exact prefix; appended history.result equals exact HEAD guest result. Replacing only19 new guest results/history plus updated_at restores exact parsed HEAD inventory equality. Other results/history/fields therefore unchanged semantically.",
+      "No src/package/lock/workflow changes in inspected working diff.",
+      "51second parent poll interval disclosed as exception to PLAN minimum60seconds; no full procedure compliance inferred.",
+      "Redundant import generic failure phase unknown kept separate from normal existing-import promotion success."
+    ],
+    "findings": [
+      {
+        "severity": "Minor",
+        "file": "docs/stabilization/inventory.json",
+        "line": 3416,
+        "issue": "Current serialization escapes all1204 non-ASCII characters from HEAD across unrelated rows, creating avoidable textual churn outside19-result refresh. Parsed values remain equal.",
+        "correction": "Serialize current parsed JSON using indent=2, ensure_ascii=False and trailing newline; keep all semantic edits. Recheck bounded diff.",
+        "reported_to_parent": true
+      }
+    ],
+    "limits": [
+      "No independent GUI/image inspection or browser replay in this publication review; image-content limitation corroborated by fresh Settings peer.",
+      "Formatter semantic-stdin claim not rerun; inventory indentation is2spaces but current ensure_ascii=True differs from original UTF-8 representation."
+    ]
+  },
+  "publication_edits_made": false,
+  "output_only": ".output/stabilization-checkpoints/wake1930-20261029/publication-peer.json",
+  "parent_correction": {
+    "addressed": true,
+    "detail": "Re-serialized inventory indent2/ensure_asciiFalse/newline; semantic equality asserted. All old Unicode retained without unrelated escaping."
+  }
+}

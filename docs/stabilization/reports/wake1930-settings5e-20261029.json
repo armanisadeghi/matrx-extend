@@ -1,10 +1,10 @@
 {
   "schema": 1,
   "task_id": "wake1930-settings5e-20261029",
-  "at": "2026-10-29T19:38:38.785409+00:00",
+  "at": "2026-10-29T19:46:01.364586+00:00",
   "owner": "root / Settings B",
   "goal": "Retest registered Settings controls on latest successful frozen main while the release-only lane completes the existing daily Store claim. Campaign incomplete.",
-  "status": "HOSTED_IN_PROGRESS_NO_PRODUCT_VERDICT",
+  "status": "TERMINAL_SUCCESS_BOUNDED_NATIVE_PARTIAL",
   "source_sha": "5e198305b2f54df244a91b81ca7cba6de06e4db1",
   "ci_run_id": 40934394304,
   "artifact_id": 12924249329,
@@ -44,9 +44,142 @@
     "new_case_passes": 0,
     "new_defects": 0,
     "closed_defects": 0,
-    "releases": 0
+    "releases": 0,
+    "bounded_native_batch": 1
   },
   "fixture_and_credentials": "Guest selected; no parent fixture or temporary secret mutation. Release-only local browser uses separate physical host permit.",
-  "independent_review": "settings5e_independent_review; preliminary disk provenance checked, native evidence pending; no duplicate run polling.",
-  "next_action": "Parent owns status polling no faster than60seconds. Wait for official terminal, retain original archive/log/resource journals, independently inspect actual native observations and original/surrounding repro. No blind retry, timer/threshold change or host/account relocation; no acceptance before eligible terminal evidence."
+  "independent_review": "docs/stabilization/reports/wake1930-settings5e-peer-20261029.json",
+  "next_action": "No retry or source fix follows from this successful partial batch. Continue missing original/surrounding member and downstream/visual/certificate dimensions using eligible source and normal guards; D299/D300 remain in-fix. All owned hosted/local jobs and credential/fixture obligations terminal.",
+  "terminal": {
+    "conclusion": "success",
+    "observed_at": "2026-10-29T19:43:03Z",
+    "job_id": 123683513920,
+    "owned_jobs_remaining": 0
+  },
+  "archive": {
+    "artifact_id": 12927926511,
+    "name": "hosted-guest-40940843759-1",
+    "official_and_download_sha256": "2da565024376c7abb5ce0e30ab03fce81e467f4caaffecc584099cc7901e585c",
+    "private_original_zip": ".output/stabilization-checkpoints/wake1930-20261029/settings-original.zip",
+    "private_original_log": ".output/stabilization-checkpoints/wake1930-20261029/settings-original.log",
+    "members": [
+      {
+        "path": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-40940843759-1.jsonl",
+        "bytes": 977,
+        "sha256": "1464848b5445ef5852760732c3c0da507ef2bfb899d1eab171f38433e0dcaa67"
+      },
+      {
+        "path": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-40940843759-1.jsonl",
+        "bytes": 986,
+        "sha256": "a58675be0e503e9cdb31a1741235ffaed7f837815d65c73f1d524fe97008cdae"
+      },
+      {
+        "path": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-40940843759-1.jsonl",
+        "bytes": 56658,
+        "sha256": "36a8fdd0188434a0e15c987b4e0aacda9a897560b80b572ef4b7f178f96c84fa"
+      },
+      {
+        "path": "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-cprlj5/native-side-panel.png",
+        "bytes": 20739,
+        "sha256": "12974e53a0ecc5532f2da87b9ae4b974277a60755b0b8c957f166a19dd27a39c"
+      },
+      {
+        "path": "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-cprlj5/normal-target-after-open.png",
+        "bytes": 27046,
+        "sha256": "b40fd4bba1a54c1403ccecf49f36bc9de1cb5f67ef081a74294abfef37e8ef5c"
+      },
+      {
+        "path": "matrx-extend/matrx-extend/test-results/settings-local-controls-acceptance.json",
+        "bytes": 436806,
+        "sha256": "2b366883d5b99d00f9f88397ef488921dc076aff05efc3520499340951670ade"
+      }
+    ]
+  },
+  "resources": [
+    {
+      "path": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-40940843759-1.jsonl",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-29T19:34:02.968Z",
+        "runId": "hosted-package-40940843759-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "cpu_pending_events": 0,
+      "unsafe_events": 0
+    },
+    {
+      "path": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-40940843759-1.jsonl",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-29T19:35:53.577Z",
+        "runId": "hosted-browser-40940843759-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "cpu_pending_events": 0,
+      "unsafe_events": 0
+    },
+    {
+      "path": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-40940843759-1.jsonl",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-29T19:42:53.354Z",
+        "runId": "hosted-guest-40940843759-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "cpu_pending_events": 3,
+      "unsafe_events": 0
+    }
+  ],
+  "native": {
+    "producer_status": "unverified",
+    "terminal": true,
+    "raw_case_labels": {
+      "pass": 12,
+      "unverified": 7
+    },
+    "raw_criteria_labels": {
+      "pass": 199,
+      "unverified": 11
+    },
+    "counts_scope": "Producer labels only; criteria/steps overlap and are not distinct behaviors or whole-case passes.",
+    "projection": "docs/stabilization/evidence/settings5e-40940843759/selected-native-projection.json",
+    "bounded_scope": "Theme/mode/sections/selectors across panel and actual full-extension reload; T10 actual Chat Act consumer and sampled absent shadow mode fields. No member org repro or D300 interruption repro.",
+    "remaining": [
+      "Normal guest Settings certificate unavailable in current CLI; no fabricated mode/certificate",
+      "Only startup PNGs; decisive Settings captures absent",
+      "T40 actual background capture",
+      "Four downstream preference consumers",
+      "Ordinary member denial and member/admin coverage",
+      "Update/API absence/error/throttling branches",
+      "Independent browser replay and remote profile-deletion readback"
+    ]
+  },
+  "A_verdict": "PARTIAL: bounded current-artifact native observations; no full case or defect closure.",
+  "B_verdict": "PARTIAL: official archive/member provenance and all three valid0 resources checked independently; procedure/coverage/visual/certificate gaps explicit.",
+  "observation_procedure_exception": "One disclosed parent GitHub status-poll interval19:42:12 to19:43:03 was51seconds, below required60. No remote/browser/resource mutation or whole-procedure compliance claim.",
+  "actual_timing": {
+    "MACOS_billable_total_ms": 0,
+    "jobs": 1,
+    "run_duration_ms": 695000,
+    "scope": "Official run timing API; not aggregate weekly spend."
+  },
+  "publication_verification": {
+    "inventory": "Independent semantic restoration equality: only19 guest results/history appends and updated timestamp; prior guest results/history, member/admin and all other inventory data preserved. No coverage-pass count increase.",
+    "json": "Six JSON semantic formatter round trips passed; ignored inventory retains prior indent2/ensure_asciiFalse serialization, format--write processed0files with excluded-path diagnostic.",
+    "tracker": "Regenerated STATUS/CHECKLIST; partial labels preserved.",
+    "fresh_publication_peer": "docs/stabilization/reports/wake1930-publication-peer-20261029.json",
+    "minor_finding": "Unrelated Unicode escaping removed after fresh peer review; semantic equality rechecked."
+  }
 }

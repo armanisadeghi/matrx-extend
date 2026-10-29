@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-28 22:32 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-28T22:32:38.615528+00:00. 207 features · 833 cases · 1422 controls · 301 linked defect records.
+Generated 2026-10-29 19:46 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-29T19:46:31.454112+00:00. 207 features · 833 cases · 1422 controls · 301 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -548,7 +548,7 @@ These historical checks retain their original artifact boundary; they do not est
 - EXT-F-1003-T03 · admin: Unverified. Current load-ladder semantics supersede the original no-device-choice/manual-Choose procedure; its old results are historical. Historical result/procedure objects are retained whole; no current native execution or applicability verdict is supplied by this source reconciliation.
   Evidence / build / date recorded: ['docs/stabilization/reports/settings-inventory-reconcile-20261026.json', 'docs/stabilization/reports/settings-inventory-peer-20261026.json']
 - EXT-F-1003-T04 · guest: Partial.
-  Evidence / build / date recorded: 40751540105, ['docs/stabilization/reports/wake1858-settings223-native-20261028.json', 'docs/stabilization/reports/wake1858-settings223-peer-20261028.json']
+  Evidence / build / date recorded: 40940843759, ['docs/stabilization/reports/wake1930-settings5e-20261029.json', 'docs/stabilization/reports/wake1930-settings5e-peer-20261029.json']
 - EXT-F-1003-T05 · member: Partial. Six native cases: changed Light/System saves, rejected Dark write with visible error/Retry, retry Dark persistence after panel reload, and latest rapid System choice before/after panel reload. Rendered theme appearance and full extension Reload not established by this run.
   Evidence / build / date recorded: settings-mounted-member-full6-20261003-01, ['.research/settings-all-modes-evidence-peer.json', '.research/settings-mounted-native.json']
 - EXT-F-1003-T06 · admin: Pass.
@@ -561,33 +561,33 @@ These historical checks retain their original artifact boundary; they do not est
 - EXT-F-1003-T09 · admin: Unverified. Expanded membership-backed load/unavailable-organization criteria are unverified; original agent-selection evidence is retained whole as bounded history. Historical result/procedure objects are retained whole; no current native execution or applicability verdict is supplied by this source reconciliation.
   Evidence / build / date recorded: ['docs/stabilization/reports/settings-inventory-reconcile-20261026.json', 'docs/stabilization/reports/settings-inventory-peer-20261026.json']
 - EXT-F-1003-T10 · guest: Partial.
-  Evidence / build / date recorded: 40751540105, ['docs/stabilization/reports/wake1858-settings223-native-20261028.json', 'docs/stabilization/reports/wake1858-settings223-peer-20261028.json']
+  Evidence / build / date recorded: 40940843759, ['docs/stabilization/reports/wake1930-settings5e-20261029.json', 'docs/stabilization/reports/wake1930-settings5e-peer-20261029.json']
 - EXT-F-1003-T13 · guest: Partial.
-  Evidence / build / date recorded: 40751540105, ['docs/stabilization/reports/wake1858-settings223-native-20261028.json', 'docs/stabilization/reports/wake1858-settings223-peer-20261028.json']
+  Evidence / build / date recorded: 40940843759, ['docs/stabilization/reports/wake1930-settings5e-20261029.json', 'docs/stabilization/reports/wake1930-settings5e-peer-20261029.json']
 - EXT-F-1003-T15 · admin: Pass. Actual adminUI on0.2.51; full control criteria includingreload verified, System/Fast/groups restored; resourcehealthy.
   Evidence / build / date recorded: admin-settings-local-001, docs/stabilization/runs/admin-settings-local-001.json
 - EXT-F-1003-T16 · guest: Partial.
-  Evidence / build / date recorded: 40751540105, ['docs/stabilization/reports/wake1858-settings223-native-20261028.json', 'docs/stabilization/reports/wake1858-settings223-peer-20261028.json']
+  Evidence / build / date recorded: 40940843759, ['docs/stabilization/reports/wake1930-settings5e-20261029.json', 'docs/stabilization/reports/wake1930-settings5e-peer-20261029.json']
 - EXT-F-1003-T19 · guest: Partial.
-  Evidence / build / date recorded: 40751540105, ['docs/stabilization/reports/wake1858-settings223-native-20261028.json', 'docs/stabilization/reports/wake1858-settings223-peer-20261028.json']
+  Evidence / build / date recorded: 40940843759, ['docs/stabilization/reports/wake1930-settings5e-20261029.json', 'docs/stabilization/reports/wake1930-settings5e-peer-20261029.json']
 - EXT-F-1003-T22 · guest: Partial.
-  Evidence / build / date recorded: 40751540105, ['docs/stabilization/reports/wake1858-settings223-native-20261028.json', 'docs/stabilization/reports/wake1858-settings223-peer-20261028.json']
+  Evidence / build / date recorded: 40940843759, ['docs/stabilization/reports/wake1930-settings5e-20261029.json', 'docs/stabilization/reports/wake1930-settings5e-peer-20261029.json']
 - EXT-F-1003-T25 · guest: N/A. Audit key is admin-only: source isAdmin gate and actual guest T22 evidence confirm absence. Negative access remains covered byT22/T63; this does not waive member/direct-state checks.
   Evidence / build / date recorded: ['docs/stabilization/reports/guest-settings-applicability.json', 'docs/stabilization/runs/guest-settings-local-003.json']
 - EXT-F-1003-T27 · admin: Partial. Admin identity and key-read/error recovery exercised; no assertions for creation time, receipt count, recent rows, filters, or a normal warm/reload display comparison.
   Evidence / build / date recorded: 37699585477, ['.research/audit-selected-native-20261007.json', '.research/settings-audit-native-peer-20261007.json', '.research/desktop-route-audit-final-peer-20261007.json']
 - EXT-F-1003-T28 · guest: Partial.
-  Evidence / build / date recorded: 40751540105, ['docs/stabilization/reports/wake1858-settings223-native-20261028.json', 'docs/stabilization/reports/wake1858-settings223-peer-20261028.json']
+  Evidence / build / date recorded: 40940843759, ['docs/stabilization/reports/wake1930-settings5e-20261029.json', 'docs/stabilization/reports/wake1930-settings5e-peer-20261029.json']
 - EXT-F-1003-T30 · admin: Pass. Actual adminUI on0.2.51; full control criteria includingreload verified, System/Fast/groups restored; resourcehealthy.
   Evidence / build / date recorded: admin-settings-local-001, docs/stabilization/runs/admin-settings-local-001.json
 - EXT-F-1003-T31 · guest: Partial.
-  Evidence / build / date recorded: 40751540105, ['docs/stabilization/reports/wake1858-settings223-native-20261028.json', 'docs/stabilization/reports/wake1858-settings223-peer-20261028.json']
+  Evidence / build / date recorded: 40940843759, ['docs/stabilization/reports/wake1930-settings5e-20261029.json', 'docs/stabilization/reports/wake1930-settings5e-peer-20261029.json']
 - EXT-F-1003-T34 · guest: Partial.
-  Evidence / build / date recorded: 40751540105, ['docs/stabilization/reports/wake1858-settings223-native-20261028.json', 'docs/stabilization/reports/wake1858-settings223-peer-20261028.json']
+  Evidence / build / date recorded: 40940843759, ['docs/stabilization/reports/wake1930-settings5e-20261029.json', 'docs/stabilization/reports/wake1930-settings5e-peer-20261029.json']
 - EXT-F-1003-T37 · guest: Partial.
-  Evidence / build / date recorded: 40751540105, ['docs/stabilization/reports/wake1858-settings223-native-20261028.json', 'docs/stabilization/reports/wake1858-settings223-peer-20261028.json']
+  Evidence / build / date recorded: 40940843759, ['docs/stabilization/reports/wake1930-settings5e-20261029.json', 'docs/stabilization/reports/wake1930-settings5e-peer-20261029.json']
 - EXT-F-1003-T40 · guest: Partial.
-  Evidence / build / date recorded: 40751540105, ['docs/stabilization/reports/wake1858-settings223-native-20261028.json', 'docs/stabilization/reports/wake1858-settings223-peer-20261028.json']
+  Evidence / build / date recorded: 40940843759, ['docs/stabilization/reports/wake1930-settings5e-20261029.json', 'docs/stabilization/reports/wake1930-settings5e-peer-20261029.json']
 - EXT-F-1003-T43 · guest: Partial.
   Evidence / build / date recorded: 38034890248, ['docs/stabilization/evidence/desktop-settings-hosted/run38034890248/receipt.sanitized.json', 'docs/stabilization/evidence/desktop-settings-hosted/run38034890248/native-report.sanitized.json', 'docs/stabilization/evidence/desktop-settings-hosted/run38034890248/resource-journals/hosted-package-38034890248-1.jsonl', 'docs/stabilization/evidence/desktop-settings-hosted/run38034890248/resource-journals/hosted-browser-38034890248-1.jsonl', 'docs/stabilization/evidence/desktop-settings-hosted/run38034890248/resource-journals/hosted-guest-38034890248-1.jsonl']
 - EXT-F-1003-T44 · member: Partial.
@@ -595,7 +595,7 @@ These historical checks retain their original artifact boundary; they do not est
 - EXT-F-1003-T45 · admin: Partial.
   Evidence / build / date recorded: desktop-settings-admin-final-20261003-01, ['.research/desktop-settings-admin-final.json', '.research/desktop-settings-guard-proof.json', '.research/settings-forget-reset-final.json']
 - EXT-F-1003-T46 · guest: Partial.
-  Evidence / build / date recorded: 40751540105, ['docs/stabilization/reports/wake1858-settings223-native-20261028.json', 'docs/stabilization/reports/wake1858-settings223-peer-20261028.json']
+  Evidence / build / date recorded: 40940843759, ['docs/stabilization/reports/wake1930-settings5e-20261029.json', 'docs/stabilization/reports/wake1930-settings5e-peer-20261029.json']
 - EXT-F-1003-T47 · member: Partial.
   Evidence / build / date recorded: desktop-settings-member-20261003-independent01, ['.research/desktop-settings-independent-native.json', '.research/desktop-settings-guard-proof.json', '.research/settings-forget-reset-final.json']
 - EXT-F-1003-T48 · admin: Partial.
@@ -625,21 +625,21 @@ These historical checks retain their original artifact boundary; they do not est
 - EXT-F-1003-T62 · admin: Unverified. No receipt-origin filter selection, per-filter row/count assertion, or empty-origin assertion.
   Evidence / build / date recorded: 37699585477, ['.research/audit-selected-native-20261007.json', '.research/settings-audit-native-peer-20261007.json', '.research/desktop-route-audit-final-peer-20261007.json']
 - EXT-F-1003-T63 · guest: Partial.
-  Evidence / build / date recorded: 40751540105, ['docs/stabilization/reports/wake1858-settings223-native-20261028.json', 'docs/stabilization/reports/wake1858-settings223-peer-20261028.json']
+  Evidence / build / date recorded: 40940843759, ['docs/stabilization/reports/wake1930-settings5e-20261029.json', 'docs/stabilization/reports/wake1930-settings5e-peer-20261029.json']
 - EXT-F-1003-T64 · guest: Partial.
-  Evidence / build / date recorded: 40751540105, ['docs/stabilization/reports/wake1858-settings223-native-20261028.json', 'docs/stabilization/reports/wake1858-settings223-peer-20261028.json']
+  Evidence / build / date recorded: 40940843759, ['docs/stabilization/reports/wake1930-settings5e-20261029.json', 'docs/stabilization/reports/wake1930-settings5e-peer-20261029.json']
 - EXT-F-1003-T67 · guest: Partial.
-  Evidence / build / date recorded: 40751540105, ['docs/stabilization/reports/wake1858-settings223-native-20261028.json', 'docs/stabilization/reports/wake1858-settings223-peer-20261028.json']
+  Evidence / build / date recorded: 40940843759, ['docs/stabilization/reports/wake1930-settings5e-20261029.json', 'docs/stabilization/reports/wake1930-settings5e-peer-20261029.json']
 - EXT-F-1003-T70 · guest: Partial.
-  Evidence / build / date recorded: 40751540105, ['docs/stabilization/reports/wake1858-settings223-native-20261028.json', 'docs/stabilization/reports/wake1858-settings223-peer-20261028.json']
+  Evidence / build / date recorded: 40940843759, ['docs/stabilization/reports/wake1930-settings5e-20261029.json', 'docs/stabilization/reports/wake1930-settings5e-peer-20261029.json']
 - EXT-F-1003-T72 · admin: Partial.
   Evidence / build / date recorded: personal-dev577-refresh-20261020, ['docs/stabilization/reports/personal-dev577-refresh-20261020.json']
 - EXT-F-1003-T73 · guest: Partial.
-  Evidence / build / date recorded: 40751540105, ['docs/stabilization/reports/wake1858-settings223-native-20261028.json', 'docs/stabilization/reports/wake1858-settings223-peer-20261028.json']
+  Evidence / build / date recorded: 40940843759, ['docs/stabilization/reports/wake1930-settings5e-20261029.json', 'docs/stabilization/reports/wake1930-settings5e-peer-20261029.json']
 - EXT-F-1003-T75 · admin: Pass. Known authorized admin account identity, ADMIN badge and Sign out matched warm and after exact development extension reload/reopen. Native AX and inline-only screenshots; receipt/tree/runtime binding verified. Not wholeSettings or577Store evidence.
   Evidence / build / date recorded: settings-native-identity-20261020-b, ['docs/stabilization/reports/settings-actual-native-20261020.json', 'docs/stabilization/reports/member577-native-fresh-peer-20261020.json']
 - EXT-F-1003-T76 · guest: Partial.
-  Evidence / build / date recorded: 40751540105, ['docs/stabilization/reports/wake1858-settings223-native-20261028.json', 'docs/stabilization/reports/wake1858-settings223-peer-20261028.json']
+  Evidence / build / date recorded: 40940843759, ['docs/stabilization/reports/wake1930-settings5e-20261029.json', 'docs/stabilization/reports/wake1930-settings5e-peer-20261029.json']
 - EXT-F-1003-T79 · guest: Partial. {'warm': 'Matrx Local: Not connected. No Engine health, version, degraded, or failed service row was exposed.', 'after_extension_reload': 'Matrx Local: Not connected. No Engine health, version, degraded, or failed service row was exposed.', 'transport_comparison': 'Underlying bridge transport and health response were not independently observed, so the displayed status cannot be fully matched to transport.'}
   Evidence / build / date recorded: guest-settings-batch-20261021-0620, ['docs/stabilization/reports/guest-connections579-20261021.json', 'docs/stabilization/reports/connections-evidence0625.json', 'docs/stabilization/resource-journals/guest-settings-batch-20261021-0620.jsonl']
 - EXT-F-1003-T81 · admin: Partial. Native Matrx2 not running / Local not connected shown warm and afterreload; no health response or pairing/backend behavior proof.
@@ -663,7 +663,7 @@ These historical checks retain their original artifact boundary; they do not est
 - EXT-F-1003-T91 · admin: Partial. Unavailable-lock details/export/rotation states disabled actions and preserved history; restoration/read-only retry recovered. Cold auth-shell boot and ordinary retryable failures were not tested in this case.
   Evidence / build / date recorded: 37699585477, ['.research/audit-selected-native-20261007.json', '.research/settings-audit-native-peer-20261007.json', '.research/desktop-route-audit-final-peer-20261007.json']
 - EXT-F-1003-T92 · guest: Partial.
-  Evidence / build / date recorded: 40751540105, ['docs/stabilization/reports/wake1858-settings223-native-20261028.json', 'docs/stabilization/reports/wake1858-settings223-peer-20261028.json']
+  Evidence / build / date recorded: 40940843759, ['docs/stabilization/reports/wake1930-settings5e-20261029.json', 'docs/stabilization/reports/wake1930-settings5e-peer-20261029.json']
 - EXT-F-1003-T93 · guest: Unverified. The Current/New selector procedure is stale against audited source; current native applicability is unknown, not N/A. Historical result/procedure objects are retained whole; no current native execution or applicability verdict is supplied by this source reconciliation.
   Evidence / build / date recorded: ['docs/stabilization/reports/settings-inventory-reconcile-20261026.json', 'docs/stabilization/reports/settings-inventory-peer-20261026.json']
 - EXT-F-1003-T94 · member: Unverified. The Current/New selector procedure is stale against audited source; current native applicability is unknown, not N/A. Historical result/procedure objects are retained whole; no current native execution or applicability verdict is supplied by this source reconciliation.

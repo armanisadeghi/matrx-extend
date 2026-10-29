@@ -1,6 +1,6 @@
 {
-  "at": "2026-10-29T19:39:34.056652+00:00",
-  "scope": "Pre-publication remote baseline; this containing evidence update is metadata. Source/native/install proof remains separate.",
+  "at": "2026-10-29T19:49:57.245449+00:00",
+  "scope": "Pre-publication remote baseline; extension dirty paths are this containing completed evidence unit. Final post-push cleanliness is checked separately. Source/native/install proof remains separate.",
   "repositories": [
     {
       "repository": "/Volumes/Samsung2TB/code",
@@ -20,31 +20,31 @@
     {
       "repository": "/Volumes/Samsung2TB/code/aidream",
       "previous_origin_main": "fb14ee94b654efb3d3c6b63dad35d685f1844af4",
-      "origin_main": "7f5fc053c7294415b0f06fd30e6d9de12fb30833",
-      "commit_time": "2026-10-29T12:38:49-07:00",
-      "head": "7f5fc053c7294415b0f06fd30e6d9de12fb30833",
+      "origin_main": "f13e7215954f461c56ba6a5ad50b1e6570785b56",
+      "commit_time": "2026-10-29T12:49:29-07:00",
+      "head": "f13e7215954f461c56ba6a5ad50b1e6570785b56",
       "branch": "main",
       "status": "",
       "divergence": "0\t0",
       "stashes": "",
       "local_branches": "main",
-      "worktrees": "worktree /Volumes/Samsung2TB/code/aidream\nHEAD 7f5fc053c7294415b0f06fd30e6d9de12fb30833\nbranch refs/heads/main",
-      "files_modified_since_prior_ledger": 15,
+      "worktrees": "worktree /Volumes/Samsung2TB/code/aidream\nHEAD f13e7215954f461c56ba6a5ad50b1e6570785b56\nbranch refs/heads/main",
+      "files_modified_since_prior_ledger": 16,
       "fetch_exit": 0
     },
     {
       "repository": "/Volumes/Samsung2TB/code/matrx-extend",
       "previous_origin_main": "caed864270cd731faceabc921fd0d8783c04e99b",
-      "origin_main": "8ab950fa7a68e47fcc7edca00bfec6d671404baa",
-      "commit_time": "2026-10-29T12:38:56-07:00",
-      "head": "8ab950fa7a68e47fcc7edca00bfec6d671404baa",
+      "origin_main": "e692b123235ff1430cc2f40346359a72ec0018fd",
+      "commit_time": "2026-10-29T12:41:14-07:00",
+      "head": "e692b123235ff1430cc2f40346359a72ec0018fd",
       "branch": "main",
-      "status": "",
+      "status": "M docs/stabilization/CHECKLIST.md\n M docs/stabilization/COORDINATOR.md\n M docs/stabilization/STATUS.html\n M docs/stabilization/STATUS.md\n M docs/stabilization/defects/EXT-D-0299.json\n M docs/stabilization/defects/EXT-D-0300.json\n M docs/stabilization/inventory.json\n M docs/stabilization/reports/wake1930-settings5e-20261029.json\n?? docs/stabilization/evidence/settings5e-40940843759/\n?? docs/stabilization/reports/wake1930-publication-peer-20261029.json\n?? docs/stabilization/reports/wake1930-settings5e-peer-20261029.json",
       "divergence": "0\t0",
       "stashes": "",
       "local_branches": "main",
-      "worktrees": "worktree /Volumes/Samsung2TB/code/matrx-extend\nHEAD 8ab950fa7a68e47fcc7edca00bfec6d671404baa\nbranch refs/heads/main",
-      "files_modified_since_prior_ledger": 13,
+      "worktrees": "worktree /Volumes/Samsung2TB/code/matrx-extend\nHEAD e692b123235ff1430cc2f40346359a72ec0018fd\nbranch refs/heads/main",
+      "files_modified_since_prior_ledger": 14,
       "fetch_exit": 0
     },
     {
