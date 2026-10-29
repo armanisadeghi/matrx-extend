@@ -1,0 +1,90 @@
+{
+  "schema": 1,
+  "task_id": "wake2026-admission-ci-20261029",
+  "at": "2026-10-29T20:46:10.101597+00:00",
+  "goal": "Continue registered member Data lifecycle and published guest Scrape testing while preserving source/resource/release guards.",
+  "data_attempt": {
+    "candidate_source": "6c761f8c451a2511426386aba9d397a573b970a3",
+    "artifact_source": "5e198305b2f54df244a91b81ca7cba6de06e4db1",
+    "development_ci": 40934394304,
+    "artifact_id": 12924249329,
+    "scope": "lifecycle / EXT-F-2005-T03",
+    "plan_exit": 1,
+    "reason": "HOSTED_DEVELOPMENT_RUNTIME_SOURCE_DRIFT",
+    "dispatches": 0,
+    "underlying_diagnosis": "Operational docs/stabilization/repository-ledger.json was outside unchanged conservative compatibility predicate. Current exact-source CI40943680643 was cancelled by the five-minute Mac verification budget; successful Linux job alone is not eligible.",
+    "new_product_credit": 0
+  },
+  "fixture_cleanup": {
+    "at": "2026-10-29T20:29:17.476294+00:00",
+    "status": "TERMINAL_CLEANUP_VERIFIED",
+    "owned_secret_delete_exit0": true,
+    "owned_secret_absence_verified": true,
+    "fixture_original_archive_restored": true,
+    "fixture_separate_readback_exact": true,
+    "owned_auth_files_absent": true,
+    "obligations_remaining": 0
+  },
+  "fixture_scope": "Canonical worker minted/staged exactly one approved existing member link before parent refusal arrived, then normal cleanup. Preparation did not dispatch or prove member authentication/product behavior. Original private receipts retained; no raw account/auth values published. Future plan/source/artifact checks precede any fixture mutation.",
+  "source_repair": {
+    "commit_sha": "f922fc1f4bebedc4c4c8074a77cee372c8e3d626",
+    "reviewed": true,
+    "full_ci_run": 40951157258,
+    "status": "success",
+    "old_ci": 40943680643,
+    "old_resource_job": 123698290301,
+    "diagnosis": "Four real Mac suites passed; duplicate portable corpus consumed151s after roughly149s host tests, exceeding unchanged five-minute job budget.",
+    "change": "Preserve four real Mac suites and actual-host artifact provenance on Mac. Complete portable root remains mandatory Linux. Move data-only repository ledger into reviewed reports directory. No compatibility allowlist, threshold, resource timer, runner, job or cadence expansion.",
+    "guarded_regression": {
+      "old_layout": "23/24; sole expected duplicate portable-suite failure",
+      "repaired_layout": "24/24; zero skips; valid exit0"
+    },
+    "product_credit": 0,
+    "cost_scope": "Existing standard public workflow; no new paid job/publication. Forecast corrected conservatively; no aggregate weekly real-spend claim.",
+    "fresh_artifact_requirement": "Automatic exact-source full CI must succeed before any adoption or new Data dispatch. Old cancelled run/artifact remains ineligible; no direct dispatch or alternate runner.",
+    "full_ci_observed_at": "2026-10-29T20:52:11Z",
+    "mac_resource_job_duration_seconds": 157,
+    "unchanged_mac_job_budget_seconds": 300,
+    "all_required_ci_jobs_successful": true,
+    "official_ci_timing": {
+      "UBUNTU_billable_total_ms": 0,
+      "MACOS_billable_total_ms": 0,
+      "run_duration_ms": 586000
+    },
+    "development_artifact_id": 12930753901,
+    "development_artifact_digest": "sha256:fd3c1d6f06631dcc923756dcee6e1ecac678e6823da37c58795793d255630876"
+  },
+  "ci_review": {
+    "independent": true,
+    "private_original_sha256": "f6334e4fc1e2916ecc166c8e97615aa63afd64f3ee69f9674199dbf4437b6f8b",
+    "A_verdict": "Bounded pass: all four real Mac suites, actual-host architecture provenance, unchanged five-minute deadline and thresholds; complete portable corpus remains mandatory Linux.",
+    "B_verdict": "Bounded pass: forcing duplicate/missing-gate negatives and current layout passed independent review; census parser/manifest-order limitations retained privately.",
+    "publication_selection": "Only extension-relevant source verdicts selected; unrelated sibling/private financial totals, arithmetic and warnings excluded. Official public-run billable-zero evidence remains separately recorded."
+  },
+  "daily_store": "Reuse same Oct29 bounded guest/mail observation and preserve last dashboard state. Supported Google six-hour wait has not elapsed; no new claim, OAuth grant, login retry, upload or submission.",
+  "owned_active": "Automatic source CI and normal import/promotion are terminal/successful; current ownerreload and any new member dispatch remain pending separate normal admission. No fixture/tab/credential/watch obligations remain from completed attempts.",
+  "artifact_adoption": {
+    "source_sha": "f922fc1f4bebedc4c4c8074a77cee372c8e3d626",
+    "run_id": 40951157258,
+    "artifact_id": 12930753901,
+    "official_digest": "sha256:fd3c1d6f06631dcc923756dcee6e1ecac678e6823da37c58795793d255630876",
+    "normal_import_session": 32468,
+    "normal_import_exit": 0,
+    "import_scope": "New exacttarget absent beforecall; no redundant reimport or alternative path.",
+    "normal_promotion_session": 31053,
+    "normal_promotion_exit": 0,
+    "promotion_at": "2026-10-29T20:53:08.566Z",
+    "version": "0.2.631",
+    "tree_sha256": "b749fd7c68ea8c3a25f92cb0084e32220133fcac9c0bcfe1955e473a5f1e25a6",
+    "file_count": 3252,
+    "actual_owner_reload": "pending; disk promotion is not a Chrome-loaded observation"
+  },
+  "publication_review": {
+    "independent_bounded_A_B_pass": true,
+    "findings_addressed": [
+      "Copied unrelated private financial material removed; selected extension-only source review retained.",
+      "Readable AX transformation wording corrected to normalize to one final newline."
+    ],
+    "recheck": "docs/stabilization/reports/wake2026-publication-recheck-20261029.json"
+  }
+}

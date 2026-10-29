@@ -1,0 +1,28 @@
+{
+  "reviewer": "wake2026_publication_recheck",
+  "at": "2026-10-29T20:56:54.641881+00:00",
+  "independent": true,
+  "authorship": false,
+  "scope": "Narrow re-verification of two prior publication findings; no GUI, CI jobs, Git mutations or expanded acceptance.",
+  "A": {
+    "verdict": "BOUNDED_PASS",
+    "status": "UNCHANGED",
+    "bounds": "Prior Store577 guest warm and panel-reopen Article observation only. No full-case/current-candidate acceptance, member dispatch or new owner-reload credit."
+  },
+  "B": {
+    "verdict": "BOUNDED_PASS",
+    "status": "ADDRESSED",
+    "financial_publication_finding": "ADDRESSED",
+    "manifest_transformation_finding": "ADDRESSED",
+    "evidence": "Private copied review replaced by selected extension verdicts plus verified private-original SHA256. Public report inspected: no unrelated private financial figures, arithmetic or warnings remain. Remaining forecast scope and official public billable-zero metadata are bounded. Exact base64 payloads and PNG bytes match private originals; readable JSON semantics unchanged; AX readable text matches corrected description; all published hashes match.",
+    "verified_counts": {
+      "base64": 10,
+      "json_semantics": 2,
+      "ax_transform": 8,
+      "png_exact": 2
+    }
+  },
+  "findings_remaining": [],
+  "publication_ready_with_existing_A_bounds": true,
+  "git_mutations": false
+}

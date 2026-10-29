@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-29T19:46:31.454112+00:00",
+  "updated_at": "2026-10-29T20:49:41.120112+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -28183,6 +28183,26 @@
                 "docs/stabilization/evidence/chrome-native-20261019/store205-scrape.sanitized.jsonl"
               ],
               "detail": "Operator observed Capture, Article, Links17 and matching Schema on public demo. Full cases remain partial; Images/Video/SEO, error recovery and reload unverified in this run; no current-main or development coverage."
+            }
+          ],
+          "bounded_store_observations": [
+            {
+              "at": "2026-10-29T20:49:41.119383+00:00",
+              "run_id": "store-scrape-t01-20261029-2039",
+              "mode": "guest",
+              "build_evidence_class": "actual Store-installed browser",
+              "version": "0.2.577",
+              "runtime_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+              "status": "partial",
+              "scope": "Fastcapture Article/currenttarget/six result tabs observed warm andafterpanelreopen; counts aredisplayedlabels only, other tabcontents notvalidated. Busy/error/cold/otherrole/currentcandidate remainunverified.",
+              "full_case_pass": false,
+              "candidate_acceptance_credit": false,
+              "resource_valid": true,
+              "independent_review": "retained original evidence; no browser replay or wholeprocedureclaim",
+              "evidence": [
+                "docs/stabilization/reports/store-t01-native-20261029.json",
+                "docs/stabilization/reports/store-t01-peer-20261029.json"
+              ]
             }
           ]
         },

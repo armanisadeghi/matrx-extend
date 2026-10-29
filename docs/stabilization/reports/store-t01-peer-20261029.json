@@ -1,0 +1,170 @@
+{
+  "reviewer": "store_t01_fresh_peer_20261029",
+  "scope": "Independent inspection of saved original evidence only; no independent browser replay, UI action, auth, fixtures, polling, source edit or candidate artifact verification. Reviewer playbook applied within parent no-UI scope.",
+  "case": "EXT-F-1007-T01",
+  "full_case_closed": false,
+  "A": {
+    "verdict": "BOUNDED PASS: published Store 0.2.577 Guest warm Fast capture and panel-reopen repeat Article behavior supported by original evidence",
+    "installation": "AX01 explicitly shows enabled Chrome Web Store source, version 0.2.577, runtime hnfolienncfklkgmdjjmhhegglimlamg; AX03/04/07/12 sidepanel URL has same runtime. DEV copy also installed; matching runtime prevents relying on toolbar label alone.",
+    "guest": "AX04 explicitly shows Guest and G account; public demo Sign in remains visible. Backend guest auth unverified.",
+    "first": "AX06 shows empty capture-ready current demo title/URL; AX07 shows actual returned Article title/URL, three workflow rows and page-aware assistance paragraphs matching live-page AX, 179-word displayed count, Re-capture. PNG08 visually supports current page and returned article.",
+    "repeat": "AX09 shows reopened Chat; AX11 empty ready Scrape on same target; AX12 contains same returned Article/table/body and current URL; PNG13 visually supports repeat result. Reopening does not retain prior result in this sequence.",
+    "tabs": "AX07 and AX12 + screenshots show Article, Images 1, Video, Links 17, SEO, Schema. Counts are displayed labels; Images/Video/Links/SEO/Schema inner contents and correctness were not inspected. 179 is UI count, not independent word-count computation.",
+    "gaps": [
+      "Busy/disabled transient missed: both immediate observations already settled",
+      "Natural error/recovery unverified",
+      "Cold/full extension reload unverified",
+      "Member/admin unverified",
+      "Current candidate/development source and artifact unverified; published binary source SHA and Chrome version unverified",
+      "Independent browser replay not performed; conclusions are evidence review of operator capture sequence"
+    ]
+  },
+  "B": {
+    "verdict": "PARTIAL: original-content/privacy/hash support and guard lifecycle verified; entire procedure not independently established",
+    "verified": [
+      "All 18 evidence files match report SHA256 and byte lengths",
+      "Selected 12-copy manifest hashes independently recalculated",
+      "Guard journal literal admission 20:40:35.106Z and final valid exit 0 at 20:42:50.736Z; SHA256 matches",
+      "Parent watcher independently re-read: 95 entries, SHA256 matches, final holder_alive false and final completed journal",
+      "Cleanup final AX15 shows only original New Tab, panel closed, both copies pinned; AX15 deliberately excluded from public copy for browsing-history shortcuts"
+    ],
+    "watcher": {
+      "sha256": "0568bff43f1e1b7b5acad06be832a11680b39a1996f334391f0aee107dd6f000",
+      "reads": 95,
+      "max_gap_seconds": 2.011609
+    },
+    "guard_sha256": "80648c12901e3f02abd15545b36b934679969fcfa45ee32002e1746e20655d41",
+    "operator_attested_only": [
+      "47 API calls including one failed stale-element call, group counts/max4, journal read before each group; earlier exact per-call timestamps absent",
+      "Failed stale-element invocation caused no mutation: no retained failed-call transcript/state pair independently proves this; later snapshots support normal target state only",
+      "Native clipboard restoration relies on App.paste contract, no byte readback",
+      "No login, AI send, source injection, backend save/delete or Vault value access; not exhaustively independently provable from selected captures",
+      "Owned-tab count two created/two closed supported by saved progression/final snapshot and action receipt; no separate browser replay",
+      "Parent GUI approval following admission supplied by parent context; not a fresh recorded approval review by this reviewer"
+    ],
+    "originals_vs_selection": "AX and screenshots are operator-retained original captures, not independent original acquisition by reviewer. Public set is selected originals, not complete native-call transcript. Copy exact bytes with these hashes. Any excerpts/crops/redactions later are transformed derivatives and must be labeled separately."
+  },
+  "safe_originals_to_copy": [
+    {
+      "source": "/Volumes/Samsung2TB/code/matrx-extend/.output/stabilization-checkpoints/wake2026-20261029/store-scrape/01-store-origin.ax.txt",
+      "name": "01-store-origin.ax.txt",
+      "sha256": "e18a25311f75bafa6252ffd0a012a25807f0b4492018b8ecac3fc0eee13aff18",
+      "bytes": 5967,
+      "type": "text/plain; charset=utf-8",
+      "copy_mode": "byte-identical selected original; no transform",
+      "privacy_review": "reviewed full AX text / timing JSON or visible screenshot; public demo and designated test-profile only; no credentials, auth codes, Vault entries, or unrelated personal content observed"
+    },
+    {
+      "source": "/Volumes/Samsung2TB/code/matrx-extend/.output/stabilization-checkpoints/wake2026-20261029/store-scrape/03-initial-guest-panel.ax.txt",
+      "name": "03-initial-guest-panel.ax.txt",
+      "sha256": "8c5ec0b565a94651193c10e8ea144644ceb7b98f127a7aa4ad69ce63e8c2894f",
+      "bytes": 7059,
+      "type": "text/plain; charset=utf-8",
+      "copy_mode": "byte-identical selected original; no transform",
+      "privacy_review": "reviewed full AX text / timing JSON or visible screenshot; public demo and designated test-profile only; no credentials, auth codes, Vault entries, or unrelated personal content observed"
+    },
+    {
+      "source": "/Volumes/Samsung2TB/code/matrx-extend/.output/stabilization-checkpoints/wake2026-20261029/store-scrape/04-account-guest.ax.txt",
+      "name": "04-account-guest.ax.txt",
+      "sha256": "0d8544e043ced2ababf4d07d1b6892303d5a67762e08ef5078951cd6e55fd9fb",
+      "bytes": 7198,
+      "type": "text/plain; charset=utf-8",
+      "copy_mode": "byte-identical selected original; no transform",
+      "privacy_review": "reviewed full AX text / timing JSON or visible screenshot; public demo and designated test-profile only; no credentials, auth codes, Vault entries, or unrelated personal content observed"
+    },
+    {
+      "source": "/Volumes/Samsung2TB/code/matrx-extend/.output/stabilization-checkpoints/wake2026-20261029/store-scrape/06-scrape-ready.ax.txt",
+      "name": "06-scrape-ready.ax.txt",
+      "sha256": "4d31d4e67fc904e475996a48563948be1a7bb5324fe772b37cd563e4b157a4f5",
+      "bytes": 6727,
+      "type": "text/plain; charset=utf-8",
+      "copy_mode": "byte-identical selected original; no transform",
+      "privacy_review": "reviewed full AX text / timing JSON or visible screenshot; public demo and designated test-profile only; no credentials, auth codes, Vault entries, or unrelated personal content observed"
+    },
+    {
+      "source": "/Volumes/Samsung2TB/code/matrx-extend/.output/stabilization-checkpoints/wake2026-20261029/store-scrape/07-capture-immediate.ax.txt",
+      "name": "07-capture-immediate.ax.txt",
+      "sha256": "3b1b016d88a866e97c1284510d5f69afe71f9d75f2f3b0e8bbcd8a34df571daf",
+      "bytes": 10179,
+      "type": "text/plain; charset=utf-8",
+      "copy_mode": "byte-identical selected original; no transform",
+      "privacy_review": "reviewed full AX text / timing JSON or visible screenshot; public demo and designated test-profile only; no credentials, auth codes, Vault entries, or unrelated personal content observed"
+    },
+    {
+      "source": "/Volumes/Samsung2TB/code/matrx-extend/.output/stabilization-checkpoints/wake2026-20261029/store-scrape/07-capture-click.json",
+      "name": "07-capture-click.json",
+      "sha256": "303d2b696c7ba06adaa8eea46db3f06c7f28329ee3c835190e97840a88e652fe",
+      "bytes": 80,
+      "type": "application/json",
+      "copy_mode": "byte-identical selected original; no transform",
+      "privacy_review": "reviewed full AX text / timing JSON or visible screenshot; public demo and designated test-profile only; no credentials, auth codes, Vault entries, or unrelated personal content observed"
+    },
+    {
+      "source": "/Volumes/Samsung2TB/code/matrx-extend/.output/stabilization-checkpoints/wake2026-20261029/store-scrape/08-capture.png",
+      "name": "08-capture.png",
+      "sha256": "d3031c219e1e17bf2792e2fdfdc7aeedebc5ec8ac1a0de66fcb5152b8d090633",
+      "bytes": 295485,
+      "type": "image/png",
+      "copy_mode": "byte-identical selected original; no transform",
+      "privacy_review": "reviewed full AX text / timing JSON or visible screenshot; public demo and designated test-profile only; no credentials, auth codes, Vault entries, or unrelated personal content observed"
+    },
+    {
+      "source": "/Volumes/Samsung2TB/code/matrx-extend/.output/stabilization-checkpoints/wake2026-20261029/store-scrape/09-reopened.ax.txt",
+      "name": "09-reopened.ax.txt",
+      "sha256": "f9314e735e4f9ba3f68b26bc3b6753af52e244de3abfa2217745d42cf261b52e",
+      "bytes": 7059,
+      "type": "text/plain; charset=utf-8",
+      "copy_mode": "byte-identical selected original; no transform",
+      "privacy_review": "reviewed full AX text / timing JSON or visible screenshot; public demo and designated test-profile only; no credentials, auth codes, Vault entries, or unrelated personal content observed"
+    },
+    {
+      "source": "/Volumes/Samsung2TB/code/matrx-extend/.output/stabilization-checkpoints/wake2026-20261029/store-scrape/11-reopen-ready.ax.txt",
+      "name": "11-reopen-ready.ax.txt",
+      "sha256": "7e9949dbe719971266d30a5b7cb9a65a406f9dd3b1d799daa3c0b0d9e66664e7",
+      "bytes": 6727,
+      "type": "text/plain; charset=utf-8",
+      "copy_mode": "byte-identical selected original; no transform",
+      "privacy_review": "reviewed full AX text / timing JSON or visible screenshot; public demo and designated test-profile only; no credentials, auth codes, Vault entries, or unrelated personal content observed"
+    },
+    {
+      "source": "/Volumes/Samsung2TB/code/matrx-extend/.output/stabilization-checkpoints/wake2026-20261029/store-scrape/12-reopen-capture.ax.txt",
+      "name": "12-reopen-capture.ax.txt",
+      "sha256": "b9f7633a38e7676ba84e7dacdcf519f6b1503148c65e08988f51fd594cb0394f",
+      "bytes": 10179,
+      "type": "text/plain; charset=utf-8",
+      "copy_mode": "byte-identical selected original; no transform",
+      "privacy_review": "reviewed full AX text / timing JSON or visible screenshot; public demo and designated test-profile only; no credentials, auth codes, Vault entries, or unrelated personal content observed"
+    },
+    {
+      "source": "/Volumes/Samsung2TB/code/matrx-extend/.output/stabilization-checkpoints/wake2026-20261029/store-scrape/12-reopen-click.json",
+      "name": "12-reopen-click.json",
+      "sha256": "1b680e5ccd310651ef655d4e0a4cb931c30d9593b2a1d2acb8601109ff0733ed",
+      "bytes": 79,
+      "type": "application/json",
+      "copy_mode": "byte-identical selected original; no transform",
+      "privacy_review": "reviewed full AX text / timing JSON or visible screenshot; public demo and designated test-profile only; no credentials, auth codes, Vault entries, or unrelated personal content observed"
+    },
+    {
+      "source": "/Volumes/Samsung2TB/code/matrx-extend/.output/stabilization-checkpoints/wake2026-20261029/store-scrape/13-reopen-capture.png",
+      "name": "13-reopen-capture.png",
+      "sha256": "29e7e0dfdb49f8652132b580e36e6b5276d1a2dc9fe934fde1afe7d4e5abebfa",
+      "bytes": 295485,
+      "type": "image/png",
+      "copy_mode": "byte-identical selected original; no transform",
+      "privacy_review": "reviewed full AX text / timing JSON or visible screenshot; public demo and designated test-profile only; no credentials, auth codes, Vault entries, or unrelated personal content observed"
+    }
+  ],
+  "publication_exclusions": [
+    "02-controlled-page.ax.txt is premature New Tab, not target proof, and contains browsing shortcuts",
+    "15-cleanup-final.ax.txt contains unrelated browsing shortcuts; private cleanup support only",
+    "05/10 are transient blank Scrape observations, not capture-ready/content proof; not needed in selected copy",
+    "report.private.json, parent watcher, cleanup/timing receipts remain private unless separately selected; do not copy entire directory"
+  ],
+  "cleanup_obligations": {
+    "reviewer_owned_browser_tabs": 0,
+    "reviewer_owned_processes": 0,
+    "reviewer_owned_fixtures": 0,
+    "reviewer_active_obligations": []
+  },
+  "parent_handoff": "Parent owns public copy, inventory, Git and any remaining case/release work; this review does not authorize full case closure."
+}
