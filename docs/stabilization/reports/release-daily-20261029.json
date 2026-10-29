@@ -319,5 +319,13 @@
     "item_id_provenance": "Message body AX inserts whitespace in item ID; only whitespace normalized when comparing. Exact unbroken primary ID independently corroborated by preserved official published-item link in same message excerpt."
   },
   "latest_evidence": "docs/stabilization/evidence/release-codes-20261029/manifest.json",
-  "earlier_source_sha": "7ecfd60e807a51ccd72d3a63ceb4126d44e50698"
+  "earlier_source_sha": "7ecfd60e807a51ccd72d3a63ceb4126d44e50698",
+  "later_same_daily_window_checkpoint": {
+    "report": "docs/stabilization/reports/guest-server-drift-20261029.json",
+    "advertised_server_sha": "11cbedd28a68861dae27fd2ebc074878c8019c2d",
+    "current_server_guest_chat": "unverified_shared_foreground_ownership_conflict_zero_sends",
+    "owner_reload_report": "docs/stabilization/reports/owner-f922-reload-20261029.json",
+    "member_latest_report": "docs/stabilization/reports/member-lifecycle-f922-20261029.json",
+    "store_actions": "No new claim, login/recovery retry, OAuth grant, upload, submission or baseline change."
+  }
 }

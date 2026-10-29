@@ -1,0 +1,76 @@
+{
+  "schema": 1,
+  "at": "2026-10-29T21:45:45.050814+00:00",
+  "status": "CHECKPOINT_SHARED_FOREGROUND_OWNERSHIP_CONFLICT",
+  "daily_claim": "same release_daily_20261029; no new claim or schedule",
+  "current_server_target": {
+    "git_sha": "11cbedd28a68861dae27fd2ebc074878c8019c2d",
+    "built_at": "2026-10-29T21:13:46Z",
+    "before_evidence": ".output/stabilization-checkpoints/wake2026-20261029/guest-server-before.json",
+    "provenance": "parent-supplied endpoint observation; no per-stream claim"
+  },
+  "A_product_verdict": "Current-server Store guest two-turn retest UNVERIFIED. No sends occurred. One read-only native getApp showed designated Matrx Guest Test foreground on an unrelated authorization flow, alongside prior DEV detail tab. Parent instructed immediate stop to preserve ownership; no product failure inferred.",
+  "B_provenance_verdict": "Resource admitted and final valid/0. Parent independently watched before first native call and explicitly approved at21:45:10Z freshness. Single getApp only, fresh local journal check21:45:13Z. No auth originals retained.",
+  "native": {
+    "api_calls_attempted": 1,
+    "batch_counts": [
+      1
+    ],
+    "first_and_only_api": "cua.getApp Google Chrome",
+    "timestamp_scope": "between21:45:13Z check and21:45:34Z SIGINT; exact API timestamp not captured",
+    "sends": 0,
+    "observed_profile": "Matrx Guest Test",
+    "store577_identity_reverified": false,
+    "visible_model_observed": false,
+    "reply_or_terminal_evidence": false,
+    "raw_capture_policy": "No auth URL/device code/profile inventory saved; safe factual attestation only."
+  },
+  "resource": {
+    "run_id": "guest-live11cb-20261029-2148",
+    "session_id": 33741,
+    "pid": 53817,
+    "pid_alive_after": false,
+    "journal": "docs/stabilization/resource-journals/guest-live11cb-20261029-2148.jsonl",
+    "sha256": "18e3cb0eec78864bfcd80314eb403feb4fa5133cd1b8e99c4fa81ccee83b2f9a",
+    "admitted_at": "2026-10-29T21:43:05.178Z",
+    "final": {
+      "schema": 1,
+      "at": "2026-10-29T21:45:34.308Z",
+      "runId": "guest-live11cb-20261029-2148",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "code": "RESOURCE_FINAL_DECISION"
+    },
+    "independent_watch": {
+      "reads": 100,
+      "max_gap_seconds": 2.011335,
+      "sha256": "0e9ff7247cff198ddaae6c169618d1abf3dbcd04e5d847614ea6564193bdc745",
+      "final_holder_alive": false,
+      "scope": "Retained parent independent two-second watcher; normal operator SIGINT after UI ended is cleanup."
+    }
+  },
+  "actions": {
+    "ui_mutations": 0,
+    "tabs_created": 0,
+    "tabs_closed": 0,
+    "clipboard_mutations": 0,
+    "credentials_or_login": 0,
+    "google_attempts": 0,
+    "uploads": 0,
+    "baseline_changes": 0,
+    "provider_calls_initiated": 0
+  },
+  "cleanup": {
+    "ui": "No mutation; original tabs/foreground and clipboard preserved. All UI ended before SIGINT.",
+    "cua_reset": true,
+    "holder_session_exit_code": 0,
+    "owned_jobs": 0,
+    "owned_leases": 0,
+    "owned_tabs": 0,
+    "owned_credentials": 0,
+    "active_lane_obligations": 0
+  },
+  "next_action": "Parent owns next safely isolated guarded Store577 two-send retest and watch; preserve earlier18:40 evidence as earlier server16324 scope. No retries in this lane."
+}

@@ -63,9 +63,16 @@
   "diagnostic_source_fix_sha": "2629de30a0b9cfd435bb15d6aa09a9b6ae793010",
   "diagnostic_fix_scope": "Reporting-only: safe final wait evidence and same-evaluation Data selection/link state, preserving predicates/deadlines/lifecycle/auth/failed verdict. Reviewed guarded9/9 and mutation checks are source support only.",
   "diagnostic_ci": {
-    "full": 40957816232,
-    "focused": 40957816228,
-    "status": "in_progress"
+    "reporting_source": 2629,
+    "typing_fix_sha": "c65110aa48b81108db63e846d69f0d1c769c1f19",
+    "format_fix_sha": "00185648a6143bf031cb0cbe0108f88eeabf498e",
+    "typing_run": 40957816232,
+    "typing_run_status": "failure_test_fixture_typing",
+    "lint_run": 40959319453,
+    "lint_run_status": "failure_two_format_lint_issues",
+    "full": 40960544186,
+    "focused": 40960544133,
+    "status": "queued_or_running_not_yet_verified"
   },
   "product_fix_sha": null,
   "next_action": "Wait new exact-source successful CI/artifact, normal plan before one canonical fixture mint, then one diagnostic replay of original and surrounding lifecycle. Use retained post-click state to establish cause; no blind retry, timeout relaxation or closure from source checks.",
