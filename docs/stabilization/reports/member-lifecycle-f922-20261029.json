@@ -1,0 +1,46 @@
+{
+  "schema": 1,
+  "task_id": "member-lifecycle-f922-20261029",
+  "at": "2026-10-29T21:04:34.838854+00:00",
+  "status": "HOSTED_IN_PROGRESS_NO_PRODUCT_VERDICT",
+  "owner": "root / member Data lifecycle A",
+  "case_id": "EXT-F-2005-T03",
+  "purpose": "One registered member lifecycle case on newly eligible exact-source CI artifact, after repaired source guards. Not a repeat of old d190 auto-extract failure; that original startup cause remains unknown.",
+  "artifact_source_sha": "f922fc1f4bebedc4c4c8074a77cee372c8e3d626",
+  "development_ci_run": 40951157258,
+  "artifact_id": 12930753901,
+  "artifact_digest": "sha256:fd3c1d6f06631dcc923756dcee6e1ecac678e6823da37c58795793d255630876",
+  "tree_sha256": "b749fd7c68ea8c3a25f92cb0084e32220133fcac9c0bcfe1955e473a5f1e25a6",
+  "version": "0.2.631",
+  "normal_plan": {
+    "session_id": 72968,
+    "exit_code": 0,
+    "candidate_source_sha": "336c62406e36ad18989031c518bc59de2f95ca17",
+    "compatibility": "runtime-equivalent",
+    "scope": "lifecycle"
+  },
+  "normal_dispatch": {
+    "session_id": 80734,
+    "exit_code": 0,
+    "run_id": 40954051355,
+    "attempt": 1,
+    "workflow_checkout_sha": "336c62406e36ad18989031c518bc59de2f95ca17",
+    "job_id": 123729404639,
+    "requested_by": "extend-stabilization",
+    "lane": "A",
+    "created_at": "2026-10-29T21:00:47Z"
+  },
+  "fixture_owner": "member_lifecycle_fixture_20261029; one canonical approved member link staged after actual plan passed; exclusive fixture/secret held until actual run terminal. No principal/auth values published.",
+  "pending_cleanup": [
+    "Delete only owned staged secret after authoritative terminal and verify complete inventory absence",
+    "Restore original owned fixture archive state and independently read back via canonical helper",
+    "Verify temporary authentication files absent"
+  ],
+  "current_product_metrics": {
+    "new_case_passes": 0,
+    "defects_closed": 0,
+    "releases": 0
+  },
+  "source_scope": "No timer/threshold/runner change or old artifact adoption. Full CI succeeded; normal plan/dispatch rechecked current candidate. Local owner refresh starts only after hosted dispatch, on a separate physical host permit.",
+  "next_action": "Parent owns native job polling no faster than60seconds; wait authoritative terminal before fixture/secret cleanup, retain official original archive/log/journals, and obtain fresh independent retained-packet review. No blind retry or product pass from setup."
+}
