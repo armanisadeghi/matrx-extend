@@ -1,0 +1,56 @@
+[
+  {
+    "file": "dev-final-reload.json",
+    "private_original_sha256": "469789afc9c5b71f0092c25a73872de93006ada027ce0b387f32f872feee34bf",
+    "published_sha256": "2f898ab76421619416d8d7d2c8ce1935d8fcd8451674a99ee414c2335a5480cf",
+    "transformation": "JSON whitespace formatting only; raw string preserved"
+  },
+  {
+    "file": "guest-store-id.json",
+    "private_original_sha256": "c53db8afea0b8624015ca9787f2ee8069247a00c02d2a8605741807b378337e1",
+    "published_sha256": "690419c43352d1d36dfcdfd435e100fee4d86aa22e4e5a41536f4d3a5ef2c9c7",
+    "transformation": "JSON whitespace formatting only; raw string preserved"
+  },
+  {
+    "file": "guest-panel.json",
+    "private_original_sha256": "d3eb7ab4139322ae566678d02f313373a8cc979bcf55358b242aaf0a08fb0ce7",
+    "published_sha256": "9f786e5472b3533d2a38d8fb8116e7484eb856162442c08af8e1d61752017c88",
+    "transformation": "JSON whitespace formatting only; raw string preserved"
+  },
+  {
+    "file": "guest-account.json",
+    "private_original_sha256": "2dbac5150cd5e44f3aacdf71b90fcd8cc9a40af2cd102c5f34c73b044b634199",
+    "published_sha256": "e51b76021f12c4b4d8fb74aa7c4da66b77f10efb52f8a5f1af8aa63bdfba9cf2",
+    "transformation": "JSON whitespace formatting only; raw string preserved"
+  },
+  {
+    "file": "guest-first-settled.json",
+    "private_original_sha256": "ac749c3c0bec553c73e5d4ff6205e9d904b18e2dc4f6dfdf3de1d8e81030ba3e",
+    "published_sha256": "4c088af7925ce7bd7a492cbdc82d2b25a3fe17fb23f976ea12c20d6da553c750",
+    "transformation": "JSON whitespace formatting only; raw string preserved"
+  },
+  {
+    "file": "guest-follow-settled.json",
+    "private_original_sha256": "5e56274212900c83c076094b16e82441e4c039e596cb4c6e356aa89e5dd1fbe6",
+    "published_sha256": "c2c477f7b687b69752200c44eff6afb312510eea6db7026be6125ab899b1e609",
+    "transformation": "JSON whitespace formatting only; raw string preserved"
+  },
+  {
+    "file": "guest-follow-visible.json",
+    "private_original_sha256": "ba5e4061f2f6bef10103c11f8f9319c845e640e9f0088fff5f13278197a088f3",
+    "published_sha256": "e7b8649ceb4085e59d77b63f3ee120945c2bf784a8cb7231764f799f4ef69092",
+    "transformation": "JSON whitespace formatting only; raw string preserved"
+  },
+  {
+    "file": "guest-first-screen.png",
+    "private_original_sha256": "f608fa5a5e02e023359ecdcf8dd1e94470b8b75e56db67067759ac722568fcc0",
+    "published_sha256": "f608fa5a5e02e023359ecdcf8dd1e94470b8b75e56db67067759ac722568fcc0",
+    "transformation": "exact bytes"
+  },
+  {
+    "file": "guest-follow-visible.png",
+    "private_original_sha256": "a9aacafe3bcc73651a0923557e33918bd811b0adc2b205024ddae4281a68d364",
+    "published_sha256": "a9aacafe3bcc73651a0923557e33918bd811b0adc2b205024ddae4281a68d364",
+    "transformation": "exact bytes"
+  }
+]
