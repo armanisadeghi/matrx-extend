@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "task_id": "release_daily_20261029",
-  "at": "2026-10-29T18:42:18.962993+00:00",
-  "status": "CHECKPOINT_GOOGLE_RECOVERY_INCOMPLETE_GUEST_DEV_VERIFIED",
+  "at": "2026-10-29T19:37:56.907305+00:00",
+  "status": "CHECKPOINT_GOOGLE_TIMED_RECOVERY_OFFICIAL_MAIL_VERIFIED",
   "claim": {
     "task": "matrx-extend-daily-review-and-update",
     "window": "2026-10-29 America/Los_Angeles",
@@ -11,9 +11,9 @@
     "publication_order": "Fallback claim/checkpoint publication followed refused admission; this is a procedure exception. No external action occurred."
   },
   "primary_item": "hnfolienncfklkgmdjjmhhegglimlamg",
-  "source_sha": "7ecfd60e807a51ccd72d3a63ceb4126d44e50698",
-  "A_product_verdict": "BOUNDED_UI_PASS: actual designated Guest profile Store 0.2.577 returned correct first and follow-up answers in one conversation; terminal Send/no Stop and visible Guest account. Owner DEV 0.2.631 Reloaded at verified normal directory, ID and pin after parent normal existing-import promotion. Current private Store published/draft/pending and official mail remain UNVERIFIED: Google recovery incomplete. Full candidate guest/nonadmin acceptance remains open; no eligible upload candidate.",
-  "B_provenance_verdict": "RESOURCE_VALID_WITH_BOUNDED_UI_EVIDENCE: completed normal guard admitted and valid exit0, independent195-read watcher maxgap2.010893s, no unsafe events. Operator attests100 attempted native APIs in44 groups/max4 and journal check before each; published decisive captures do not independently establish whole-procedure compliance. One invalid stale menu index produced no mutation; fresh state then documented Cancel recovered. Independent review supports bounded guest answers and DEV reload, not private Store state or full candidate acceptance.",
+  "source_sha": "5e198305b2f54df244a91b81ca7cba6de06e4db1",
+  "A_product_verdict": "BOUNDED_PARTIAL: current private Published/Draft/Pending remains UNVERIFIED after existing Authenticator code led to a six-hour Google recovery wait. Direct authenticated publisher Gmail works: bounded official-sender query and actual October23 message confirm primary item0.2.577/Public. Current promoted DEV631 physically Reloaded, enabled/pinned at expected ID/path. Earlier Store577 guest two-turn evidence retained; full exact-candidate guest/nonadmin acceptance open, no eligible upload.",
+  "B_provenance_verdict": "RESOURCE_VALID_WITH_BOUNDED_EVIDENCE: new normal codes-recovery holder finalvalid0; independent148-read watcher maxgap2.009683s, no unsafe events. Operator attests70nativeAPIs in29groups/max4 with pregroup checks. Safe full DEV AX original and selected verbatim official-mail AX excerpts retained; auth/Vault/code state deliberately excluded. No whole-procedure or per-stream source claim.",
   "last_authenticated_store_observation": {
     "date": "2026-10-28 America/Los_Angeles",
     "receipt": "docs/stabilization/reports/release-daily-20261028.json",
@@ -22,12 +22,12 @@
     "draft_version": "0.2.577",
     "draft_state": "unpublished",
     "pending_scope": "No pending/reviewer action displayed in those inspected views; not a fresh October29 finding.",
-    "mail_scope": "Prior bounded query only; no fresh mail observation today.",
+    "mail_scope": "Historical dashboard-associated scope; current October29 direct-mail observation recorded separately in official_mail_observation.",
     "last_fully_compliant_daily_record": "2026-10-27"
   },
   "actions": {
-    "browser_api_calls": 100,
-    "tabs_created": 3,
+    "browser_api_calls": 170,
+    "tabs_created": 5,
     "credentials_read_or_changed": "Existing saved/Vault password used privately; none read as plaintext, changed or rotated",
     "oauth_grants": 0,
     "jobs_dispatched": 0,
@@ -36,7 +36,9 @@
     "baseline_changes": 0,
     "source_product_changes": 0,
     "guest_ui_sends": 2,
-    "provider_calls": "unobserved"
+    "provider_calls": "unobserved",
+    "current_resume_native_api_calls": 70,
+    "authenticator_codes_submitted": 1
   },
   "cleanup": {
     "owned_jobs": 0,
@@ -45,11 +47,11 @@
     "owned_tabs": 0,
     "owned_temporary_credentials": 0,
     "active_lane_obligations": 0,
-    "shared_holder": "No holder remains; parent watcher completed exit0 with terminal journal observed.",
-    "ui": "Guest original NewTab restored with sidepanel closed; owner original Vault focus restored; all3 owned tabs closed; CUA reset.",
-    "clipboard": "Overwrote copied existing password with nonsecret Chrome extensions URL via nativecopy; original clipboard not restored."
+    "shared_holder": "Holder actualexit0 and independent watcher actualexit0; both terminal.",
+    "ui": "Two newly owned tabs closed; original owner Vault root restored, only original tab remains; CUA reset. No Guest UI touched in this resume.",
+    "clipboard": "Copied authenticator code overwritten with nonsecret chrome://extensions development URL via nativecopy; original clipboard not restored."
   },
-  "next_action": "Complete existing supported Google account recovery under fresh admitted browser lease and independent watcher, then bounded exact primary Published/Draft/Package and official mail check; do not infer state from login outcome. Full exact-candidate guest/nonadmin gates remain required before upload.",
+  "next_action": "Resume same daily claim after Google supported timed recovery can proceed; verify exact primary Published/Draft/Package/Pending before any Store action. Preserve official-mail bounded observation separately. Full exact-candidate guest/nonadmin gates still required before upload; no new schedule or immediate repeated recovery attempt.",
   "validation": {
     "json": "Semantic equality after Biome stdin formatting; journal JSONL parse passed. Report path is excluded by checked-in Biome config.",
     "docs_links": "371 broken /8317 checked, retained global findings; no changed Store record finding.",
@@ -62,6 +64,14 @@
       "A": "Bounded Store577 two-turn+Guest and DEV631Reloaded PASS; fullscope PARTIAL.",
       "B": "Integrity/resource final PASS; selectedprocedure PARTIAL. Counts arithmetic only, no fullcalltraceaudit; Googlechallenge operatorattested; before/after endpoint parentattested; retainedpostrun endpoint independentlyverified.",
       "privacy": "Nine safe published captures approved as bounded evidence; auth/Vault excluded."
+    },
+    "latest_peer": "Awaiting parent independent review of current safe packet; prior peer scope remains historical.",
+    "latest_checks": {
+      "json_and_hashes": "PASS: JSON/JSONL parse, evidence manifest exactSHA256,70API sum/max4/29groups,terminal valid0,git diffcheck. Biome formatted4safeJSON files without changes; dailyreport excluded by checked-in config.",
+      "docs_links": "371broken/8317checked; unchanged global count.",
+      "docs_guards": "103globalviolations; unchanged count.",
+      "okf_lint": "60violations/175warnings; unchanged global count.",
+      "one_home": "PASS76homes/376skills"
     }
   },
   "initial_resource_refusal": {
@@ -78,7 +88,10 @@
       "run_id": "hourly-sync-20261029-1828",
       "process_start": "Thu Oct 29 11:31:03 2026",
       "journal": "docs/stabilization/resource-journals/hourly-sync-20261029-1828.pending.jsonl",
-      "events_seen": ["RESOURCE_JOURNAL_OPENED", "RESOURCE_STOP_REQUESTED"],
+      "events_seen": [
+        "RESOURCE_JOURNAL_OPENED",
+        "RESOURCE_STOP_REQUESTED"
+      ],
       "ownership": "not this lane; preserved; no kill/recovery/removal attempted"
     },
     "other_live_holder_terminal_followup": {
@@ -91,48 +104,75 @@
     }
   },
   "resource": {
-    "journal": "docs/stabilization/resource-journals/release-daily-20261029-native-resume-1835.jsonl",
-    "sha256": "0d69ccb90606bbcc10f39f0d6017e4b3d7d5c84b31733c743ffeb5f2cf2566b0",
-    "run_id": "release-daily-20261029-native-resume-1835",
-    "session_id": 1205,
-    "pid": 99573,
-    "admitted_at": "2026-10-29T18:35:51.982Z",
-    "final_at": "2026-10-29T18:41:32.282Z",
+    "journal": "docs/stabilization/resource-journals/release-daily-20261029-codes-recovery.jsonl",
+    "sha256": "b2d2639867c4865febaa34ee30241b4174cee33fb71a804ede549148a07f954a",
+    "run_id": "release-daily-20261029-codes-recovery",
+    "session_id": 61223,
+    "pid": 8189,
+    "admitted_at": "2026-10-29T19:33:04.056Z",
+    "final_at": "2026-10-29T19:37:08.987Z",
     "admitted": true,
     "resourceInvalid": false,
     "exit_code": 0,
     "decision": "valid",
     "independent_watcher": {
-      "path": "docs/stabilization/evidence/release-native-20261029/independent-watch.jsonl",
-      "sha256": "35ec60f9f7b7babaaad0c7bc107421906f36058470db1893e4ca28ef08a490d1",
-      "reads": 195,
-      "maximum_gap_seconds": 2.010893,
-      "start": "2026-10-29T18:35:04.553685+00:00",
-      "end": "2026-10-29T18:41:33.474544+00:00",
+      "path": "docs/stabilization/evidence/release-codes-20261029/independent-watch.jsonl",
+      "sha256": "ff6635b0a0629c8a97a612420548a0403c43713c767c3e2224c98aed137baa46",
+      "reads": 148,
+      "maximum_gap_seconds": 2.009683,
+      "start": "2026-10-29T19:32:15.152115+00:00",
+      "end": "2026-10-29T19:37:09.794254+00:00",
       "exit_code": 0,
-      "unsafe_events": 0
-    },
-    "setup_note": "Unsupported --help returned RESOURCE_ARGUMENT_INVALID before normal unique guard launch; no permit/UI resulted; not used as admission."
+      "unsafe_events": 0,
+      "normal_cleanup_stop_requested": true
+    }
   },
   "native_procedure": {
-    "api_calls_attempted": 100,
+    "api_calls_attempted": 70,
     "batch_counts": [
-      1, 4, 2, 2, 2, 3, 2, 3, 4, 2, 2, 2, 2, 2, 1, 2, 1, 2, 4, 2, 2, 2, 1, 2, 2, 2, 4, 4, 2, 4, 1,
-      1, 4, 2, 3, 1, 2, 2, 2, 2, 2, 2, 4, 2
+      1,
+      2,
+      4,
+      1,
+      2,
+      2,
+      2,
+      2,
+      4,
+      2,
+      4,
+      2,
+      2,
+      4,
+      1,
+      4,
+      1,
+      4,
+      1,
+      1,
+      3,
+      1,
+      2,
+      4,
+      2,
+      4,
+      4,
+      1,
+      3
     ],
     "maximum_batch": 4,
-    "batch22": "Escape succeeded; stale menu index click rejected invalid element ID; planned final getAX did not run. Count2. No mutation from rejected click. Next group fresh full state then documented Cancel restored menu state.",
-    "guard_checks": "Before first getApp and every subsequent <=4 group; parent approval18:35:59 before UI; final UI stopped before guardSIGINT.",
-    "budget": "Parent extended60 to80 then100 for required two-turn guest and cleanup; only2 AI sends.",
-    "evidence_limit": "API chronology, all per-batch guard checks, Google challenge/recovery and cleanup are operator attested from tool execution; nine published captures preserve decisive bounded observations, not all100 actions. No whole-procedure compliance claim."
+    "guard_checks": "Before first getApp and every following native group; parent explicit independent-watch healthy approval before GUI. UI stopped before SIGINT.",
+    "evidence_limit": "Operator-attested chronology/counts/checks; full original DEV AX and verbatim selected mail excerpts support decisive bounded observations, not entire70API compliance.",
+    "corrections": "Native typeText dropped the from: prefix on a narrowed Gmail query and URL prefix while restoring Vault; exact setValue corrected both and actual resulting state was reread. No product inference from malformed intermediate queries."
   },
   "google_recovery": {
     "dashboard_reached": false,
-    "official_mail_checked": false,
+    "official_mail_checked": true,
     "current_private_store_state": "unverified",
-    "observations": "Google requested existing-account re-verification; browser saved password rejected once, existing Vault personal password copy rejected once. Supported Authenticator code challenge reached; no code entered. Available codes not exhausted, so no human-only blocker claimed. No reset/rotation or OAuth/grant.",
-    "capture_policy": "No auth/Vault/password/code raw captures published or saved by lane; report retains safe booleans only.",
-    "provenance": "Operator attested from native tool execution; originals intentionally not retained because auth URLs/credential context must remain private."
+    "observations": "Existing personal Vault Google authenticator copy control available; code copied at point of use and submitted once through native clipboard into genuine Google Authenticator challenge. No additional password attempt. Google then displayed already signed in on another device/browser and after6hours check publisher email there for a sign-in link. This is a timed recovery checkpoint, not proof of exact current Store state or a human-only gate.",
+    "time_scope": "Notice observed during19:34UTC native flow; six-hour duration operator attested. No exact future completion promise or automated follow-up created.",
+    "capture_policy": "No raw auth/Vault/code capture retained. Only safe factual attestation.",
+    "credentials": "No password reset, rotation, new OAuth grant or credential creation."
   },
   "guest_observation": {
     "profile": "Matrx Guest Test",
@@ -161,9 +201,11 @@
     "pinned": true,
     "enabled": true,
     "reload_status": "Reloaded",
-    "source_sha": "7ecfd60e807a51ccd72d3a63ceb4126d44e50698",
-    "current_metadata_sha": "d033d8ef8521a55e451c3f647595be08dbf6ced5",
-    "scope": "Parent normal existing-import promoter completed before final actual Reloaded native proof; app bits are7ec, d033 metadata compatibility reported separately."
+    "source_sha": "5e198305b2f54df244a91b81ca7cba6de06e4db1",
+    "scope": "Parent attested normal existing-import promotion10539actualexit0 at19:32UTC for app5e/CI40934394304/art12924249329; lane independently physically Reloaded current DEV631 and verified path/ID/enabled/pin at19:36UTC. Source identity from parent promotion, not UI alone.",
+    "earlier_source_sha": "7ecfd60e807a51ccd72d3a63ceb4126d44e50698",
+    "latest_reload_evidence": "docs/stabilization/evidence/release-codes-20261029/dev-reloaded-original.json",
+    "earlier_metadata_sha": "d033d8ef8521a55e451c3f647595be08dbf6ced5"
   },
   "evidence": "docs/stabilization/evidence/release-native-20261029/manifest.json",
   "server_observation": {
@@ -171,5 +213,109 @@
     "built_at": "2026-10-29T18:16:52Z",
     "scope": "Advertised /health/version endpoint only; not perstream identity. Parent observed same before/after guest around18:38:40/18:40:01; those originals not separatelysaved. Retained post-run actual GET original is published.",
     "post_run_evidence": "docs/stabilization/evidence/release-native-20261029/health-version-after.json"
-  }
+  },
+  "previous_resource": {
+    "journal": "docs/stabilization/resource-journals/release-daily-20261029-native-resume-1835.jsonl",
+    "sha256": "0d69ccb90606bbcc10f39f0d6017e4b3d7d5c84b31733c743ffeb5f2cf2566b0",
+    "run_id": "release-daily-20261029-native-resume-1835",
+    "session_id": 1205,
+    "pid": 99573,
+    "admitted_at": "2026-10-29T18:35:51.982Z",
+    "final_at": "2026-10-29T18:41:32.282Z",
+    "admitted": true,
+    "resourceInvalid": false,
+    "exit_code": 0,
+    "decision": "valid",
+    "independent_watcher": {
+      "path": "docs/stabilization/evidence/release-native-20261029/independent-watch.jsonl",
+      "sha256": "35ec60f9f7b7babaaad0c7bc107421906f36058470db1893e4ca28ef08a490d1",
+      "reads": 195,
+      "maximum_gap_seconds": 2.010893,
+      "start": "2026-10-29T18:35:04.553685+00:00",
+      "end": "2026-10-29T18:41:33.474544+00:00",
+      "exit_code": 0,
+      "unsafe_events": 0
+    },
+    "setup_note": "Unsupported --help returned RESOURCE_ARGUMENT_INVALID before normal unique guard launch; no permit/UI resulted; not used as admission."
+  },
+  "earlier_native_procedure": {
+    "api_calls_attempted": 100,
+    "batch_counts": [
+      1,
+      4,
+      2,
+      2,
+      2,
+      3,
+      2,
+      3,
+      4,
+      2,
+      2,
+      2,
+      2,
+      2,
+      1,
+      2,
+      1,
+      2,
+      4,
+      2,
+      2,
+      2,
+      1,
+      2,
+      2,
+      2,
+      4,
+      4,
+      2,
+      4,
+      1,
+      1,
+      4,
+      2,
+      3,
+      1,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      4,
+      2
+    ],
+    "maximum_batch": 4,
+    "batch22": "Escape succeeded; stale menu index click rejected invalid element ID; planned final getAX did not run. Count2. No mutation from rejected click. Next group fresh full state then documented Cancel restored menu state.",
+    "guard_checks": "Before first getApp and every subsequent <=4 group; parent approval18:35:59 before UI; final UI stopped before guardSIGINT.",
+    "budget": "Parent extended60 to80 then100 for required two-turn guest and cleanup; only2 AI sends.",
+    "evidence_limit": "API chronology, all per-batch guard checks, Google challenge/recovery and cleanup are operator attested from tool execution; nine published captures preserve decisive bounded observations, not all100 actions. No whole-procedure compliance claim."
+  },
+  "earlier_google_recovery": {
+    "dashboard_reached": false,
+    "official_mail_checked": false,
+    "current_private_store_state": "unverified",
+    "observations": "Google requested existing-account re-verification; browser saved password rejected once, existing Vault personal password copy rejected once. Supported Authenticator code challenge reached; no code entered. Available codes not exhausted, so no human-only blocker claimed. No reset/rotation or OAuth/grant.",
+    "capture_policy": "No auth/Vault/password/code raw captures published or saved by lane; report retains safe booleans only.",
+    "provenance": "Operator attested from native tool execution; originals intentionally not retained because auth URLs/credential context must remain private."
+  },
+  "official_mail_observation": {
+    "at_window": "2026-10-29T19:35Z\u201319:36Z",
+    "account": "arman@armansadeghi.com",
+    "query": "from:chromewebstore-noreply@google.com \"Matrx Extend\" after:2026/10/22",
+    "visible_result_rows": 1,
+    "message_date": "2026-10-23 20:01 as rendered; timezone not separately shown",
+    "sender": "chromewebstore-noreply@google.com",
+    "primary_item": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "message_version": "0.2.577",
+    "message_visibility": "Public",
+    "scope": "Existing authenticated Gmail; opened actual official message. Bounded query absence does not establish private pending/reviewer state.",
+    "evidence": [
+      "docs/stabilization/evidence/release-codes-20261029/mail-query-excerpt.json",
+      "docs/stabilization/evidence/release-codes-20261029/official-message-excerpt.json"
+    ]
+  },
+  "latest_evidence": "docs/stabilization/evidence/release-codes-20261029/manifest.json",
+  "earlier_source_sha": "7ecfd60e807a51ccd72d3a63ceb4126d44e50698"
 }
