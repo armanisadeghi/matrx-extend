@@ -1,0 +1,52 @@
+{
+  "schema": 1,
+  "task_id": "wake1930-settings5e-20261029",
+  "at": "2026-10-29T19:38:38.785409+00:00",
+  "owner": "root / Settings B",
+  "goal": "Retest registered Settings controls on latest successful frozen main while the release-only lane completes the existing daily Store claim. Campaign incomplete.",
+  "status": "HOSTED_IN_PROGRESS_NO_PRODUCT_VERDICT",
+  "source_sha": "5e198305b2f54df244a91b81ca7cba6de06e4db1",
+  "ci_run_id": 40934394304,
+  "artifact_id": 12924249329,
+  "github_artifact_digest": "sha256:7bb90fe54f6a0fa0f25f1d38c61c2af3983d49c6e9e9be7d0a44ad32c4b20866",
+  "normal_plan": {
+    "session_id": 62220,
+    "exit_code": 0
+  },
+  "normal_dispatch": {
+    "session_id": 40768,
+    "exit_code": 0,
+    "run_id": 40940843759,
+    "attempt": 1,
+    "lane": "B",
+    "case": "settings-controls",
+    "runner": "macos-15-intel",
+    "requested_by": "extend-stabilization",
+    "workflow_source_sha": "5e198305b2f54df244a91b81ca7cba6de06e4db1",
+    "job_id": 123683513920
+  },
+  "cost_scope": "Unchanged standard hosted workflow in existing public repository; checked-in cost manifest declares billed increment0. No paid job/publication or billing-block relocation; no claim about current authenticated aggregate weekly total.",
+  "artifact_adoption": {
+    "existing_import": true,
+    "redundant_import_session": 55372,
+    "redundant_import_exit": 1,
+    "redundant_import_error": "test_artifact_operation_failed",
+    "underlying_failure_phase": "unknown; no exact EEXIST claim",
+    "normal_existing_import_promotion_session": 10539,
+    "promotion_exit": 0,
+    "promotion_at": "2026-10-29T19:32:00.229Z",
+    "version": "0.2.631",
+    "tree_sha256": "b0fad43d2a783d0cb8ae2fc837c268e2a335a265b372ebba15ed06fce7edc5f5",
+    "file_count": 3252,
+    "scope": "Independent retained artifact/disk review consistent; separate current daily receipt owns later actual Chrome reload."
+  },
+  "product_metrics": {
+    "new_case_passes": 0,
+    "new_defects": 0,
+    "closed_defects": 0,
+    "releases": 0
+  },
+  "fixture_and_credentials": "Guest selected; no parent fixture or temporary secret mutation. Release-only local browser uses separate physical host permit.",
+  "independent_review": "settings5e_independent_review; preliminary disk provenance checked, native evidence pending; no duplicate run polling.",
+  "next_action": "Parent owns status polling no faster than60seconds. Wait for official terminal, retain original archive/log/resource journals, independently inspect actual native observations and original/surrounding repro. No blind retry, timer/threshold change or host/account relocation; no acceptance before eligible terminal evidence."
+}
