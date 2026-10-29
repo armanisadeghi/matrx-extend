@@ -65,7 +65,7 @@
       "B": "Integrity/resource final PASS; selectedprocedure PARTIAL. Counts arithmetic only, no fullcalltraceaudit; Googlechallenge operatorattested; before/after endpoint parentattested; retainedpostrun endpoint independentlyverified.",
       "privacy": "Nine safe published captures approved as bounded evidence; auth/Vault excluded."
     },
-    "latest_peer": "Awaiting parent independent review of current safe packet; prior peer scope remains historical.",
+    "latest_peer": "Parent independent safe-packet review requested two provenance clarifications: historical mail scope superseded by fresh observation; message-body whitespace normalization and account identity operator-attestation. Applied both; exact preserved message link independently corroborates primary ID. Recovery flow remains operator attested; no auth captures retained.",
     "latest_checks": {
       "json_and_hashes": "PASS: JSON/JSONL parse, evidence manifest exactSHA256,70API sum/max4/29groups,terminal valid0,git diffcheck. Biome formatted4safeJSON files without changes; dailyreport excluded by checked-in config.",
       "docs_links": "371broken/8317checked; unchanged global count.",
@@ -314,7 +314,9 @@
     "evidence": [
       "docs/stabilization/evidence/release-codes-20261029/mail-query-excerpt.json",
       "docs/stabilization/evidence/release-codes-20261029/official-message-excerpt.json"
-    ]
+    ],
+    "identity_provenance": "Publisher account identity/authenticated-session state operator attested from native Gmail account controls; selected saved mail excerpts do not independently establish account identity.",
+    "item_id_provenance": "Message body AX inserts whitespace in item ID; only whitespace normalized when comparing. Exact unbroken primary ID independently corroborated by preserved official published-item link in same message excerpt."
   },
   "latest_evidence": "docs/stabilization/evidence/release-codes-20261029/manifest.json",
   "earlier_source_sha": "7ecfd60e807a51ccd72d3a63ceb4126d44e50698"
