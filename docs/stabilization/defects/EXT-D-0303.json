@@ -1,9 +1,7 @@
 {
   "id": "EXT-D-0303",
   "feature_id": "EXT-F-2005",
-  "case_ids": [
-    "EXT-F-2005-T03"
-  ],
+  "case_ids": ["EXT-F-2005-T03"],
   "title": "Member Data pane activation is not observed after a dispatched full-reload Data click",
   "surface": "Native member Data lifecycle / post-extension-reload navigation",
   "auth_mode": "member",

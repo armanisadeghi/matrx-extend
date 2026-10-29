@@ -151,7 +151,7 @@ test('reload wait projection rejects unrestricted and mistyped metadata', () => 
       waitDiagnostic: {
         active: 'CANARY_private_active',
         matchingTabCount: -1,
-        visibleTabCount: Infinity,
+        visibleTabCount: Number.POSITIVE_INFINITY,
         activeTabCount: 101,
         selectedTabCount: 'CANARY_private_selected',
         linkedPaneCount: {},
