@@ -48,7 +48,7 @@ Historical October28 published-copy UI observation was the prior wake's designat
 
 No upload/submission/baseline change, new OAuth grant or Store release. Complete guest/non-admin acceptance is still missing, so no candidate is eligible for submission. Preserve exact last authenticated state; never infer private pending status from a public listing.
 
-Current repository synchronization baseline and ordered workspace ledger: [ledger](repository-ledger.md), [exact remote SHAs](repository-ledger.json). This containing evidence publication is metadata, not a later app artifact or new physical reload. Local release worker and guard/watch processes have finished; no owned local credentials, tabs or fixture obligations remain. Hosted Settings run40940843759 and its independent reviewer are terminal; all owned local/hosted jobs, tabs, temporary credentials, fixtures and watchers have no remaining obligations. Next hourly checkpoint is due20:30UTC while active; fetch at least every15minutes.
+Current repository synchronization baseline and ordered workspace ledger: [ledger](repository-ledger.md), [exact remote SHAs](reports/repository-ledger.json). This containing evidence publication is metadata, not a later app artifact or new physical reload. Local release worker and guard/watch processes have finished; no owned local credentials, tabs or fixture obligations remain. Hosted Settings run40940843759 and its independent reviewer are terminal; all owned local/hosted jobs, tabs, temporary credentials, fixtures and watchers have no remaining obligations. Next hourly checkpoint is due20:30UTC while active; fetch at least every15minutes.
 
 ## Next safe execution boundary
 
