@@ -1,0 +1,58 @@
+{
+  "schema": 1,
+  "at": "2026-10-29T19:38:41.805667+00:00",
+  "status": "DONE_WITH_CONCERNS",
+  "role": "fresh independent reviewer; zero authorship; no GUI/jobs/auth or Vault reads",
+  "A_observed_facts": {
+    "verdict": "BOUNDED_PARTIAL",
+    "supported": [
+      "Preserved DEV AX shows 0.2.631, expected runtime ID, normal development directory, enabled, toolbar pin on, and Reloaded.",
+      "Preserved selected Gmail query and official-message AX show official sender, October23 publication, version0.2.577/Public, and exact primary item URL.",
+      "Current daily report, canonical current bullets and master row retain private Published/Draft/Pending UNVERIFIED; full candidate guest/nonadmin acceptance remains open."
+    ],
+    "limits": [
+      "Google six-hour recovery notice/code procedure and cleanup are operator-attested; no auth captures intentionally retained. This is not independent human-only-gate proof.",
+      "Gmail account identity/authentication is operator-attested beyond selected excerpt; no current dashboard or pending-state proof.",
+      "DEV application-source5e identity derives from parent promotion attestation; UI alone cannot establish source SHA. Earlier guest scope not rerun."
+    ]
+  },
+  "B_provenance_procedure": {
+    "verdict": "INTEGRITY_PASS_PROCEDURE_PARTIAL",
+    "manifest_hashes": "All four entries independently recomputed and match.",
+    "watcher": {
+      "copy_byte_identical_to_parent": true,
+      "reads": 148,
+      "max_gap_seconds": 2.009683,
+      "sha256": "ff6635b0a0629c8a97a612420548a0403c43713c767c3e2224c98aed137baa46",
+      "terminal": "RESOURCE_FINAL_DECISION"
+    },
+    "resource": {
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "sha256": "b2d2639867c4865febaa34ee30241b4174cee33fb71a804ede549148a07f954a"
+    },
+    "arithmetic": "29 declared batches sum70, max4; not independent reconstruction of all API calls/checks.",
+    "privacy": "APPROVED bounded files: dev-reloaded-original.json; mail-query-excerpt.json; official-message-excerpt.json; independent-watch.jsonl; manifest.json. Only benign extension/profile/tab title metadata and official publication/query excerpt; no auth/Vault contents, secrets, code, or auth URL observed. Approval does not extend to omitted auth surfaces.",
+    "limits": "Safe originals/excerpts checked as supplied; no full tool chronology or untouched AX transcript exists here to independently establish excerpt selection provenance."
+  },
+  "corrections": [
+    {
+      "severity": "Minor",
+      "target": "official_mail_observation",
+      "finding": "Explicitly state whitespace normalization in displayed Item ID; exact official link independently corroborates primary ID. Excerpt itself should remain unchanged."
+    },
+    {
+      "severity": "Minor",
+      "target": "last_authenticated_store_observation.mail_scope",
+      "finding": "No fresh mail observation today is an earlier checkpoint statement now superseded. Label it historical or point to current official_mail_observation."
+    }
+  ],
+  "report_reviewed_at": "2026-10-29T19:37:56.907305+00:00",
+  "public_edits": 0,
+  "owned_jobs": 0,
+  "owned_leases": 0,
+  "owned_watchers": 0,
+  "active_lane_obligations": 0
+}
