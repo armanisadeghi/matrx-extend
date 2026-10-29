@@ -31,7 +31,7 @@ async function failureReport(scenario: string, eraseCatch = false, constantProje
       '<div id="app"><button role="tab" title="Data" data-state="inactive" aria-selected="false" aria-controls="pane">CANARY_private_text</button><div id="pane" role="tabpanel" data-state="inactive"><input value="CANARY_private_value"></div></div>';
     const tab = window.document.querySelector('button')!;
     const pane = window.document.querySelector('#pane')!;
-    tab.getBoundingClientRect = () => ({ width: 10, height: 10 }) as DOMRect;
+    tab.getBoundingClientRect = () => new window.DOMRect(0, 0, 10, 10);
     if (scenario === 'selected_missing_pane') {
       tab.setAttribute('data-state', 'active');
       tab.setAttribute('aria-selected', 'true');
