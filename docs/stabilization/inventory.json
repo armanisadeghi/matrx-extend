@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-29T21:30:52.736483+00:00",
+  "updated_at": "2026-10-29T23:08:28.064926+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -50740,23 +50740,23 @@
             "EXT-D-0274",
             "EXT-D-0303"
           ],
-          "verification_note": "Selected member T03 lifecycle PASS on e157 development artifact: real save/list/refresh, pre/post-reload run and TSV/JSON/AI clipboard, Cancel; normal certificate and fresh independent raw peer pass. Not admin/special-cell/whole-Data/Store577 acceptance.",
+          "verification_note": "Latest bounded member T03 lifecycle PASS once on001856 development artifact, real save/list/run/TSV/JSON/AI copy/Cancel and actual full-reload survival/run; normal verifier and fresh retained-original peer pass. Prior f922 postreload failure preserved, cause unknown;49.895s readiness is not fast/reliable/within10s proof. No D303 closure/admin/T08/wholeData/Store acceptance.",
           "results": {
             "member": {
-              "status": "partial",
-              "run_id": 40954051355,
+              "status": "pass",
+              "run_id": 40969223078,
               "build_version": "0.2.631",
-              "source_sha": "f922fc1f4bebedc4c4c8074a77cee372c8e3d626",
-              "workflow_source_sha": "336c62406e36ad18989031c518bc59de2f95ca17",
-              "development_ci_run_id": 40951157258,
-              "development_artifact_id": 12930753901,
-              "result_artifact_id": 12933132076,
+              "source_sha": "00185648a6143bf031cb0cbe0108f88eeabf498e",
+              "workflow_source_sha": "c6aecec4fb0baf9e78e06ef3d77d05211cdc60b9",
+              "development_ci_run_id": 40960544186,
+              "development_artifact_id": 12936850820,
+              "result_artifact_id": 12939617437,
               "resource_invalid": false,
-              "automation_exit": 1,
-              "raw_case_status": "fail",
-              "full_case_pass": false,
-              "new_lifecycle_pass": false,
-              "scope": "Actual canonical member/org and pre-reload pattern UI/service positives; full post-reload active Data pane not observed. Product-versus-driver cause unknown; no full current lifecycle acceptance.",
+              "automation_exit": 0,
+              "raw_case_status": "pass",
+              "full_case_pass": true,
+              "new_lifecycle_pass": true,
+              "scope": "One bounded actual ordinary-member T03 lifecycle including real save/list/run/copy/cancel and actual reload saved-pattern survival/run. No admin/T08/whole Data/Store or D303 closure.",
               "verified_subtargets": {
                 "picker_field_clicks_landed": true,
                 "two_distinct_previews": true,
@@ -50772,28 +50772,66 @@
                 "saved_pattern_refreshed": true,
                 "saved_pattern_run_before_reload": true,
                 "cancel_cleared_unsaved_selection": true,
-                "reload_replacement_adopted": true
+                "reload_replacement_adopted": true,
+                "saved_pattern_survived_extension_reload": true,
+                "saved_pattern_run_after_reload": true,
+                "member_save_succeeded": true
               },
-              "unverified": [
-                "Post-reload active Data pane and remaining lifecycle",
-                "Last active-pane wait state/category missing from original report",
-                "Product versus driver causal attribution",
-                "Independent browser replay/closure after fresh diagnostic artifact"
-              ],
+              "clipboard": {
+                "clipboard_before_reload": {
+                  "tsv_matches_fixture": true,
+                  "json_matches_fixture": true,
+                  "ai_contains_all_fixture_rows": true,
+                  "native_copy_feedback_observed": true,
+                  "clipboard_readback": true,
+                  "observation_permission_restored": true
+                },
+                "clipboard_after_reload": {
+                  "tsv_matches_fixture": true,
+                  "json_matches_fixture": true,
+                  "ai_contains_all_fixture_rows": true,
+                  "native_copy_feedback_observed": true,
+                  "clipboard_readback": true,
+                  "observation_permission_restored": true
+                }
+              },
+              "reload_data_readiness_elapsed_ms": 49895,
+              "latency_scope": "Polling-loop budget is not enforced wallclock/CDP deadline; no within10s/fast/reliable reload claim. Cause unknown.",
+              "normal_verifier_valid": true,
+              "independent_retained_original_review": "A/B pass scoped; no second native browser replay.",
               "cleanup": {
-                "native_owned_pattern_rows_deleted": 1,
-                "active_owned_rows_after_delete": 0,
-                "canonical_fixture_archive_restored_and_read_back": true,
-                "owned_secret_absent_complete_inventory": true,
-                "auth_files_absent": true
+                "at": "2026-10-29T23:03:17.241182+00:00",
+                "status": "TERMINAL_CLEANUP_VERIFIED",
+                "run_id": 40969223078,
+                "attempt": 1,
+                "official_run_status": "completed",
+                "official_conclusion": "success",
+                "owned_secret_deleted": true,
+                "complete_paginated_inventory_absence": true,
+                "fixture_archive_restored_and_separate_readback_exact": true,
+                "local_auth_files_absent": true,
+                "obligations_remaining": 0
+              },
+              "native_owned_pattern_cleanup": {
+                "verified": true,
+                "deleted_rows": 1,
+                "exact_owned_name_organization_lookup": true,
+                "active_rows_after_delete": 0
               },
               "backend_sha": {
-                "advertised_post_run": "429a7d2037506982eb7bf28658debcafb6ad2994",
-                "scope": "API-only /health/version after run, not per-request deployment proof"
+                "status": "unverified",
+                "HTTP": 403,
+                "scope": "Optional Pythonurllib endpoint GET refused; no per-request or productfailure conclusion."
               },
+              "unverified": [
+                "Earlier f922 failure cause/product versus driver",
+                "D303 product repair and independent original/surrounding closure",
+                "Admin/T08/whole Data/Store candidate acceptance",
+                "Decisive postreload screenshot/current server per-request identity"
+              ],
               "evidence": [
-                "docs/stabilization/reports/member-lifecycle-f922-20261029.json",
-                "docs/stabilization/reports/owner-member-peer-20261029.json"
+                "docs/stabilization/reports/member-d303-replay-40969223078-20261029.json",
+                "docs/stabilization/reports/member-d303-peer-20261029.json"
               ]
             },
             "admin": {
@@ -51132,6 +51170,63 @@
                 "development_ci_run_id": 39474432457,
                 "development_artifact_id": 12288703340,
                 "result_artifact_id": 12289074514
+              }
+            },
+            {
+              "mode": "member",
+              "result": {
+                "status": "partial",
+                "run_id": 40954051355,
+                "build_version": "0.2.631",
+                "source_sha": "f922fc1f4bebedc4c4c8074a77cee372c8e3d626",
+                "workflow_source_sha": "336c62406e36ad18989031c518bc59de2f95ca17",
+                "development_ci_run_id": 40951157258,
+                "development_artifact_id": 12930753901,
+                "result_artifact_id": 12933132076,
+                "resource_invalid": false,
+                "automation_exit": 1,
+                "raw_case_status": "fail",
+                "full_case_pass": false,
+                "new_lifecycle_pass": false,
+                "scope": "Actual canonical member/org and pre-reload pattern UI/service positives; full post-reload active Data pane not observed. Product-versus-driver cause unknown; no full current lifecycle acceptance.",
+                "verified_subtargets": {
+                  "picker_field_clicks_landed": true,
+                  "two_distinct_previews": true,
+                  "save_pattern_visible": true,
+                  "pattern_name_visible": true,
+                  "pattern_write_requests": 1,
+                  "pattern_write_status": 201,
+                  "saved_row_lookup_verified": true,
+                  "request_body_organization_present": true,
+                  "request_body_organization_matched_selected": true,
+                  "request_header_organization_matched_body": true,
+                  "request_header_organization_matched_selected": true,
+                  "saved_pattern_refreshed": true,
+                  "saved_pattern_run_before_reload": true,
+                  "cancel_cleared_unsaved_selection": true,
+                  "reload_replacement_adopted": true
+                },
+                "unverified": [
+                  "Post-reload active Data pane and remaining lifecycle",
+                  "Last active-pane wait state/category missing from original report",
+                  "Product versus driver causal attribution",
+                  "Independent browser replay/closure after fresh diagnostic artifact"
+                ],
+                "cleanup": {
+                  "native_owned_pattern_rows_deleted": 1,
+                  "active_owned_rows_after_delete": 0,
+                  "canonical_fixture_archive_restored_and_read_back": true,
+                  "owned_secret_absent_complete_inventory": true,
+                  "auth_files_absent": true
+                },
+                "backend_sha": {
+                  "advertised_post_run": "429a7d2037506982eb7bf28658debcafb6ad2994",
+                  "scope": "API-only /health/version after run, not per-request deployment proof"
+                },
+                "evidence": [
+                  "docs/stabilization/reports/member-lifecycle-f922-20261029.json",
+                  "docs/stabilization/reports/owner-member-peer-20261029.json"
+                ]
               }
             }
           ],

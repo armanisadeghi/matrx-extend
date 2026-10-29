@@ -1,0 +1,62 @@
+{
+  "task": "member_d303_replay_fresh_peer_2251",
+  "at": "2026-10-29T23:06:21.029738+00:00",
+  "status": "DONE_BOUNDED_ORIGINAL_PACKET_REVIEW",
+  "scope": "Fresh independent retained-native original packet and source/provenance/privacy review; no native browser replay, heavy job, dispatch, authentication or fixture mutation. Only private review files written.",
+  "source_commit_reviewed": "6af866cf6",
+  "run_id": 40969223078,
+  "result_artifact_id": 12939617437,
+  "A": {
+    "verdict": "PASS_BOUNDED_MEMBER_T03_NATIVE_MACHINE_EVIDENCE",
+    "evidence": [
+      "Official six-member ZIP and every original hash/byte count match report and saved official artifact digest. Exact native JSON status pass/complete; immutable app001856 and workflowcandidatec6 kept distinct.",
+      "Six real web/extension/nonadmin/org authentication booleans, all18 scalar observations and both six-boolean clipboard projections independently equal original native fields. Actual save201/scoped request/readback, list refresh, saved run/cancel and post-full-reload saved pattern survival/run retained.",
+      "Original reload context, tab readiness and lifecycle proof inspected: old worker/panel retired, replacement worker event and correlated panel materialization, panel targetCreated event false preserved. Normal independent verifier accepts this exact proof basis.",
+      "Native cleanup is verified deleted_rows1/active_rows0. Canonical fixture restore and separate readback rows equal; archived timestamp raw spelling differs but parses to original same instant and SQL exact_archive_state_restored true. Owned secret deletion0 and complete inventory absence retained. Local identity/admin files absent; full three-file cleanup remains original worker attestation."
+    ],
+    "limits": [
+      "One successful native attempt on new artifact does not explain earlier f922 failure, prove a product fix, close D303, or cover admin/T08/wholeData/Store release acceptance.",
+      "Evidence is original native machine report/resource/provenance, without decisive post-reload screenshot. No independent native browser replay by this reviewer.",
+      "Current live server identity remains unverified: optional endpoint returned403. No product failure or per-request server SHA inferred."
+    ]
+  },
+  "B": {
+    "verdict": "PASS_SCOPED_PROVENANCE_PRIVACY_WITH_EXPLICIT_PROCEDURE_LIMITS",
+    "evidence": [
+      "Four exact evidence paths in commit6af866cf6 inspected; no source/runtime predicate/timer/auth/model changes in that commit.",
+      "All three raw journal SHA/finals match; every normal sanitizer output independently equals public bytes. All three admitted, resourceInvalidfalse, exit0/valid, zero unsafe events.",
+      "Fresh normal lifecycle verify rerun by reviewer actualexit0 returns validtrue/replacementPanelBasis correlated_panel_materialization and expected verifier SHA50bf51ea0b5cef794db517af4c2ec695432ba67a5de3e0ec3ad12cce118c45c9.",
+      "Member public projection contains only safe booleans/counts/categories/hash/provenance; full native auth/response/clipboard/log/ZIP and startup PNGs remain private.",
+      "Owner public packet exact seven-file approved whitelist verified: decoded originals byte-equal private peer-approved files, hashes and byte counts match, five AX normalized views match declared transformation, PNG exact, native-calls JSON semantically equal. Private profile popup excluded."
+    ],
+    "limits": [
+      "First owner poll occurred within60seconds of dispatch; retained limitation prevents whole-procedure compliance claim. Later saved poll mtime gaps65.728\u201378.000seconds corroborate bounded subsequent cadence, not exact API call chronology.",
+      "Data readiness elapsed49895ms is retained. Existing shared waitFor accepts a successful awaited read before rechecking deadline;10000ms is polling-loop budget, not an enforced wall-clock/CDP-read deadline. No within10seconds or continuous-absence claim; latency cause unknown.",
+      "Exact native operation chronology and cleanup assertions rely on retained machine/worker records; no browser action replay."
+    ]
+  },
+  "normal_verifier": {
+    "actual_exit": 0,
+    "valid": true,
+    "output_file": ".output/stabilization-checkpoints/wake2251-20261029/member-peer-normal-verifier.json",
+    "output_sha256": "3b2fc502ea4065c9ac8d59980fd1ab22170b85242bf93d02b9a4a34676821b71",
+    "replacement_panel_basis": "correlated_panel_materialization"
+  },
+  "privacy": {
+    "approved_public_member_projection": "Existing report fixed safe projections match originals; do not publish full native/auth/request response/clipboard/log/ZIP/startup captures.",
+    "approved_owner_packet": "docs/stabilization/evidence/owner-001856-20261029/",
+    "excluded_owner_file": "owner-profile.private.ax.txt"
+  },
+  "findings": [],
+  "follow_up_observations": [
+    {
+      "item": "Replacement readiness49.895seconds despite10second polling-loop budget",
+      "severity": "bounded diagnostic observation",
+      "action": "Keep explicit latency/deadline limitation. Investigate async read duration separately before claiming latency bounds; no inferred relation to earlier click failure."
+    }
+  ],
+  "recommendation": "May record one new bounded member T03 native pass with prior failed result preserved in history; D303 cause remains unknown/open and no release/overall-health claim. Fresh original+surrounding native retest remains required before closure.",
+  "owned_processes": [],
+  "owned_cleanup_obligations": [],
+  "commits": []
+}

@@ -324,8 +324,17 @@
     "report": "docs/stabilization/reports/guest-server-drift-20261029.json",
     "advertised_server_sha": "11cbedd28a68861dae27fd2ebc074878c8019c2d",
     "current_server_guest_chat": "unverified_shared_foreground_ownership_conflict_zero_sends",
-    "owner_reload_report": "docs/stabilization/reports/owner-f922-reload-20261029.json",
+    "owner_reload_report": "docs/stabilization/reports/owner-001856-reload-20261029.json",
     "member_latest_report": "docs/stabilization/reports/member-lifecycle-f922-20261029.json",
-    "store_actions": "No new claim, login/recovery retry, OAuth grant, upload, submission or baseline change."
+    "store_actions": "No new claim, login/recovery retry, OAuth grant, upload, submission or baseline change.",
+    "member_diagnostic_replay": {
+      "run_id": 40969223078,
+      "status": "success_once_bounded_with_retained_original_peer",
+      "case_id": "EXT-F-2005-T03",
+      "product_verdict": "MemberT03passonce; D303cause/closureunknown,49.895sreadiness, noStoreacceptance",
+      "report": "docs/stabilization/reports/member-d303-replay-40969223078-20261029.json",
+      "peer": "docs/stabilization/reports/member-d303-peer-20261029.json",
+      "cleanup": "terminal obligations0"
+    }
   }
 }

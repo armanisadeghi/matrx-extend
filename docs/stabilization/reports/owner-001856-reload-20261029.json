@@ -1,0 +1,284 @@
+{
+  "schema": 1,
+  "at": "2026-10-29T22:56:00.209422+00:00",
+  "status": "BOUNDED_OWNER_RELOAD_VERIFIED_CURRENT_RUNTIME_EQUIVALENT_CANDIDATE",
+  "A": "Explicit exact owner account verified before actual DEV Reloaded, version631, expectedID, stablepath/enabled/pinbesideStore577. No product acceptance or Store current-private-state proof.",
+  "B": "Bounded native provenance:23APIs, max4pergroup, fresh journalcheck beforegroups; firstgetApp lacks exact start/end;22subsequent calls individuallytimed. Parent owns independent watcher and finalresourceverdict.",
+  "owner_identity": "arman@armansadeghi.com observed native Accounts and sync beforeReload",
+  "source_sha": "00185648a6143bf031cb0cbe0108f88eeabf498e",
+  "ci_run": 40960544186,
+  "artifact_id": 12936850820,
+  "tree_sha256": "3b536e6416fe13ea4e984a31763b02b2996fa6f7f9d7f13b8316975fbfde2655",
+  "file_count": 3252,
+  "version": "0.2.631",
+  "dev_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+  "store_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+  "store_version": "0.2.577",
+  "loaded_from": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+  "native_api_count": 23,
+  "groups": [
+    1,
+    2,
+    2,
+    2,
+    2,
+    3,
+    3,
+    4,
+    2,
+    2
+  ],
+  "gui_ended_before_sigint": true,
+  "cua_reset": true,
+  "cleanup": {
+    "owner_original_store_view_restored": true,
+    "original_guest_foreground_restored": true,
+    "owned_tabs_created": 0,
+    "pin_changes": 0,
+    "auth_actions": 0,
+    "AI_sends": 0,
+    "auth_capture_saved": false
+  },
+  "privacy": {
+    "owner-profile.private.ax.txt": "PRIVATE: otherpersonalprofiles present; nevercopypublic",
+    "auth_flow": "No savedoriginal; initialgetApp automaticallydisplayed statebut no capturepersisted. RestorationAX emitfalse and notsaved."
+  },
+  "resource_journal": "docs/stabilization/resource-journals/owner-dev001856-20261029-2255.jsonl",
+  "holder_pid": 1432,
+  "holder_final_status": "terminal_valid_0",
+  "evidence": {
+    "owner-dev-reloaded.original.ax.txt": {
+      "bytes": 6287,
+      "sha256": "d9a1080b5c164ac954e3d5c3a60d064e8153805676f0ca490642bebf62c4c8c5"
+    },
+    "owner-store-before.original.ax.txt": {
+      "bytes": 6062,
+      "sha256": "45fec1306c850f07a93a88b50657a26ca6c839d46700e5e26d0a7e7ba172975b"
+    },
+    "owner-store-restored.original.ax.txt": {
+      "bytes": 6035,
+      "sha256": "854f9cf4c262962b338482bfec87ec7f480c0dc589e7288cf45d5f1dd7ba4ece"
+    },
+    "owner-dev-before.original.ax.txt": {
+      "bytes": 6233,
+      "sha256": "da38171524a80d053448d0e05ef8ceba9c8d02870bfb6c9ffd7d39da3436d9a6"
+    },
+    "owner-store.original.ax.txt": {
+      "bytes": 6060,
+      "sha256": "00a248b13e3856c24acf44eaf8f7f4ac8c33c62021aef8f5f39537848cc61bb1"
+    },
+    "native-calls.json": {
+      "bytes": 3406,
+      "sha256": "8eb41cbf601a517b3d681f0d520eb123a7c9d5a4ffdc2ed9d2cf01a7ce965c55"
+    },
+    "owner-dev-reloaded.original.png": {
+      "bytes": 166853,
+      "sha256": "991fc944ba38454a8f93b9636552713441d298573f9b4d5cd116f970be79b0e7"
+    }
+  },
+  "native_calls": [
+    {
+      "call": "getApp",
+      "timestamp_scope": "after parent approval22:54:47Z; exact start/end not captured"
+    },
+    {
+      "call": "click Profiles",
+      "start": "2026-10-29T22:55:02.752Z",
+      "end": "2026-10-29T22:55:02.770Z",
+      "ok": true
+    },
+    {
+      "call": "getAXState profile menu",
+      "start": "2026-10-29T22:55:02.770Z",
+      "end": "2026-10-29T22:55:03.099Z",
+      "ok": true
+    },
+    {
+      "call": "select existing Arman profile",
+      "start": "2026-10-29T22:55:07.391Z",
+      "end": "2026-10-29T22:55:07.400Z",
+      "ok": true
+    },
+    {
+      "call": "getAXState owner window",
+      "start": "2026-10-29T22:55:07.400Z",
+      "end": "2026-10-29T22:55:08.114Z",
+      "ok": true
+    },
+    {
+      "call": "click owner account",
+      "start": "2026-10-29T22:55:12.464Z",
+      "end": "2026-10-29T22:55:12.506Z",
+      "ok": true
+    },
+    {
+      "call": "getAXState exact owner identity",
+      "start": "2026-10-29T22:55:12.506Z",
+      "end": "2026-10-29T22:55:12.880Z",
+      "ok": true
+    },
+    {
+      "call": "dismiss profile popover",
+      "start": "2026-10-29T22:55:17.843Z",
+      "end": "2026-10-29T22:55:17.862Z",
+      "ok": true
+    },
+    {
+      "call": "getAXState Store full",
+      "start": "2026-10-29T22:55:17.862Z",
+      "end": "2026-10-29T22:55:18.304Z",
+      "ok": true
+    },
+    {
+      "call": "navigate existing extension details to DEV",
+      "start": "2026-10-29T22:55:21.894Z",
+      "end": "2026-10-29T22:55:22.433Z",
+      "ok": true
+    },
+    {
+      "call": "confirm DEV address",
+      "start": "2026-10-29T22:55:22.433Z",
+      "end": "2026-10-29T22:55:22.445Z",
+      "ok": true
+    },
+    {
+      "call": "getAXState DEV before reload",
+      "start": "2026-10-29T22:55:22.445Z",
+      "end": "2026-10-29T22:55:23.128Z",
+      "ok": true
+    },
+    {
+      "call": "click actual DEV extension Reload",
+      "start": "2026-10-29T22:55:26.959Z",
+      "end": "2026-10-29T22:55:27.057Z",
+      "ok": true
+    },
+    {
+      "call": "getAXState DEV Reloaded full",
+      "start": "2026-10-29T22:55:27.057Z",
+      "end": "2026-10-29T22:55:27.716Z",
+      "ok": true
+    },
+    {
+      "call": "getScreenshot DEV Reloaded",
+      "start": "2026-10-29T22:55:27.716Z",
+      "end": "2026-10-29T22:55:27.778Z",
+      "ok": true
+    },
+    {
+      "call": "focus owner address bar",
+      "start": "2026-10-29T22:55:34.550Z",
+      "end": "2026-10-29T22:55:34.561Z",
+      "ok": true
+    },
+    {
+      "call": "restore original owner Store URL",
+      "start": "2026-10-29T22:55:34.561Z",
+      "end": "2026-10-29T22:55:34.753Z",
+      "ok": true
+    },
+    {
+      "call": "confirm original owner Store URL",
+      "start": "2026-10-29T22:55:34.753Z",
+      "end": "2026-10-29T22:55:34.763Z",
+      "ok": true
+    },
+    {
+      "call": "getAXState restored owner Store full",
+      "start": "2026-10-29T22:55:34.763Z",
+      "end": "2026-10-29T22:55:35.654Z",
+      "ok": true
+    },
+    {
+      "call": "open Profiles to restore original foreground",
+      "start": "2026-10-29T22:55:40.485Z",
+      "end": "2026-10-29T22:55:40.498Z",
+      "ok": true
+    },
+    {
+      "call": "getAXState restoration profile menu",
+      "start": "2026-10-29T22:55:40.498Z",
+      "end": "2026-10-29T22:55:40.854Z",
+      "ok": true
+    },
+    {
+      "call": "restore original Matrx Guest Test window",
+      "start": "2026-10-29T22:55:44.917Z",
+      "end": "2026-10-29T22:55:44.936Z",
+      "ok": true
+    },
+    {
+      "call": "verify restored original foreground privately",
+      "start": "2026-10-29T22:55:44.936Z",
+      "end": "2026-10-29T22:55:45.339Z",
+      "ok": true
+    }
+  ],
+  "resource": {
+    "journal": "docs/stabilization/resource-journals/owner-dev001856-20261029-2255.jsonl",
+    "journal_sha256": "f2882fb6a59f08eb90e9ad6ae02c0debccc79de121671ea92ef50282009cd8e7",
+    "watch_sha256": "ac4d63f9b88311aa7063d5cdbbe6851843caadb8ab1c2ccfafe4307fbd9b494b",
+    "watch_reads": 71,
+    "max_watch_gap_seconds": 2.010938,
+    "last_holder_alive": false,
+    "final": {
+      "schema": 1,
+      "at": "2026-10-29T22:55:59.287Z",
+      "runId": "owner-dev001856-20261029-2255",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "code": "RESOURCE_FINAL_DECISION"
+    }
+  },
+  "safe_publication_candidates": [
+    "owner-store-before.original.ax.txt",
+    "owner-store.original.ax.txt",
+    "owner-dev-before.original.ax.txt",
+    "owner-dev-reloaded.original.ax.txt",
+    "owner-dev-reloaded.original.png",
+    "owner-store-restored.original.ax.txt",
+    "native-calls.json"
+  ],
+  "publication_limits": "Fresh peer must select/verifysafeoriginals; profilepopoverexcluded, authforegroundnotpersisted. Exact firstgetApp timing unavailable.",
+  "owned_processes": [],
+  "owned_cleanup_obligations": [],
+  "promotion": {
+    "schema_version": 1,
+    "kind": "ci_development_test_promotion",
+    "eligibleStore": false,
+    "publish_state": "not_published",
+    "observedAt": "2026-10-29T22:52:57.894Z",
+    "sourceSha": "00185648a6143bf031cb0cbe0108f88eeabf498e",
+    "mainSha": "c6aecec4fb0baf9e78e06ef3d77d05211cdc60b9",
+    "compatibility": "runtime-equivalent",
+    "allowedDiffPaths": [
+      "docs/stabilization/COORDINATOR.md",
+      "docs/stabilization/defects/EXT-D-0303.json",
+      "docs/stabilization/reports/guest-server-drift-20261029.json",
+      "docs/stabilization/reports/release-daily-20261029.json",
+      "docs/stabilization/reports/repository-ledger.json",
+      "docs/stabilization/reports/wake2026-final-checkpoint-peer-20261029.json",
+      "docs/stabilization/repository-ledger.md",
+      "docs/stabilization/resource-journals/guest-live11cb-20261029-2148.jsonl"
+    ],
+    "version": "0.2.631",
+    "runId": 40960544186,
+    "runAttempt": 1,
+    "artifactId": 12936850820,
+    "sourceDir": "/Volumes/Samsung2TB/code/matrx-extend/test-results/ci-artifacts/00185648a6143bf031cb0cbe0108f88eeabf498e/40960544186-1/chrome-mv3",
+    "destinationDir": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "treeSha256": "3b536e6416fe13ea4e984a31763b02b2996fa6f7f9d7f13b8316975fbfde2655",
+    "fileCount": 3252
+  },
+  "normal_import": {
+    "session": 4171,
+    "exit": 0
+  },
+  "normal_promotion": {
+    "session": 38531,
+    "exit": 0
+  },
+  "public_evidence": "docs/stabilization/evidence/owner-001856-20261029/manifest.json"
+}

@@ -45,9 +45,10 @@
     ]
   },
   "reproducibility": {
-    "native_attempts": 1,
+    "native_attempts": 2,
     "post_reload_assertion_failures": 1,
-    "confirmed_product_cause": false
+    "confirmed_product_cause": false,
+    "later_new_artifact_native_passes": 1
   },
   "evidence": [
     "docs/stabilization/reports/member-lifecycle-f922-20261029.json",
@@ -72,10 +73,12 @@
     "lint_run_status": "failure_two_format_lint_issues",
     "full": 40960544186,
     "focused": 40960544133,
-    "status": "queued_or_running_not_yet_verified"
+    "status": "success",
+    "latest_candidate_ci": 40960783498,
+    "latest_candidate_ci_status": "success_metadata_only_no_development_artifact"
   },
   "product_fix_sha": null,
-  "next_action": "Wait new exact-source successful CI/artifact, normal plan before one canonical fixture mint, then one diagnostic replay of original and surrounding lifecycle. Use retained post-click state to establish cause; no blind retry, timeout relaxation or closure from source checks.",
+  "next_action": "Preserve earlier f922 failure and later001856 native pass; cause remains unknown with no attributed product fix. Independently retest original and surrounding lifecycle before closure; investigate long async readiness observation before claiming latency bounds. Continue other registered Settings/Scrape cases rather than blindly repeating this pass.",
   "transition_history": [
     {
       "at": "2026-10-29T21:30:52.736483+00:00",
@@ -89,5 +92,26 @@
       "to": "triaged",
       "reason": "Independent original-packet/source diagnosis locates post-click failure and confirms missing terminal wait evidence; reporting-only repair is not a product fix."
     }
-  ]
+  ],
+  "diagnostic_replay": {
+    "run_id": 40969223078,
+    "attempt": 1,
+    "workflow_source_sha": "c6aecec4fb0baf9e78e06ef3d77d05211cdc60b9",
+    "app_source_sha": "00185648a6143bf031cb0cbe0108f88eeabf498e",
+    "development_run_id": 40960544186,
+    "development_artifact_id": 12936850820,
+    "status": "success_once_bounded_no_defect_closure",
+    "fixture_and_secret_cleanup": "Terminal verified; rows1deleted/0remaining, ownedsecretabsent, originalarchive restored/separate readback, authfilesabsent; obligations0.",
+    "evidence": [
+      "docs/stabilization/reports/member-d303-replay-40969223078-20261029.json",
+      "docs/stabilization/reports/member-d303-peer-20261029.json"
+    ]
+  },
+  "latest_retest": {
+    "run_id": 40969223078,
+    "outcome": "One bounded original T03 and lifecycle surrounding pass; earlier failure not reproduced onnewartifact. No attributed product fix or closure.",
+    "readiness_elapsed_ms": 49895,
+    "latency_and_deadline_limit": "Polling-loop budget is not enforced wallclock/CDP deadline; no within10s/fast/reliable reload claim. Cause unknown.",
+    "independent_peer": "docs/stabilization/reports/member-d303-peer-20261029.json"
+  }
 }

@@ -1,0 +1,73 @@
+{
+  "task": "wake2251_owner_peer",
+  "status": "DONE_BOUNDED_RETAINED_ORIGINAL_REVIEW",
+  "at": "2026-10-29T22:56:53.717074+00:00",
+  "scope": "Fresh independent retained originals/privacy review only; no native replay, auth, dispatch, fixture mutation, heavy job or source edits.",
+  "A": {
+    "verdict": "PASS_BOUNDED_OWNER_DEV_RELOAD_PROOF",
+    "evidence": [
+      "Private exact owner account Accounts and sync original independently confirms arman@armansadeghi.com before the later timed actual Reload click. Profile popup remains private.",
+      "Full owner DEV AX retains Reloaded, expected development ID, version0.2.631, enabled, Pin to toolbar on and stable Loaded from path. PNG independently inspected: Reloaded toast, correct extension/version/ID and owner window; image alone does not show lower Loaded from/pin controls.",
+      "Full Store AX retains exact primary Store ID/version0.2.577, Chrome Web Store source, enabled and Pin to toolbar on. Both toolbar icons present.",
+      "Owner original Store view restoration is retained in separate safe full AX; original Guest foreground preservation and CUA reset remain operator-attested because no auth foreground original was persisted."
+    ],
+    "limits": [
+      "No independent native replay, product behavior pass, full release acceptance or authenticated Store dashboard status.",
+      "Source001856 artifact and runtime-equivalent candidatec6 remain distinct. Metadata-only c6CI produced no development artifact.",
+      "Physical UI cannot itself prove file bytes; normal import/promotion receipt connects the disk artifact, source and destination to observed reload."
+    ]
+  },
+  "B": {
+    "verdict": "PASS_SCOPED_PROVENANCE_AND_PRIVACY",
+    "evidence": [
+      "All eight manifest originals independently byte-count and SHA256 verified. Native-calls.json equals receipt native_calls exactly.",
+      "Successful full and focused CI source001856 verified in saved official status records; promotion source/run/artifact/tree/version/filecount matches native receipt. git diff source001856..c6 names exactly the eight operational/doc paths in promotion allowedDiffPaths.",
+      "Guard admission/healthy samples, normal SIGINT after reported UI end, browser stop confirmation and final valid0 verified in completed journal. Parent two-second watch independently recomputed.",
+      "23 API calls and groups sum23/max4 verified. Twenty-two later API calls have monotonic exact start/end; firstgetApp only bounded after parent approval. No full exact-chronology compliance claim."
+    ],
+    "limits": [
+      "External holder PID gone is retained watcher/operator evidence, not a new process probe by reviewer.",
+      "Journal freshness before each group and restoration/reset assertions are operator provenance; no original CUA execution trace replay.",
+      "No source changes or tests run; review is retained evidence and receipt inspection."
+    ]
+  },
+  "resource": {
+    "journal": "docs/stabilization/resource-journals/owner-dev001856-20261029-2255.jsonl",
+    "journal_sha256": "f2882fb6a59f08eb90e9ad6ae02c0debccc79de121671ea92ef50282009cd8e7",
+    "watch_sha256": "ac4d63f9b88311aa7063d5cdbbe6851843caadb8ab1c2ccfafe4307fbd9b494b",
+    "watch_reads": 71,
+    "max_watch_gap_seconds": 2.010938,
+    "last_holder_alive": false,
+    "final": {
+      "schema": 1,
+      "at": "2026-10-29T22:55:59.287Z",
+      "runId": "owner-dev001856-20261029-2255",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "code": "RESOURCE_FINAL_DECISION"
+    }
+  },
+  "privacy": {
+    "approved_originals": [
+      "owner-store-before.original.ax.txt",
+      "owner-store.original.ax.txt",
+      "owner-dev-before.original.ax.txt",
+      "owner-dev-reloaded.original.ax.txt",
+      "owner-dev-reloaded.original.png",
+      "owner-store-restored.original.ax.txt",
+      "native-calls.json"
+    ],
+    "private_only": [
+      "owner-profile.private.ax.txt"
+    ],
+    "not_persisted": "Unrelated Guest authorization foreground original. No auth URL/device code retained.",
+    "scope": "Five full AX, native-call list and exact PNG inspected; no credential/auth URL/device-code markers or private profile list in whitelist. PNG includes existing Vault tab title only, no vault content."
+  },
+  "manifest_sha256": "ed174b46b53933c0b66723eed2c39b7a777724170f578b644743805a92bd3c8d",
+  "findings": [],
+  "owned_processes": [],
+  "owned_cleanup_obligations": [],
+  "next_action": "Parent may publish only approved originals with declared whitespace/lossless encoding rules; preserve bounded proof and native unknowns."
+}

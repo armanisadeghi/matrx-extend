@@ -1,0 +1,138 @@
+[
+  {
+    "call": "getApp",
+    "timestamp_scope": "after parent approval22:54:47Z; exact start/end not captured"
+  },
+  {
+    "call": "click Profiles",
+    "start": "2026-10-29T22:55:02.752Z",
+    "end": "2026-10-29T22:55:02.770Z",
+    "ok": true
+  },
+  {
+    "call": "getAXState profile menu",
+    "start": "2026-10-29T22:55:02.770Z",
+    "end": "2026-10-29T22:55:03.099Z",
+    "ok": true
+  },
+  {
+    "call": "select existing Arman profile",
+    "start": "2026-10-29T22:55:07.391Z",
+    "end": "2026-10-29T22:55:07.400Z",
+    "ok": true
+  },
+  {
+    "call": "getAXState owner window",
+    "start": "2026-10-29T22:55:07.400Z",
+    "end": "2026-10-29T22:55:08.114Z",
+    "ok": true
+  },
+  {
+    "call": "click owner account",
+    "start": "2026-10-29T22:55:12.464Z",
+    "end": "2026-10-29T22:55:12.506Z",
+    "ok": true
+  },
+  {
+    "call": "getAXState exact owner identity",
+    "start": "2026-10-29T22:55:12.506Z",
+    "end": "2026-10-29T22:55:12.880Z",
+    "ok": true
+  },
+  {
+    "call": "dismiss profile popover",
+    "start": "2026-10-29T22:55:17.843Z",
+    "end": "2026-10-29T22:55:17.862Z",
+    "ok": true
+  },
+  {
+    "call": "getAXState Store full",
+    "start": "2026-10-29T22:55:17.862Z",
+    "end": "2026-10-29T22:55:18.304Z",
+    "ok": true
+  },
+  {
+    "call": "navigate existing extension details to DEV",
+    "start": "2026-10-29T22:55:21.894Z",
+    "end": "2026-10-29T22:55:22.433Z",
+    "ok": true
+  },
+  {
+    "call": "confirm DEV address",
+    "start": "2026-10-29T22:55:22.433Z",
+    "end": "2026-10-29T22:55:22.445Z",
+    "ok": true
+  },
+  {
+    "call": "getAXState DEV before reload",
+    "start": "2026-10-29T22:55:22.445Z",
+    "end": "2026-10-29T22:55:23.128Z",
+    "ok": true
+  },
+  {
+    "call": "click actual DEV extension Reload",
+    "start": "2026-10-29T22:55:26.959Z",
+    "end": "2026-10-29T22:55:27.057Z",
+    "ok": true
+  },
+  {
+    "call": "getAXState DEV Reloaded full",
+    "start": "2026-10-29T22:55:27.057Z",
+    "end": "2026-10-29T22:55:27.716Z",
+    "ok": true
+  },
+  {
+    "call": "getScreenshot DEV Reloaded",
+    "start": "2026-10-29T22:55:27.716Z",
+    "end": "2026-10-29T22:55:27.778Z",
+    "ok": true
+  },
+  {
+    "call": "focus owner address bar",
+    "start": "2026-10-29T22:55:34.550Z",
+    "end": "2026-10-29T22:55:34.561Z",
+    "ok": true
+  },
+  {
+    "call": "restore original owner Store URL",
+    "start": "2026-10-29T22:55:34.561Z",
+    "end": "2026-10-29T22:55:34.753Z",
+    "ok": true
+  },
+  {
+    "call": "confirm original owner Store URL",
+    "start": "2026-10-29T22:55:34.753Z",
+    "end": "2026-10-29T22:55:34.763Z",
+    "ok": true
+  },
+  {
+    "call": "getAXState restored owner Store full",
+    "start": "2026-10-29T22:55:34.763Z",
+    "end": "2026-10-29T22:55:35.654Z",
+    "ok": true
+  },
+  {
+    "call": "open Profiles to restore original foreground",
+    "start": "2026-10-29T22:55:40.485Z",
+    "end": "2026-10-29T22:55:40.498Z",
+    "ok": true
+  },
+  {
+    "call": "getAXState restoration profile menu",
+    "start": "2026-10-29T22:55:40.498Z",
+    "end": "2026-10-29T22:55:40.854Z",
+    "ok": true
+  },
+  {
+    "call": "restore original Matrx Guest Test window",
+    "start": "2026-10-29T22:55:44.917Z",
+    "end": "2026-10-29T22:55:44.936Z",
+    "ok": true
+  },
+  {
+    "call": "verify restored original foreground privately",
+    "start": "2026-10-29T22:55:44.936Z",
+    "end": "2026-10-29T22:55:45.339Z",
+    "ok": true
+  }
+]

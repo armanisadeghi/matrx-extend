@@ -1,0 +1,44 @@
+{
+  "task": "wake2251_publication_peer",
+  "at": "2026-10-29T23:08:23.720575+00:00",
+  "status": "DONE_BOUNDED_INTEGRATION_REVIEW_MINOR_FRESHNESS_PENDING",
+  "scope": "Fresh retained-evidence and parent integration review only; no native replay, heavy job, authentication, dispatch or source edits. Only this private report written.",
+  "baseline_commit": "6af866cf6",
+  "A": {
+    "verdict": "PASS_BOUNDED_CURRENT_TRUTH_WITH_MINOR_METADATA_CORRECTION",
+    "evidence": [
+      "Inventory latest member T03 result equals current original-packet-reviewed run40969223078 safe18scalar/copy/cleanup/source projections; status pass is one ordinary-member native lifecycle observation, not D303 closure/admin/T08/wholeData/Store acceptance.",
+      "Earlier full f922 partial/failure result appended unchanged to member result_history. Reverting only latest member result, one history append and verification note restores exact baseline inventory semantic equality.",
+      "D303 remains triaged, unknown cause, product_fix_sha null, prior failure preserved and later pass recorded;49.895s readiness/pollbudget-not-deadline/initialearlypoll limits remain explicit.",
+      "COORD and canonical five Store bullets distinguish immutable source001856, runtime-equivalent candidatec6, physical owner reload, earlier/newer member results, current guest Chat unverified and last private Store status bounded. No release readiness or overall-health claim.",
+      "Generated CHECKLIST/STATUSmd/STATUShtml independently render identically except generated minute using read-only captured writes."
+    ],
+    "limits": [
+      "No independent native browser replay. Native/cleanup facts rely on reviewed original machine reports and peer packets.",
+      "One minor inventory updated_at freshness correction remains recommended before publication."
+    ]
+  },
+  "B": {
+    "verdict": "PASS_SCOPED_PROVENANCE_PRIVACY_WITH_MINOR_FRESHNESS_CORRECTION",
+    "evidence": [
+      "Seven owner public-original whitelist matches fresh private peer-approved set exactly; decoded bytes/hash/length equal originals, five whitespace-readable AX views match declared transform, PNG exact, native-calls JSON semantically equal. Private profile popup excluded.",
+      "No new app/test/runtime/workflow behavior in parent checkpoint; only bounded evidence/status/inventory/generated views/ledger update.",
+      "Focused D303 Biome error-level check passes; git diff --check passes.",
+      "All public source/native/install distinctions remain bounded; no copied private auth request/response/clipboard/ZIP/log or Google authorization content.",
+      "Current ordered ledger is explicitly pre-publication baseline; final Git cleanliness and exact pushed checkpoint remain parent-owned."
+    ],
+    "limits": [
+      "No full CI/release test rerun or native/process replay by this reviewer.",
+      "Ledger refresh/post-push exact Git state remain parent responsibility."
+    ]
+  },
+  "findings": [
+    {
+      "severity": "minor",
+      "item": "inventory.updated_at remains2026-10-29T21:30:52.736483+00:00 despite latest23:07case update; generated headers repeat old value.",
+      "recommended_action": "Update only inventory timestamp, regenerate tracker and allow this explicit metadata exception in restoration equality."
+    }
+  ],
+  "owned_processes": [],
+  "owned_cleanup_obligations": []
+}
