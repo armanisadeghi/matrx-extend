@@ -63,8 +63,6 @@
       "raw_payload_file": "docs/stabilization/evidence/owner-001856-20261029/original-payloads.json"
     }
   ],
-  "private_excluded": [
-    "owner-profile.private.ax.txt"
-  ],
+  "private_excluded": ["owner-profile.private.ax.txt"],
   "independent_review": "docs/stabilization/reports/owner-001856-peer-20261029.json"
 }
