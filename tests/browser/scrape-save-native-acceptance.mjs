@@ -708,7 +708,16 @@ try {
           report.defect_id = 'EXT-D-0217';
           report.case_ids = ['EXT-F-1007-T05', 'EXT-F-1007-T22'];
           report.observations.d217 = {};
-          panel = await prepareStaleProfileGuest(native, identity, report.observations.d217);
+          panel = await prepareStaleProfileGuest(
+            native,
+            identity,
+            report.observations.d217,
+            (value) =>
+              recordScrapeSaveCheckpoint(report, 'stale_guest_progress', {
+                ...value,
+                context: 'prepare',
+              }),
+          );
         }
 
         report.stage = 'member_logical_organization_proof';
@@ -965,6 +974,11 @@ try {
             repo: REPO,
             sourceUrl,
             evidence: report.observations.d217,
+            onStaleGuestProgress: (value) =>
+              recordScrapeSaveCheckpoint(report, 'stale_guest_progress', {
+                ...value,
+                context: 'postreload_retry',
+              }),
             onPanel: (livePanel) => {
               panel = livePanel;
             },

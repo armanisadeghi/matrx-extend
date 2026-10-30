@@ -13,6 +13,257 @@ import {
 } from './scrape-save-auth-report.mjs';
 import { runMemberAuthBoundary } from './settings-member-auth-diagnostic.mjs';
 
+const staleGuestSource = await readFile(
+  new URL('./scrape-save-stale-profile.mjs', import.meta.url),
+  'utf8',
+);
+const staleGuestProducer = staleGuestSource
+  .slice(
+    staleGuestSource.indexOf('/** Remove credentials'),
+    staleGuestSource.indexOf('/** Passive'),
+  )
+  .replaceAll('export async function', 'async function');
+const prepareGuestCall = (
+  await readFile(new URL('./scrape-save-native-acceptance.mjs', import.meta.url), 'utf8')
+).match(/panel = await prepareStaleProfileGuest\([\s\S]*?\n {10}\);/);
+assert.ok(prepareGuestCall, 'actual D217 preparation caller required');
+const retryStart = staleGuestSource.indexOf('export async function exerciseStaleProfileRetry');
+const reloadStart = staleGuestSource.indexOf('    const replacement = ', retryStart);
+const retryGuestProducer = staleGuestSource.slice(
+  reloadStart,
+  staleGuestSource.indexOf('    observer = observeStaleProfileRequests', reloadStart),
+);
+const retryProgress = (
+  await readFile(new URL('./scrape-save-native-acceptance.mjs', import.meta.url), 'utf8')
+).match(/onStaleGuestProgress: ([\s\S]*?),\n {12}onPanel:/);
+assert.ok(retryProgress, 'actual D217 postreload progress caller required');
+
+// The coordinator is testing an expired-session Scrape retry in the disposable member profile.
+// Browser IO is external; real preparation/assertion ordering, predicates and atomic publication run.
+async function staleGuestBoundary({
+  outputDir,
+  failAt,
+  context = 'prepare',
+  hold,
+  producer = staleGuestProducer,
+}) {
+  const report = { stage: 'member_auth', observations: { d217: {} } };
+  const panel = {};
+  const phases = [];
+  const checkpoint = (report, kind, value) => {
+    phases.push(value.phase);
+    recordScrapeSaveCheckpoint(report, kind, value, outputDir);
+  };
+  const probe = async (phase) => {
+    if (phase !== failAt) return;
+    const pending = JSON.parse(
+      await readFile(join(outputDir, 'scrape-save-native-acceptance.json'), 'utf8'),
+    );
+    assert.equal(pending.stale_guest_progress.phase, phase);
+    if (hold) await hold();
+    throw new Error('private-browser-error-url-and-token');
+  };
+  const { prepareStaleProfileGuest, assertStaleGuest } = new Function(
+    'assert',
+    'evaluate',
+    'click',
+    'openSection',
+    'waitFor',
+    'accountIdentity',
+    `${producer}\nreturn { prepareStaleProfileGuest, assertStaleGuest };`,
+  )(
+    assert,
+    async (_panel, expression) => {
+      if (expression.includes('credentials_removed')) {
+        await probe('credentials_remove');
+        return { credentials_removed: true, ignored_secret: 'private-browser-error-url-and-token' };
+      }
+      await probe('storage_read');
+      return {
+        profile_matches: true,
+        oauth_absent: failAt !== 'storage_assertion',
+        legacy_bearer_absent: true,
+        supabase_sessions_absent: true,
+      };
+    },
+    async (_panel, _kind, label) => probe(label === 'Settings' ? 'settings_click' : 'scrape_click'),
+    async () => probe('account_open'),
+    async (_label, read, accept) => {
+      await probe('rendered_guest');
+      const state = await read();
+      assert.equal(accept(state), true);
+      return state;
+    },
+    async () => ({ signInEnabled: true, signOutVisible: false }),
+  );
+  const native = {
+    panel,
+    resourceAction: (action) => action(),
+    reloadExtension: async () => {
+      await probe('extension_reload');
+      return {
+        panel,
+        management_reload_clicked: true,
+        worker_replaced: true,
+        old_targets_retired: true,
+      };
+    },
+  };
+  const run =
+    context === 'prepare'
+      ? new Function(
+          'native',
+          'identity',
+          'report',
+          'prepareStaleProfileGuest',
+          'recordScrapeSaveCheckpoint',
+          `return (async () => { let panel; ${prepareGuestCall[0]} return panel; })();`,
+        )(native, { profileId: 'private-profile-id' }, report, prepareStaleProfileGuest, checkpoint)
+      : new Function(
+          'native',
+          'panel',
+          'identity',
+          'onPanel',
+          'evidence',
+          'assertStaleGuest',
+          'onStaleGuestProgress',
+          `return (async () => { ${retryGuestProducer} return panel; })();`,
+        )(
+          native,
+          panel,
+          { profileId: 'private-profile-id' },
+          () => {},
+          {},
+          assertStaleGuest,
+          new Function('report', 'recordScrapeSaveCheckpoint', `return (${retryProgress[1]});`)(
+            report,
+            checkpoint,
+          ),
+        );
+  return { report, run, phases, panel };
+}
+
+async function requireStaleGuestFailure(result, outputDir, phase, context) {
+  await assert.rejects(result.run);
+  const raw = await readFile(join(outputDir, 'scrape-save-native-acceptance.json'), 'utf8');
+  const pending = JSON.parse(raw);
+  assert.equal(pending.status, 'unverified');
+  assert.equal(
+    pending.stage,
+    `stale_profile_guest_${context === 'prepare' ? 'prepare' : 'postreload'}`,
+  );
+  assert.equal(pending.stale_guest_progress.phase, phase);
+  assert.equal(pending.diagnostic_progress.latest.label, `${context}:${phase}`);
+  if (phase === 'storage_assertion') assert.equal(pending.stale_guest_progress.oauth_absent, false);
+  assert.equal(raw.includes('private-'), false);
+  assert.equal(result.report.auth_failure, undefined);
+}
+
+test('actual D217 caller durably identifies the failed postauth browser or storage boundary', async () => {
+  for (const [phase, context] of [
+    ['settings_click', 'prepare'],
+    ['account_open', 'postreload_retry'],
+    ['storage_assertion', 'prepare'],
+  ]) {
+    const outputDir = await mkdtemp(join(tmpdir(), 'scrape-stale-guest-'));
+    try {
+      const result = await staleGuestBoundary({ outputDir, failAt: phase, context });
+      await requireStaleGuestFailure(result, outputDir, phase, context);
+    } finally {
+      await rm(outputDir, { recursive: true, force: true });
+    }
+  }
+});
+
+test('stale guest guard rejects missing progress, skipped storage assertion and return-expected mutants in memory', async () => {
+  for (const [producer, phase] of [
+    [staleGuestProducer.replace(/^ {2}onProgress\([^\n]*\);\n/gm, ''), 'settings_click'],
+    [
+      staleGuestProducer.replace(
+        / {2}assert.equal\(\n {4}Object.values\(stored\).every\(Boolean\),[\s\S]*?\n {2}\);/,
+        '',
+      ),
+      'storage_assertion',
+    ],
+    [
+      staleGuestProducer.replace(
+        /async function prepareStaleProfileGuest[\s\S]*?\n}\n/,
+        'async function prepareStaleProfileGuest(native) { return native.panel; }\n',
+      ),
+      'settings_click',
+    ],
+  ]) {
+    assert.notEqual(producer, staleGuestProducer, 'mutation must reach actual producer');
+    const outputDir = await mkdtemp(join(tmpdir(), 'scrape-stale-guest-mutant-'));
+    try {
+      const result = await staleGuestBoundary({ outputDir, failAt: phase, producer });
+      await assert.rejects(() => requireStaleGuestFailure(result, outputDir, phase, 'prepare'));
+    } finally {
+      await rm(outputDir, { recursive: true, force: true });
+    }
+  }
+});
+
+test('actual D217 caller publishes before blocked browser IO and completes only after original predicates', async () => {
+  const outputDir = await mkdtemp(join(tmpdir(), 'scrape-stale-guest-pending-'));
+  let release;
+  let entered;
+  const ready = new Promise((resolve) => {
+    entered = resolve;
+  });
+  const blocked = new Promise((resolve) => {
+    release = resolve;
+  });
+  try {
+    const result = await staleGuestBoundary({
+      outputDir,
+      failAt: 'settings_click',
+      hold: async () => {
+        entered();
+        await blocked;
+      },
+    });
+    const rejected = assert.rejects(result.run);
+    await ready;
+    const pending = JSON.parse(
+      await readFile(join(outputDir, 'scrape-save-native-acceptance.json'), 'utf8'),
+    );
+    assert.equal(pending.stale_guest_progress.phase, 'settings_click');
+    assert.equal(result.phases.includes('complete'), false);
+    release();
+    await rejected;
+    const success = await staleGuestBoundary({ outputDir });
+    assert.equal(await success.run, success.panel);
+    assert.deepEqual(success.phases, [
+      'credentials_remove',
+      'credentials_assertion',
+      'extension_reload',
+      'settings_click',
+      'account_open',
+      'rendered_guest',
+      'storage_read',
+      'storage_assertion',
+      'scrape_click',
+      'complete',
+    ]);
+    assert.equal(success.report.observations.d217.fixture.guest_restore_observed, true);
+    assert.equal(success.report.stage, 'member_logical_organization_proof');
+    assert.throws(
+      () =>
+        recordScrapeSaveCheckpoint(
+          success.report,
+          'stale_guest_progress',
+          { context: 'prepare', phase: 'private-url' },
+          outputDir,
+        ),
+      /scrape_save_checkpoint_boundary_invalid/,
+    );
+  } finally {
+    release?.();
+    await rm(outputDir, { recursive: true, force: true });
+  }
+});
+
 const source = await readFile(
   new URL('./scrape-save-native-acceptance.mjs', import.meta.url),
   'utf8',
