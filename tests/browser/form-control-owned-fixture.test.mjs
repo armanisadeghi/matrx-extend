@@ -8,28 +8,19 @@ import { serveOwnedFixture } from './owned-fixture-server.mjs';
 
 const path = join(import.meta.dirname, 'fixtures/form-controls.html');
 const page = await readFile(path, 'utf8');
-const inventory = JSON.parse(
-  await readFile(join(import.meta.dirname, '../../docs/stabilization/inventory.json'), 'utf8'),
-);
-const cases = [];
-function collect(value) {
-  if (!value || typeof value !== 'object') return;
-  if (/^EXT-F-406[1-9]$/.test(value.id ?? '')) cases.push(value);
-  else for (const child of Object.values(value)) collect(child);
-}
-collect(inventory);
+// Reviewed selector inputs extracted from the case procedures before evidence left Git.
+// CI validates the owned page without reading a machine-local operational inventory.
+const cases = JSON.parse(
+  await readFile(join(import.meta.dirname, 'fixtures/form-control-selector-contract.json'), 'utf8'),
+).cases;
 
 test('owned page covers every reviewed form-control selector and observable', () => {
   assert.equal(cases.length, 9);
   const ids = [...page.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1]);
   assert.equal(new Set(ids).size, ids.length, 'fixture IDs must be unique');
   for (const feature of cases) {
-    const procedure = feature.cases[0];
-    const selectors = [...JSON.stringify(procedure.steps).matchAll(/#([a-z][a-z-]*)/g)].map(
-      (match) => match[1],
-    );
-    for (const selector of selectors.filter((value) => !value.startsWith('missing-'))) {
-      assert.ok(ids.includes(selector), `${feature.id} requires #${selector}`);
+    for (const selector of feature.selectors) {
+      assert.ok(ids.includes(selector), `${feature.featureId} requires #${selector}`);
     }
   }
   for (const event of [

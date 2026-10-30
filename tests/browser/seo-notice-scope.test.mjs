@@ -27,25 +27,13 @@ visit(ast);
 const clearance = ast.statements
   .find((n) => ts.isFunctionDeclaration(n) && n.name?.text === 'requireVisibleNoticeClearance')
   .getText(ast);
-const captured = JSON.parse(
-  readFileSync(
-    new URL(
-      '../../docs/stabilization/evidence/seo-notice-occlusion/run38160708149/native-report.sanitized.json',
-      import.meta.url,
-    ),
-    'utf8',
-  ),
-).reaudit_hit_diagnostics.before_click;
-
-const reloadCapture = JSON.parse(
-  readFileSync(
-    new URL(
-      '../../docs/stabilization/reports/seo-notice-reload-oracle-diagnosis-20261011.json',
-      import.meta.url,
-    ),
-    'utf8',
-  ),
-).captured_observations.after_reload;
+// Minimal captured browser-IO inputs are test fixtures, not live acceptance evidence.
+// Operational reports remain in the private archive and are not CI dependencies.
+const captures = JSON.parse(
+  readFileSync(new URL('./fixtures/seo-notice-hit-observations.json', import.meta.url), 'utf8'),
+).captures;
+const captured = captures.beforeClick.observation;
+const reloadCapture = captures.afterReload.observation;
 
 async function run(
   occluded = false,

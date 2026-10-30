@@ -1,0 +1,30 @@
+{
+  "captured_at": "2026-10-17T16:38:59.487Z",
+  "run": {
+    "id": 39049375284,
+    "name": "Hosted release (by store-rejection-retry-20261017)",
+    "path": ".github/workflows/release.yml",
+    "event": "workflow_dispatch",
+    "head_branch": "main",
+    "head_sha": "e84f516b493e11672f76f86bd5d943c10b264324",
+    "conclusion": "success"
+  },
+  "listing": {
+    "total_count": 1,
+    "artifacts": [
+      {
+        "id": 12106724248,
+        "name": "matrx-extend-v0.2.520",
+        "expired": false,
+        "digest": "sha256:e38b85edcb57734737a0916f15ea05d607c27199ecdc9d9a0cfb2160768ea2a2",
+        "workflow_run": {
+          "id": 39049375284,
+          "repository_id": 1225111202,
+          "head_repository_id": 1225111202,
+          "head_branch": "main",
+          "head_sha": "e84f516b493e11672f76f86bd5d943c10b264324"
+        }
+      }
+    ]
+  }
+}
