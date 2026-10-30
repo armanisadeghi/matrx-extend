@@ -134,7 +134,7 @@ export function bootstrapBackground(): void {
   log.info('sw', 'background bootstrap (sync)');
   // Emit the runtime identity bundle (extension id, redirect URI, OAuth
   // client id) so any future ID drift is visible in the user's debug log
-  // before sign-in is ever attempted. See .research/v0.1.4-auth-incident.md.
+  // before sign-in is ever attempted. See docs/v0.1.4-auth-incident.md.
   logExtensionIdentityOnce();
 
   // ── 0. Close any STALE offscreen document that survived an extension

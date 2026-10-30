@@ -209,7 +209,9 @@ as a hang and kills a healthy run.
 
 The strict tool-drift check needs a server token on BOTH release paths: CI mints it in `scripts/release-with-gate-auth.mjs`; local `./ship.sh` calls `release.sh` directly, so `release.sh` mints its own (`mint_gate_auth` → `--print-env`) from the gitignored `.env.release.local` (`AIDREAM_API_URL`, `AIDREAM_GATE_USERNAME`/`PASSWORD`/`ORGANIZATION_ID` — the admin@admin.com test account and a member org). Changing either path keeps the other minting; never make the gate advisory. Guard: `tests/unit/release-gate-auth-path.test.ts`.
 
-`pnpm -s lint` (`biome check .`) is a mandatory release check over EVERY tracked file, `.research/*.json` evidence included: run `pnpm exec biome format --write <file>` on anything you commit (an unformatted `.research` JSON stopped v0.2.179).
+`pnpm -s lint` (`biome check .`) is a mandatory release check over EVERY tracked file: run `pnpm exec biome format --write <file>` on anything you commit (an unformatted JSON stopped v0.2.179).
+
+**Evidence lives outside git** (Arman, 2026-10-29): `docs/stabilization/` (except `resource-policy.json`), `.research/` and `tmp/` are gitignored local folders; archive what must survive with `scripts/evidence-upload.sh` (private bucket, prefix in its header). Never `git add -f` them.
 
 ## Conventions
 
@@ -222,7 +224,7 @@ The strict tool-drift check needs a server token on BOTH release paths: CI mints
 - Web Store identity: dev and Store builds have different extension IDs;
   `EXPECTED_EXTENSION_IDS` in [src/config/identity.ts](./src/config/identity.ts) and
   the Supabase redirect-URL allowlist are the same set — new build channel = update
-  both. Incident: [.research/v0.1.4-auth-incident.md](./.research/v0.1.4-auth-incident.md).
+  both. Incident: [docs/v0.1.4-auth-incident.md](./docs/v0.1.4-auth-incident.md).
 
 ## Architecture in one glance
 

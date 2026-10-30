@@ -90,3 +90,11 @@ lib64/
 # Python bytecode from the vault canary test helpers
 __pycache__/
 *.pyc
+
+# Evidence lives OUTSIDE git (Arman 2026-10-29). Writers keep these local folders; what must survive the
+# machine goes to the private archive with scripts/evidence-upload.sh. The one committed file under
+# docs/stabilization/ is its resource policy (code reads it).
+/docs/stabilization/*
+!/docs/stabilization/resource-policy.json
+/.research/
+/tmp/
