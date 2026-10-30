@@ -1,0 +1,364 @@
+{
+  "schema": 1,
+  "at": "2026-10-30T00:10:29.829598+00:00",
+  "owner": "/root/seo_b_2358",
+  "status": "PARTIAL_NATIVE_SUBTARGET_PASS_PENDING_FRESH_PEER",
+  "feature_id": "EXT-F-1008",
+  "case_id": "EXT-F-1008-T02",
+  "run_id": 40976935006,
+  "attempt": 1,
+  "job_id": 123807173171,
+  "workflow_source_sha": "02871fcd8394041dc52914481a45eaf5c5fc652f",
+  "source_sha": "00185648a6143bf031cb0cbe0108f88eeabf498e",
+  "development_run_id": 40960544186,
+  "development_artifact_id": 12936850820,
+  "result_artifact_id": 12942139968,
+  "archive_sha256": "0437034db75760dd0acbfbc91398854db2082b5db20b9f257dac588a58ed47e8",
+  "native_original_sha256": "b3ec9165eb92a45affbcf4ed3337049d8d7590427f364b204a4ca757be0f368a",
+  "original_members": [
+    {
+      "path": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-40976935006-1.jsonl",
+      "private_saved_name": "hosted-package-40976935006-1.jsonl",
+      "bytes": 987,
+      "sha256": "7b37050f061c995274da957400e7ec4e983ce43319a4df094a197b60fb6150b7"
+    },
+    {
+      "path": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-40976935006-1.jsonl",
+      "private_saved_name": "hosted-browser-40976935006-1.jsonl",
+      "bytes": 990,
+      "sha256": "575460956820785366b98aa07fbf2e96e3ef9dcef7ed787da5da3673d1891f08"
+    },
+    {
+      "path": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-40976935006-1.jsonl",
+      "private_saved_name": "hosted-guest-40976935006-1.jsonl",
+      "bytes": 6975,
+      "sha256": "b6f67abd044be51fa0cfa6a1df645d82eae6f167c66aeccdbd337d7ed3bfec6d"
+    },
+    {
+      "path": "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-TlYFoC/native-side-panel.png",
+      "private_saved_name": "native-side-panel.png",
+      "bytes": 21371,
+      "sha256": "8f31790adbf5588409ceec914e2c62d51c47e52ea121ce7336d134cd5a6ffbe3"
+    },
+    {
+      "path": "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-TlYFoC/normal-target-after-open.png",
+      "private_saved_name": "normal-target-after-open.png",
+      "bytes": 27046,
+      "sha256": "b40fd4bba1a54c1403ccecf49f36bc9de1cb5f67ef081a74294abfef37e8ef5c"
+    },
+    {
+      "path": "matrx-extend/matrx-extend/test-results/seo-guest-acceptance.json",
+      "private_saved_name": "seo-guest-acceptance.json",
+      "bytes": 7133,
+      "sha256": "b3ec9165eb92a45affbcf4ed3337049d8d7590427f364b204a4ca757be0f368a"
+    }
+  ],
+  "native": {
+    "schema_version": 1,
+    "feature_id": "EXT-F-1008",
+    "mode": "guest",
+    "status": "partial",
+    "scope": "two controlled guest SEO notices and trusted Re-audit at native 360px",
+    "targets": [
+      {
+        "case_id": "EXT-F-1008-T02",
+        "subtarget": "multiple_and_long_notice_clearance_at_native_360px",
+        "status": "pass",
+        "evidence": {
+          "viewport_width": 360,
+          "viewport_source": "native",
+          "notice_count": 2,
+          "long_message_length": 199,
+          "distinct_notice_titles": 2,
+          "visible_dismiss_counts": [1, 1],
+          "target_hit_points": 9,
+          "notice_hit_points": 0,
+          "current_title_matched": true,
+          "independently_dismissed": [[0, 1], [0, 0]],
+          "cleared_count": 0
+        }
+      }
+    ],
+    "case_selection": {
+      "scope": "notice-stacked",
+      "selected_cases": ["T02"],
+      "selected_subtargets": ["multiple_and_long_notice_clearance_at_native_360px"],
+      "excluded_cases": ["all other SEO targets; no full T02 or D199 closure"]
+    },
+    "build": {
+      "before": {
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.631",
+        "treeSha256": "3b536e6416fe13ea4e984a31763b02b2996fa6f7f9d7f13b8316975fbfde2655"
+      },
+      "after": {
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.631",
+        "treeSha256": "3b536e6416fe13ea4e984a31763b02b2996fa6f7f9d7f13b8316975fbfde2655"
+      }
+    },
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "stacked_notice_fixture_diagnostic": {
+      "failure_code": null,
+      "stage": "independent_dismiss",
+      "cleanup": {
+        "status": "cleared",
+        "attempted_count": 2,
+        "cleared_count": 2,
+        "failed_count": 0,
+        "failure_code": null
+      }
+    },
+    "reaudit_transition_diagnostic": {
+      "observer_available": true,
+      "sample_count": 9,
+      "dropped_samples": 0,
+      "samples": [
+        {
+          "stage": "before_click",
+          "elapsed_ms": 0,
+          "click_trusted": null,
+          "scopeValid": true,
+          "auditButtonPresent": true,
+          "auditButtonDisabled": false,
+          "auditSpinner": false,
+          "reAudit": true,
+          "error": false
+        },
+        {
+          "stage": "click_event",
+          "elapsed_ms": 258,
+          "click_trusted": true,
+          "scopeValid": true,
+          "auditButtonPresent": true,
+          "auditButtonDisabled": false,
+          "auditSpinner": false,
+          "reAudit": true,
+          "error": false
+        },
+        {
+          "stage": "dom_transition",
+          "elapsed_ms": 264,
+          "click_trusted": null,
+          "scopeValid": true,
+          "auditButtonPresent": true,
+          "auditButtonDisabled": true,
+          "auditSpinner": true,
+          "reAudit": false,
+          "error": false
+        },
+        {
+          "stage": "after_release",
+          "elapsed_ms": 281,
+          "click_trusted": null,
+          "scopeValid": true,
+          "auditButtonPresent": true,
+          "auditButtonDisabled": true,
+          "auditSpinner": true,
+          "reAudit": false,
+          "error": false
+        },
+        {
+          "stage": "running_wait",
+          "elapsed_ms": 291,
+          "click_trusted": null,
+          "scopeValid": true,
+          "auditButtonPresent": true,
+          "auditButtonDisabled": true,
+          "auditSpinner": true,
+          "reAudit": false,
+          "error": false
+        },
+        {
+          "stage": "settle_wait",
+          "elapsed_ms": 302,
+          "click_trusted": null,
+          "scopeValid": true,
+          "auditButtonPresent": true,
+          "auditButtonDisabled": true,
+          "auditSpinner": true,
+          "reAudit": false,
+          "error": false
+        },
+        {
+          "stage": "dom_transition",
+          "elapsed_ms": 316,
+          "click_trusted": null,
+          "scopeValid": true,
+          "auditButtonPresent": true,
+          "auditButtonDisabled": false,
+          "auditSpinner": false,
+          "reAudit": true,
+          "error": false
+        },
+        {
+          "stage": "settle_wait",
+          "elapsed_ms": 426,
+          "click_trusted": null,
+          "scopeValid": true,
+          "auditButtonPresent": true,
+          "auditButtonDisabled": false,
+          "auditSpinner": false,
+          "reAudit": true,
+          "error": false
+        },
+        {
+          "stage": "finished",
+          "elapsed_ms": 441,
+          "click_trusted": null,
+          "scopeValid": true,
+          "auditButtonPresent": true,
+          "auditButtonDisabled": false,
+          "auditSpinner": false,
+          "reAudit": true,
+          "error": false
+        }
+      ]
+    }
+  },
+  "imported_artifact": {
+    "schema_version": 1,
+    "kind": "ci_development_test",
+    "eligibleStore": false,
+    "publish_state": "not_published",
+    "repository": "armanisadeghi/matrx-extend",
+    "workflow": ".github/workflows/ci.yml",
+    "sourceSha": "00185648a6143bf031cb0cbe0108f88eeabf498e",
+    "runId": 40960544186,
+    "runAttempt": 1,
+    "artifactId": 12936850820,
+    "githubArtifactDigest": "sha256:1f523788dc053581b3714c124a97cfa9b289f0b3a4191636ebc581a3d6b013c9",
+    "version": "0.2.631",
+    "treeSha256": "3b536e6416fe13ea4e984a31763b02b2996fa6f7f9d7f13b8316975fbfde2655",
+    "source": {
+      "originMain": "02871fcd8394041dc52914481a45eaf5c5fc652f",
+      "localHead": "02871fcd8394041dc52914481a45eaf5c5fc652f",
+      "trackedDirty": false,
+      "untrackedRunnerInputs": [],
+      "claim": "exact_pushed_commit_only"
+    }
+  },
+  "normal_admission": {
+    "plan_exit": 0,
+    "plan_session": 16622,
+    "plan_chunk": "a552fe",
+    "dispatch_exit": 0,
+    "dispatch_session": 33187,
+    "dispatch_chunk": "e1a3ea",
+    "requested_by": "extend-stabilization",
+    "same_matching_arguments": true,
+    "complete_nonterminal_status_inventories_empty_before_dispatch": true,
+    "source_compatibility": "Normal accepted runtime-equivalent app001856 versus synchronized workflowcandidate02871; no argument substitution or guard bypass."
+  },
+  "normal_verifier": {
+    "actual_exit": 0,
+    "session": 1368,
+    "tool_chunk": "9ac553",
+    "valid": true,
+    "archiveDigest": "0437034db75760dd0acbfbc91398854db2082b5db20b9f257dac588a58ed47e8",
+    "workflowSourceSha256": "76e0578aaff6100aa51576036dea55c0028482ea250f2015951b473a98710fd2",
+    "verifier_output_sha256": "6be9aa93f33e97c1fc5563ffdbc7cb835cc32717ba60a80d9106d474815a2e89"
+  },
+  "resources": {
+    "package": {
+      "original_sha256": "7b37050f061c995274da957400e7ec4e983ce43319a4df094a197b60fb6150b7",
+      "sanitized_sha256": "7b37050f061c995274da957400e7ec4e983ce43319a4df094a197b60fb6150b7",
+      "sanitized_path": "docs/stabilization/resource-journals/hosted-package-40976935006-1.jsonl",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-30T00:03:27.953Z",
+        "runId": "hosted-package-40976935006-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "original_lines": 4,
+      "sanitized_lines": 4,
+      "unsafe_events": 0
+    },
+    "browser": {
+      "original_sha256": "575460956820785366b98aa07fbf2e96e3ef9dcef7ed787da5da3673d1891f08",
+      "sanitized_sha256": "575460956820785366b98aa07fbf2e96e3ef9dcef7ed787da5da3673d1891f08",
+      "sanitized_path": "docs/stabilization/resource-journals/hosted-browser-40976935006-1.jsonl",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-30T00:05:22.844Z",
+        "runId": "hosted-browser-40976935006-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "original_lines": 4,
+      "sanitized_lines": 4,
+      "unsafe_events": 0
+    },
+    "guest": {
+      "original_sha256": "b6f67abd044be51fa0cfa6a1df645d82eae6f167c66aeccdbd337d7ed3bfec6d",
+      "sanitized_sha256": "9ea73d57f1c5ec74f1d0c7540cc17729d0b3e64c294111ccd57ba7d77d33a3ac",
+      "sanitized_path": "docs/stabilization/resource-journals/hosted-guest-40976935006-1.jsonl",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-30T00:08:46.791Z",
+        "runId": "hosted-guest-40976935006-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "original_lines": 11,
+      "sanitized_lines": 10,
+      "unsafe_events": 0
+    }
+  },
+  "cleanup": {
+    "owned_notice_fixture_status": {
+      "status": "cleared",
+      "attempted_count": 2,
+      "cleared_count": 2,
+      "failed_count": 0,
+      "failure_code": null
+    },
+    "independent_live_dismiss_counts": [[0, 1], [0, 0]],
+    "credentials_or_shared_fixtures_staged": false,
+    "AI_calls_initiated": 0,
+    "owned_local_browser_processes": 0,
+    "hosted_runner_terminal": true,
+    "remaining_owned_credential_or_notice_obligations": 0,
+    "limits": "Temporary hosted profile/process removal outside retained harness/resource evidence and ephemeral runner destruction are not independently observed."
+  },
+  "polling": {
+    "valid_snapshot_count": 6,
+    "first_valid_snapshot_after_recorded_dispatch_seconds": 72.666112,
+    "valid_snapshot_end_gap_seconds": [85.110526, 82.304099, 89.660916, 90.646933, 78.868646],
+    "local_failed_attempt": {
+      "short_precheck_seconds": 44.756026,
+      "atomic_guard": false,
+      "shell_fell_through_assert": true,
+      "gh_invalid_field": "runAttempt",
+      "actual_status_record_returned": false,
+      "limitation": "No valid early status snapshot; no whole-procedure compliance assertion. Later polling uses atomic elapsed precheck and supported attempt field."
+    },
+    "whole_procedure_compliance_claim": false
+  },
+  "deployed_server_sha": {
+    "value": null,
+    "status": "unverified",
+    "scope": "No server-version endpoint observed in this client-side notice fixture run; no per-request deployment proof."
+  },
+  "official_timing": {
+    "MACOS_billable_total_ms": 0,
+    "run_duration_ms": 477000,
+    "scope": "Official timing for this run only; not current aggregate authenticated weekly spend."
+  },
+  "A": "Bounded native360px two-notice UI subtarget passes once:9 unobscured Re-audit hit points, trusted running-to-settled/current-title observation, independent dismiss and cleared2/2 fixture. Native batch remains PARTIAL; no fullT02, naturalDBfailure, reload, other roles, Store, D199 closure or overall-health verdict. Guest mode is the executor designation; independent guest UI identity is unverified.",
+  "B": "Official archive/member hashes, unchanged frozen before/after tree, three valid resource journals and normal verifier passed. Initial failed local poll command sequencing/unsupported field retained; no whole-procedure compliance or independent native replay claim.",
+  "privacy": "Full native JSON, official ZIP/log and two startup-only PNGs remain private. Public selection is fixed notice counts/booleans/categories/provenance and bounded diagnostics; no decisive target-stage screenshot.",
+  "next_action": "Fresh independent retained-original review before parent updates one guest T02 subtarget. Preserve full-case/guest-identity/natural-error/reload/other-mode/Store gaps; no new native retry or source repair from this pass."
+}
