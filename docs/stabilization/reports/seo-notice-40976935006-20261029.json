@@ -335,7 +335,6 @@
   },
   "polling": {
     "valid_snapshot_count": 6,
-    "first_valid_snapshot_after_recorded_dispatch_seconds": 72.666112,
     "valid_snapshot_end_gap_seconds": [85.110526, 82.304099, 89.660916, 90.646933, 78.868646],
     "local_failed_attempt": {
       "short_precheck_seconds": 44.756026,
@@ -345,7 +344,9 @@
       "actual_status_record_returned": false,
       "limitation": "No valid early status snapshot; no whole-procedure compliance assertion. Later polling uses atomic elapsed precheck and supported attempt field."
     },
-    "whole_procedure_compliance_claim": false
+    "whole_procedure_compliance_claim": false,
+    "first_valid_snapshot_pre_call_admission_elapsed_seconds": 72.666112,
+    "first_valid_snapshot_saved_completion_elapsed_seconds": 73.79618
   },
   "deployed_server_sha": {
     "value": null,
