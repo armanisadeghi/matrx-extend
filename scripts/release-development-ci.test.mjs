@@ -5,6 +5,7 @@ import { createServer } from 'node:http';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
+import { EXTEND_GITHUB_REPO } from './app-layout.mjs';
 import { verifyGitHubMetadata } from './current-test-artifact.mjs';
 import {
   assertDispatchedSource,
@@ -17,8 +18,8 @@ const laterSha = 'b'.repeat(40);
 const baseRun = {
   id: 123,
   name: `CI release source ${sourceSha} (by extend-stabilization)`,
-  repository: { full_name: 'armanisadeghi/matrx-extend' },
-  head_repository: { full_name: 'armanisadeghi/matrx-extend' },
+  repository: { full_name: EXTEND_GITHUB_REPO },
+  head_repository: { full_name: EXTEND_GITHUB_REPO },
   workflow_id: 99,
   path: '.github/workflows/ci.yml',
   event: 'workflow_dispatch',
@@ -147,7 +148,7 @@ test('the real release CLI asks GitHub for one exact-source CI run after a pushe
           ...process.env,
           GITHUB_API_URL: `http://127.0.0.1:${server.address().port}`,
           GITHUB_TOKEN: 'fixture-token',
-          GITHUB_REPOSITORY: 'armanisadeghi/matrx-extend',
+          GITHUB_REPOSITORY: EXTEND_GITHUB_REPO,
           GITHUB_RUN_ID: '456',
         },
       },
@@ -161,10 +162,7 @@ test('the real release CLI asks GitHub for one exact-source CI run after a pushe
     assert.match(output, new RegExp(`RELEASE_DEVELOPMENT_CI dispatch ${sourceSha}`));
     const posts = requests.filter((request) => request.method === 'POST');
     assert.equal(posts.length, 1);
-    assert.equal(
-      posts[0].path,
-      '/repos/armanisadeghi/matrx-extend/actions/workflows/ci.yml/dispatches',
-    );
+    assert.equal(posts[0].path, `/repos/${EXTEND_GITHUB_REPO}/actions/workflows/ci.yml/dispatches`);
     assert.deepEqual(JSON.parse(posts[0].body), {
       ref: 'main',
       inputs: { expected_source_sha: sourceSha, requested_by: 'hosted-release-456' },
@@ -180,8 +178,8 @@ test('release CLI dedup requires the importer-accepted artifact digest and run i
   const requests = [];
   const run = {
     ...baseRun,
-    repository: { full_name: 'armanisadeghi/matrx-extend' },
-    head_repository: { full_name: 'armanisadeghi/matrx-extend' },
+    repository: { full_name: EXTEND_GITHUB_REPO },
+    head_repository: { full_name: EXTEND_GITHUB_REPO },
   };
   const server = createServer(async (request, response) => {
     let body = '';
@@ -233,7 +231,7 @@ test('release CLI dedup requires the importer-accepted artifact digest and run i
             ...process.env,
             GITHUB_API_URL: `http://127.0.0.1:${server.address().port}`,
             GITHUB_TOKEN: 'fixture-token',
-            GITHUB_REPOSITORY: 'armanisadeghi/matrx-extend',
+            GITHUB_REPOSITORY: EXTEND_GITHUB_REPO,
             GITHUB_RUN_ID: '456',
           },
         },

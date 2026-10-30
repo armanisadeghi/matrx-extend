@@ -5,6 +5,7 @@ import { chmodSync, existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { test } from 'node:test';
+import { EXTEND_GITHUB_REPO } from './app-layout.mjs';
 import {
   planHostedGuestChat,
   planHostedPublishedGuestChat,
@@ -296,7 +297,7 @@ else {const e=a[1];let r;
     assert.deepEqual(JSON.parse(readFileSync(log)), [
       ...planHostedGuestChat(input).args,
       '-R',
-      'armanisadeghi/matrx-extend',
+      EXTEND_GITHUB_REPO,
     ]);
     rmSync(log);
     const defaulted = execute('dispatch-guest-chat', {}, [], null);
@@ -376,7 +377,7 @@ else {const e=a[1];let r;
         sourceSha: sha,
       }).args,
       '-R',
-      'armanisadeghi/matrx-extend',
+      EXTEND_GITHUB_REPO,
     ]);
     rmSync(log);
   } finally {

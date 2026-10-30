@@ -33,7 +33,7 @@ function envFrom(file: string): Record<string, string> {
     return {};
   }
 }
-const aidreamEnv = envFrom(path.resolve(__dirname, '../../../aidream/.env'));
+const aidreamEnv = envFrom(path.resolve(aidreamRoot(), '.env'));
 const URL_ = process.env.GRID_PORT_SUPABASE_URL ?? '';
 const KEY = process.env.GRID_PORT_SUPABASE_PUBLISHABLE_KEY ?? '';
 const EMAIL = process.env.AI_ADMIN_USERNAME ?? aidreamEnv.AI_ADMIN_USERNAME ?? '';
@@ -55,6 +55,7 @@ import {
   inferSchemaFromRows,
   listPickableTables,
 } from '@/lib/supabase/user-tables';
+import { aidreamRoot } from '../../scripts/app-layout.mjs';
 
 const describeLive = READY ? describe : describe.skip;
 if (!READY) {

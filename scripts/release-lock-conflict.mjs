@@ -6,7 +6,10 @@ import { execFileSync, spawnSync } from 'node:child_process';
 const [remote, local] = process.argv.slice(2);
 if (!remote || !local) process.exit(2);
 const git = (...args) => execFileSync('git', args, { encoding: 'utf8' }).trim();
-const show = (ref, path) => git('show', `${ref}:${path}`);
+// Nested in the aidream monorepo (cwd apps/matrx-extend) git names paths from the toplevel: every read and
+// every conflict path carries the app's prefix ('' standalone).
+const PREFIX = git('rev-parse', '--show-prefix');
+const show = (ref, path) => git('show', `${ref}:${PREFIX}${path}`);
 
 // Parse the shared-package records separately so only resolved version moves
 // are eligible. Existing package metadata and importer specifiers are data,
@@ -165,7 +168,7 @@ try {
   const parts = probe.stdout.toString('utf8').split('\0');
   const separator = parts.indexOf('', 1);
   const paths = parts.slice(1, separator);
-  if (separator < 0 || paths.length !== 1 || paths[0] !== 'pnpm-lock.yaml') {
+  if (separator < 0 || paths.length !== 1 || paths[0] !== `${PREFIX}pnpm-lock.yaml`) {
     throw new Error(`conflicts include ${paths.join(', ') || 'an unknown path'}`);
   }
   const resolved = spawnSync('git', ['merge-tree', '--write-tree', '-X', 'ours', remote, local], {

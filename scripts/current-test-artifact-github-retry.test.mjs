@@ -3,6 +3,7 @@ import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { test } from 'node:test';
+import { EXTEND_GITHUB_REPO } from './app-layout.mjs';
 import { ghJson } from './current-test-artifact.mjs';
 
 async function withFakeGh(outcomes, check) {
@@ -22,7 +23,7 @@ const calls = Number(fs.existsSync(state) ? fs.readFileSync(state, 'utf8') : '0'
 fs.writeFileSync(state, String(calls));
 const outcomes = JSON.parse(process.env.MATRX_ARTIFACT_GH_TEST_OUTCOMES);
 const outcome = outcomes[Math.min(calls - 1, outcomes.length - 1)];
-if (process.argv[2] !== 'api' || process.argv[3] !== '/repos/armanisadeghi/matrx-extend/actions/runs/38339589962') process.exit(19);
+if (process.argv[2] !== 'api' || process.argv[3] !== '/repos/${EXTEND_GITHUB_REPO}/actions/runs/38339589962') process.exit(19);
 if (outcome === 'transient') { process.stderr.write('error connecting to api.github.com\\n'); process.exit(1); }
 if (outcome === 'auth') { process.stderr.write('HTTP 401: Bad credentials\\n'); process.exit(1); }
 if (outcome === 'malformed') { process.stdout.write('{'); process.exit(0); }
@@ -58,7 +59,7 @@ process.stdout.write(JSON.stringify({ id: outcome }));
   }
 }
 
-const endpoint = '/repos/armanisadeghi/matrx-extend/actions/runs/38339589962';
+const endpoint = `/repos/${EXTEND_GITHUB_REPO}/actions/runs/38339589962`;
 
 test('artifact import recovers from one GitHub connection failure and uses the later response', async () => {
   await withFakeGh(['transient', 38339589962], async (calls) => {

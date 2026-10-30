@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 /** Dispatch full CI for a release commit whose GITHUB_TOKEN push cannot start CI. */
 import { readFile } from 'node:fs/promises';
+import { EXTEND_GITHUB_REPO } from './app-layout.mjs';
 import { verifyGitHubMetadata } from './current-test-artifact.mjs';
 import { isEligibleDevelopmentCiEvent } from './development-ci-event.mjs';
 
-const OWNER = 'armanisadeghi/matrx-extend';
+const OWNER = EXTEND_GITHUB_REPO; // standalone armanisadeghi/matrx-extend, nested aidream
 const SHA = /^[a-f0-9]{40}$/;
 const DECIMAL = /^[1-9]\d*$/;
 

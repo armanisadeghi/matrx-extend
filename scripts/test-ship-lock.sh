@@ -8,7 +8,7 @@ cp "$SOURCE" "$TEST_ROOT/ship.sh"
 cd "$TEST_ROOT"
 git init -q
 mkdir scripts
-cp "$(dirname "$SOURCE")/scripts/release-owner-lock.sh" scripts/
+cp "$(dirname "$SOURCE")/scripts/release-owner-lock.sh" "$(dirname "$SOURCE")/scripts/app-git.sh" scripts/
 cat > scripts/sync-main.py <<'PY'
 import pathlib,time
 with pathlib.Path('sync-calls').open('a') as f: f.write('sync\n')

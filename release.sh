@@ -26,6 +26,17 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$SCRIPT_DIR"
 cd "$REPO_ROOT" || exit 1
+# Standalone (its own repository) or nested (aidream's apps/matrx-extend): scripts/app-git.sh says which.
+# Nested, every tree this script builds, checks and exports is the APP FOLDER's (aidream's main moves
+# every few minutes for other work; that is never a gate input), the release commit changes only
+# apps/matrx-extend/ on top of aidream's main, and the tag is matrx-extend/vX.Y.Z (aidream's own tags are
+# plain v*). Index plumbing runs at the toplevel (tgit), so its paths are always toplevel paths.
+# shellcheck source=scripts/app-git.sh
+source "$SCRIPT_DIR/scripts/app-git.sh" || { echo "RELEASE STOPPED: could not load scripts/app-git.sh" >&2; exit 1; }
+app_git_layout "$REPO_ROOT" || { echo "RELEASE STOPPED: $REPO_ROOT is not inside a git checkout" >&2; exit 1; }
+export MATRX_EXTEND_GITHUB_REPO="$EXTEND_GITHUB_REPO"
+tgit() { git -C "$GIT_TOP" "$@"; }
+REMOTE_TAG_GLOB="refs/tags/${TAG_PREFIX}v*"
 
 # ── Log capture: the terminal shows only the ship line and findings ─────────
 if [[ -z "${RELEASE_LOG_CAPTURED:-}" ]]; then
@@ -77,7 +88,7 @@ hard_stop() {
 }
 report_excluded_dirty() {
     local dirty
-    dirty="$(git status --short --untracked-files=all 2>/dev/null)"
+    dirty="$(git status --short --untracked-files=all -- . 2>/dev/null)"
     [[ -z "$dirty" ]] && return 0
     log "Uncommitted checkout paths excluded from candidate ${RELEASE_SHA:-not-yet-built}: $dirty"
     echo "Uncommitted checkout paths excluded from candidate ${RELEASE_SHA:-not-yet-built}:"
@@ -143,16 +154,16 @@ bump_version() {  # current → NEW_VERSION per BUMP_TYPE (patch-skips taken tag
         minor) min=$((min + 1)); pat=0 ;;
         major) maj=$((maj + 1)); min=0; pat=0 ;;
     esac
-    while tag_taken "v${maj}.${min}.${pat}"; do pat=$((pat + 1)); done
+    while tag_taken "${TAG_PREFIX}v${maj}.${min}.${pat}"; do pat=$((pat + 1)); done
     NEW_VERSION="${maj}.${min}.${pat}"
-    NEW_TAG="v${NEW_VERSION}"
+    NEW_TAG="${TAG_PREFIX}v${NEW_VERSION}"
 }
 REMOTE_TAGS=""
 tag_taken() {
     git rev-parse -q --verify "refs/tags/$1" >/dev/null && return 0
     grep -q "refs/tags/$1\$" <<< "$REMOTE_TAGS"
 }
-read_version_at() { git cat-file -p "$1:$VERSION_FILE" 2>/dev/null | sed -n 's/^  "version": "\([^"]*\)".*/\1/p' | head -1; }
+read_version_at() { git cat-file -p "$1:${APP_PREFIX}$VERSION_FILE" 2>/dev/null | sed -n 's/^  "version": "\([^"]*\)".*/\1/p' | head -1; }
 commit_message() {
     local note="${CUSTOM_MESSAGE#release: }"
     if [[ -n "$note" && "$note" != "$1"* ]]; then echo "release: $1 - ${note}"
@@ -175,14 +186,15 @@ commit_message() {
 # A path joins this list only when no gate, test or build step reads it; one
 # that a gate needs fails that gate loudly in the snapshot, never silently.
 GATE_INERT_RE='^(\.research/|docs/stabilization/(.*\.(md|html|png|txt|log|jsonl|pending|patch|zip)|inventory\.json|reports/.*)$)'
-gate_tree() {  # treeish → prints the tree id of what gates and the build read
-    local idx t rc=0
+gate_tree() {  # treeish → prints the tree id of what gates and the build read (the app folder's tree)
+    local idx t at rc=0
+    at="$(app_tree "$1" 2>/dev/null)" || return 1
     idx="$(mktemp)"; rm -f "$idx"
-    if GIT_INDEX_FILE="$idx" git read-tree "$1" \
-        && GIT_INDEX_FILE="$idx" git ls-files -z \
+    if GIT_INDEX_FILE="$idx" tgit read-tree "$at" \
+        && GIT_INDEX_FILE="$idx" tgit ls-files -z \
             | GATE_INERT_RE="$GATE_INERT_RE" perl -0 -ne 'chomp; print "$_\0" if m{$ENV{GATE_INERT_RE}}' \
-            | GIT_INDEX_FILE="$idx" git update-index -z --force-remove --stdin \
-        && t="$(GIT_INDEX_FILE="$idx" git write-tree)"; then :; else rc=1; fi
+            | GIT_INDEX_FILE="$idx" tgit update-index -z --force-remove --stdin \
+        && t="$(GIT_INDEX_FILE="$idx" tgit write-tree)"; then :; else rc=1; fi
     rm -f "$idx"
     [[ $rc == 0 && -n "$t" ]] && echo "$t"
 }
@@ -214,7 +226,8 @@ export_snapshot() {  # treeish head-commit [prepare] → sets SNAP_DIR (never ca
     # Every failing step is named in the log; a signalled step prints nothing.
     local gtree
     gtree="$(gate_tree "$1")" || { log "export of ${1:0:12}: gate tree failed"; return 1; }
-    git archive -o "$root/snapshot.tar" "$gtree" \
+    # at the toplevel: run in a subdirectory, git archive keeps only that subdirectory of the tree
+    tgit archive -o "$root/snapshot.tar" "$gtree" \
         || { log "export of ${1:0:12}: git archive failed (exit $?)"; return 1; }
     tar -x -C "$dir" -f "$root/snapshot.tar" \
         || { log "export of ${1:0:12}: tar extraction failed (exit $?)"; return 1; }
@@ -227,7 +240,8 @@ export_snapshot() {  # treeish head-commit [prepare] → sets SNAP_DIR (never ca
         && printf 'node_modules\n' >> .git/info/exclude \
         && git update-ref HEAD "$2" && git read-tree "$gtree" && git update-index -q --refresh ) >> "$RELEASE_LOG_FILE" 2>&1 \
         || { log "export of ${1:0:12}: snapshot git init failed (exit $?)"; return 1; }
-    [[ -d "$REPO_ROOT/../aidream" ]] && ln -s "$(cd "$REPO_ROOT/../aidream" && pwd)" "$root/aidream"
+    # <root>/aidream: the aidream checkout the gates read as ../aidream (nested: this repository's toplevel).
+    [[ -d "$AIDREAM_DIR" ]] && ln -s "$AIDREAM_DIR" "$root/aidream"
     for f in "$REPO_ROOT"/.env*; do
         [[ -f "$f" && ! -e "$dir/$(basename "$f")" ]] && cp "$f" "$dir/"
     done
@@ -262,12 +276,12 @@ fetch_main() {
 # ── Dry run ──────────────────────────────────────────────────────────────────
 if $DRY_RUN; then
     fetch_main || hard_stop "cannot reach GitHub ($REMOTE/$BRANCH)"
-    REMOTE_TAGS="$(git ls-remote --tags "$REMOTE" 'refs/tags/v*' 2>/dev/null)"
+    REMOTE_TAGS="$(git ls-remote --tags "$REMOTE" "$REMOTE_TAG_GLOB" 2>/dev/null)"
     CUR="$(read_version_at "$REMOTE/$BRANCH")"
     [[ -n "$CUR" ]] || hard_stop "cannot read the version from $VERSION_FILE on $REMOTE/$BRANCH"
     bump_version "$CUR"
     echo "dry run: $REMOTE/$BRANCH is $CUR; would release $NEW_TAG as '$(commit_message "$NEW_TAG")'"
-    AHEAD="$(git rev-list --count "$REMOTE/$BRANCH..HEAD" 2>/dev/null || echo 0)"
+    AHEAD="$(git rev-list --count "$REMOTE/$BRANCH..HEAD" -- . 2>/dev/null || echo 0)"
     [[ "$AHEAD" -gt 0 ]] && echo "dry run: would merge $AHEAD local commit(s) not on $REMOTE/$BRANCH"
     print_findings
     exit 0
@@ -338,7 +352,7 @@ dependency_inputs_changed() {  # 0 when BASE_TREE's dependency inputs differ fro
     # A prior push can bump only the package version, then fail during local ZIP
     # promotion. That version does not alter the installed graph. Compare every
     # other manifest field so a retry can still restore an interrupted release.
-    node - "$LOCAL_HEAD:package.json" "$BASE_TREE:package.json" <<'NODE' || return 0
+    node - "$LOCAL_HEAD:${APP_PREFIX}package.json" "$BASE_TREE:${APP_PREFIX}package.json" <<'NODE' || return 0
 const { execFileSync } = require('node:child_process');
 const { isDeepStrictEqual } = require('node:util');
 function manifest(ref) {
@@ -401,7 +415,8 @@ verify_installed_dependency_inputs() {
 # ── Regenerate the committed artifacts ──────────────────────────────────────
 REGEN_INFO=""   # `git update-index --index-info` lines for the regenerated paths
 regen_artifacts() {
-    local snap jobs=() name rc idx tree paths=() p
+    local snap jobs=() name rc idx tree paths=() p base_app
+    base_app="$(app_tree "$BASE_TREE")" || hard_stop "could not read the app tree of the release base"
     export_snapshot "$BASE_TREE" "$BASE" prepare && snap="$SNAP_DIR" || hard_stop "could not export the release tree to regenerate artifacts"
     local jd; jd="$(dirname "$snap")/jobs"; mkdir -p "$jd"
     $SKIP_TYPES   || { ( cd "$snap" && bounded 180 pnpm -s update-api-types --skip-typecheck ) > "$jd/api-types.out" 2>&1; echo $? > "$jd/api-types.rc"; }
@@ -415,16 +430,17 @@ regen_artifacts() {
         hard_stop "artifact regeneration $name failed (exit $rc); no release was pushed"
     done
     for p in "${GENERATED_PATHS[@]}"; do
-        if [[ -e "$snap/$p" ]] || git cat-file -e "$BASE_TREE:$p" 2>/dev/null; then paths+=("$p"); fi
+        if [[ -e "$snap/$p" ]] || git cat-file -e "$base_app:$p" 2>/dev/null; then paths+=("$p"); fi
     done
     [[ ${#paths[@]} -gt 0 ]] || return
     idx="$(mktemp)"; rm -f "$idx"
-    if GIT_INDEX_FILE="$idx" git read-tree "$BASE_TREE" \
+    # The app's tree alone (app-relative paths), then each changed path as a toplevel index line.
+    if GIT_INDEX_FILE="$idx" tgit read-tree "$base_app" \
         && ( cd "$snap" && GIT_DIR="$GIT_ABS_DIR" GIT_WORK_TREE="$snap" GIT_INDEX_FILE="$idx" git add -A -- "${paths[@]}" ) >> "$RELEASE_LOG_FILE" 2>&1 \
-        && tree="$(GIT_INDEX_FILE="$idx" git write-tree)"; then
-        REGEN_INFO="$(git diff-tree -r --no-renames "$BASE_TREE" "$tree" -- "${paths[@]}" | awk -F'\t' '{
-            split($1, m, " "); if (m[5] == "D") printf "0 0000000000000000000000000000000000000000\t%s\n", $2;
-            else printf "%s %s\t%s\n", m[2], m[4], $2 }')"
+        && tree="$(GIT_INDEX_FILE="$idx" tgit write-tree)"; then
+        REGEN_INFO="$(tgit diff-tree -r --no-renames "$base_app" "$tree" -- "${paths[@]}" | awk -F'\t' -v pre="$APP_PREFIX" '{
+            split($1, m, " "); if (m[5] == "D") printf "0 0000000000000000000000000000000000000000\t%s%s\n", pre, $2;
+            else printf "%s %s\t%s%s\n", m[2], m[4], pre, $2 }')"
         log "regenerated: $(grep -c . <<< "$REGEN_INFO") path(s) changed"
     else
         hard_stop "regenerated artifacts could not be staged into the release commit"
@@ -435,16 +451,16 @@ regen_artifacts() {
 build_commit() {  # CURRENT_VERSION NEW_VERSION COMMIT_MSG → RELEASE_SHA
     local idx blob tree
     idx="$(mktemp)"; rm -f "$idx"
-    GIT_INDEX_FILE="$idx" git read-tree "$BASE_TREE" || return 1
+    GIT_INDEX_FILE="$idx" tgit read-tree "$BASE_TREE" || return 1
     if [[ -n "$REGEN_INFO" ]]; then
-        printf '%s\n' "$REGEN_INFO" | GIT_INDEX_FILE="$idx" git update-index --index-info || return 1
+        printf '%s\n' "$REGEN_INFO" | GIT_INDEX_FILE="$idx" tgit update-index --index-info || return 1
     fi
-    blob="$(git cat-file -p "$BASE_TREE:$VERSION_FILE" \
+    blob="$(git cat-file -p "$BASE_TREE:${APP_PREFIX}$VERSION_FILE" \
         | sed "s/^  \"version\": \"${CURRENT_VERSION}\"/  \"version\": \"${NEW_VERSION}\"/" \
         | git hash-object -w --stdin)" || return 1
     [[ "$(git cat-file -p "$blob" | sed -n 's/^  "version": "\([^"]*\)".*/\1/p' | head -1)" == "$NEW_VERSION" ]] || return 1
-    GIT_INDEX_FILE="$idx" git update-index --cacheinfo "100644,$blob,$VERSION_FILE" || return 1
-    tree="$(GIT_INDEX_FILE="$idx" git write-tree)" || return 1
+    GIT_INDEX_FILE="$idx" tgit update-index --cacheinfo "100644,$blob,${APP_PREFIX}$VERSION_FILE" || return 1
+    tree="$(GIT_INDEX_FILE="$idx" tgit write-tree)" || return 1
     rm -f "$idx"
     RELEASE_SHA="$(git commit-tree "$tree" "${PARENTS[@]}" -m "$COMMIT_MSG")" || return 1
 }
@@ -588,7 +604,7 @@ adopt_inert_move() {
     local head merged sha parents
     [[ -n "${VALIDATED_GATE_TREE:-}" ]] || return 1
     fetch_main || return 1
-    REMOTE_TAGS="$(git ls-remote --tags "$REMOTE" 'refs/tags/v*')" || return 1
+    REMOTE_TAGS="$(git ls-remote --tags "$REMOTE" "$REMOTE_TAG_GLOB")" || return 1
     tag_taken "$NEW_TAG" && return 1
     head="$(git rev-parse "$REMOTE/$BRANCH")"
     [[ "$head" == "$BASE" ]] && return 0
@@ -949,7 +965,7 @@ $review" -- "${paths[@]}"; then
 # keyed bundle is promoted into both paths used by existing Chrome profiles
 # (stable dev ID; the Supabase OAuth redirect is registered against it).
 # The Store rejects any
-# upload that carries the dev key (incident: .research/v0.1.4-auth-incident.md).
+# upload that carries the dev key (incident: docs/v0.1.4-auth-incident.md).
 build_zips() (
     local wxt_zip=".output/${PROJECT_NAME}-${NEW_VERSION}-chrome.zip" phase="build-snapshot"
     trap 'rc=$?; if (( rc != 0 )); then printf "%s %s\n" "$phase" "$rc" > "$JOBS/build-failure"; fi' EXIT
@@ -984,7 +1000,7 @@ build_zips() (
 
 
 # ── Validate the exact candidate before any remote publication ──────────────
-REMOTE_TAGS="$(git ls-remote --tags "$REMOTE" 'refs/tags/v*')" \
+REMOTE_TAGS="$(git ls-remote --tags "$REMOTE" "$REMOTE_TAG_GLOB")" \
     || hard_stop "cannot read remote tags — nothing was pushed"
 RACES=0
 PUSHED=false
@@ -995,7 +1011,7 @@ note_race() {  # where — origin moved: drop this candidate, refetch, and stop 
         [[ -n "${SNAP_ROOTS[i]}" && -d "${SNAP_ROOTS[i]}" ]] && rm -rf -- "${SNAP_ROOTS[i]}"
     done
     fetch_main || hard_stop "cannot reach $REMOTE/$BRANCH after a $1 race — nothing was published"
-    REMOTE_TAGS="$(git ls-remote --tags "$REMOTE" 'refs/tags/v*')" \
+    REMOTE_TAGS="$(git ls-remote --tags "$REMOTE" "$REMOTE_TAG_GLOB")" \
         || hard_stop "cannot read remote tags after a $1 race — nothing was published"
     RACES=$((RACES + 1))
     log "lost $1 race $RACES — revalidating the new candidate"
@@ -1066,7 +1082,7 @@ The @ai-matrx catch-up could not finish; the release goes ahead on the current p
         fi
         previous_base="$BASE"
         fetch_main || hard_stop "cannot reach $REMOTE/$BRANCH after push rejection — nothing was published"
-        REMOTE_TAGS="$(git ls-remote --tags "$REMOTE" 'refs/tags/v*')" \
+        REMOTE_TAGS="$(git ls-remote --tags "$REMOTE" "$REMOTE_TAG_GLOB")" \
             || hard_stop "cannot read remote tags after push rejection — nothing was published"
         if [[ "$(git rev-parse "$REMOTE/$BRANCH")" == "$previous_base" ]] && ! tag_taken "$NEW_TAG"; then
             hard_stop "atomic push rejected without a branch or tag race — nothing was published"
@@ -1152,7 +1168,7 @@ rm -rf -- "$OUTPUT_STAGE" \
     || finding "WARNING" "Cleanup" "Release installed; could not remove staging at $OUTPUT_STAGE" "remove the retained staging after inspection"
 find "$OUTPUT_DIR" -maxdepth 1 -type f \( -name "${PROJECT_NAME}-*-store.zip" -o -name "${PROJECT_NAME}-*-local.zip" \) \
     ! -name "$(basename "$STORE_ZIP")" ! -name "$(basename "$LOCAL_ZIP")" -delete
-[[ -n "${RELEASE_LOG_DIR:-}" ]] && ln -sfn "$(basename "$RELEASE_LOG_FILE")" "$RELEASE_LOG_DIR/release-${NEW_TAG}.log"
+[[ -n "${RELEASE_LOG_DIR:-}" ]] && ln -sfn "$(basename "$RELEASE_LOG_FILE")" "$RELEASE_LOG_DIR/release-${NEW_TAG//\//-}.log"
 if [[ "$(git rev-parse --abbrev-ref HEAD)" == "$BRANCH" ]]; then
     quiet git merge --ff-only "$REMOTE/$BRANCH"         || finding "WARNING" "Git" "This checkout could not fast-forward to $NEW_TAG" "git pull --no-rebase origin main"
 fi

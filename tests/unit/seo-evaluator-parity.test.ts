@@ -19,8 +19,7 @@
  */
 
 import { existsSync, readFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { join } from 'node:path';
 import { evaluateHeadingStructure, headingInputsFromRaw } from '@/lib/seo/evaluators/headings';
 import { evaluateIndexability } from '@/lib/seo/evaluators/indexability';
 import { evaluateSocialCard } from '@/lib/seo/evaluators/social';
@@ -33,12 +32,12 @@ import {
 } from '@/lib/seo/evaluators/stored';
 import { evaluateUrlQuality } from '@/lib/seo/evaluators/url-quality';
 import { describe, expect, it } from 'vitest';
+import { aidreamRoot } from '../../scripts/app-layout.mjs';
 import vendored from './__fixtures__/audit-parity.json';
 
 /** The one home of the expected answers, when an aidream checkout is present. */
 const AIDREAM_HOME = join(
-  process.env.MATRX_AIDREAM_ROOT ??
-    join(dirname(fileURLToPath(import.meta.url)), '../../../aidream'),
+  process.env.MATRX_AIDREAM_ROOT ?? aidreamRoot(),
   'packages/matrx-scraper/tests/__fixtures__/audit-parity.json',
 );
 const aidreamHome: unknown = existsSync(AIDREAM_HOME)

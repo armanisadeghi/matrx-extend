@@ -1,7 +1,14 @@
 #!/usr/bin/env bash
 # Both entry points use one lock. A ship child may borrow only its live
 # ancestor's lock; it never releases that lock on the parent's behalf.
-SHIP_LOCK_DIR="$(git rev-parse --git-path matrx-release-ship.lock)"
+# Nested in the aidream monorepo the git dir is aidream's, shared with every other nested app's release
+# (matrx-frontend's lock there is matrx-release-ship.lock): Extend's own name keeps one app's release from
+# ever waiting on, or refusing because of, another app's.
+if [[ -n "$(git rev-parse --show-prefix 2>/dev/null)" ]]; then
+    SHIP_LOCK_DIR="$(git rev-parse --git-path matrx-release-ship-matrx-extend.lock)"
+else
+    SHIP_LOCK_DIR="$(git rev-parse --git-path matrx-release-ship.lock)"
+fi
 SHIP_LOCK_HELD=false
 ship_lock_cleanup() {
     if $SHIP_LOCK_HELD && [[ "$(cat "$SHIP_LOCK_DIR/pid" 2>/dev/null)" == "$$" ]]; then
