@@ -78,7 +78,7 @@
     "latest_candidate_ci_status": "success_metadata_only_no_development_artifact"
   },
   "product_fix_sha": null,
-  "next_action": "Preserve earlier f922 failure and later001856 native pass; cause remains unknown with no attributed product fix. Independently retest original and surrounding lifecycle before closure; investigate long async readiness observation before claiming latency bounds. Continue other registered Settings/Scrape cases rather than blindly repeating this pass.",
+  "next_action": "Product cause remains unknown. Keep earlier failed postclick reproduction and later native pass separate. Use existing terminal diagnostic and bounded first/last state on the next necessary native original/surrounding case; do not repeat the successful case blindly. Timing mechanism test is an unrun optional discriminator after future safe admission, not a product-case prerequisite. Never weaken resource holds to shorten measured readiness.",
   "transition_history": [
     {
       "at": "2026-10-29T21:30:52.736483+00:00",
@@ -111,7 +111,8 @@
     "run_id": 40969223078,
     "outcome": "One bounded original T03 and lifecycle surrounding pass; earlier failure not reproduced onnewartifact. No attributed product fix or closure.",
     "readiness_elapsed_ms": 49895,
-    "latency_and_deadline_limit": "Polling-loop budget is not enforced wallclock/CDP deadline; no within10s/fast/reliable reload claim. Cause unknown.",
+    "latency_and_deadline_limit": "49.895s is whole guarded-observation elapsed. Source awaits resource health before rawCDP; a nearby48.287s CPU_PENDING\u2192RECOVERED hold is retained. Exact action overlap and causal fraction are uninstrumented; no app-only/CDP-only delay or10s wallclock cutoff claim.",
     "independent_peer": "docs/stabilization/reports/member-d303-peer-20261029.json"
-  }
+  },
+  "timing_diagnosis_report": "docs/stabilization/reports/data-reload-timing-20261030.json"
 }

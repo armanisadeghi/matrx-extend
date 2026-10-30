@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-30T00:13:01.947313+00:00",
+  "updated_at": "2026-10-30T01:09:06.513525+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -50767,7 +50767,7 @@
             "EXT-D-0274",
             "EXT-D-0303"
           ],
-          "verification_note": "Latest bounded member T03 lifecycle PASS once on001856 development artifact, real save/list/run/TSV/JSON/AI copy/Cancel and actual full-reload survival/run; normal verifier and fresh retained-original peer pass. Prior f922 postreload failure preserved, cause unknown;49.895s readiness is not fast/reliable/within10s proof. No D303 closure/admin/T08/wholeData/Store acceptance.",
+          "verification_note": "Latest bounded member T03 pass once on001856, real save/list/run/copy/cancel and full-reload survival; prior f922 failure preserved, D303cause/closure unknown.49.895s whole guarded observation includes resource-health waits; nearby CPUhold prevents assigning app-only delay. No admin/T08/wholeData/Store acceptance.",
           "results": {
             "member": {
               "status": "pass",
@@ -50823,7 +50823,7 @@
                 }
               },
               "reload_data_readiness_elapsed_ms": 49895,
-              "latency_scope": "Polling-loop budget is not enforced wallclock/CDP deadline; no within10s/fast/reliable reload claim. Cause unknown.",
+              "latency_scope": "Whole guarded-readiness observation includes resource-health waits before rawCDP; nearby48.287sCPUhold retained. Exact overlap/fraction/app-only latency unverified.10s is loop-entry budget, not enforced wallclock/CDP-read deadline.",
               "normal_verifier_valid": true,
               "independent_retained_original_review": "A/B pass scoped; no second native browser replay.",
               "cleanup": {
