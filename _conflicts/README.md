@@ -23,6 +23,7 @@ agent -> Needs Arman) with ` — <question> — <what was checked> — <who>` ad
 Its files stay as they are.
 
 ## Held files
+- _conflicts/2026-10-29-224611/tests/fixtures/release-member-api-metadata.json.held — LOCAL latest unknown; GITHUB latest 2026-10-29 21:25; no line differences; recover: git show 7b353768d8:'tests/fixtures/release-member-api-metadata.json' / 55af1f61ba:'tests/fixtures/release-member-api-metadata.json'
 
 ## Needs a manager
 

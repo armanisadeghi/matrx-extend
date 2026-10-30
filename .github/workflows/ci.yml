@@ -121,8 +121,10 @@ jobs:
         run: node --test scripts/test-stabilization-resource-journal.mjs
       - name: CPU confirmation and native action boundary
         run: node --test scripts/test-stabilization-resource-cpu-integration.mjs
-      - name: Bounded hosted acceptance lanes
-        run: node --test scripts/test-hosted-acceptance-lanes.mjs
+      # Portable lane/CLI fixtures run in the mandatory Linux focused suite.
+      # Retain the actual-host architecture branch on macOS.
+      - name: Native architecture artifact admission
+        run: node --test scripts/hosted-artifact-provenance.test.mjs
 
   checks:
     needs: scope

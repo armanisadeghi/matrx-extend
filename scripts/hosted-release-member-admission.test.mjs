@@ -17,12 +17,12 @@ const archive = Buffer.from('captured artifact bytes represented at the hash sea
 const store = Buffer.from('Store package bytes represented at the hash seam');
 const hash = (value) => createHash('sha256').update(value).digest('hex');
 const input = { releaseRunId: '39049375284', artifactId: '12106724248', sourceSha: sha };
+// Captured public Actions API fields from 5447c68213b23f320a67d78b5dc0e502beef9363:
+// docs/stabilization/evidence/member-release-admission-20261017/release-api-metadata.json.
+// This bounded test input is independent of the private operational evidence archive.
 const captured = JSON.parse(
   readFileSync(
-    new URL(
-      '../docs/stabilization/evidence/member-release-admission-20261017/release-api-metadata.json',
-      import.meta.url,
-    ),
+    new URL('../tests/fixtures/release-member-api-metadata.json', import.meta.url),
     'utf8',
   ),
 );

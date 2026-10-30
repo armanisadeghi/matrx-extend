@@ -27,6 +27,27 @@ export function captureDataMemberDriverDiagnostic(error) {
 
 export function recordDataMemberDriverDiagnostic(error, report) {
   if (
+    ['data_member_reloaded_data_tab_ready', 'data_member_saved_pattern_survived_reload'].includes(
+      error?.waitLabel,
+    ) &&
+    report &&
+    typeof report === 'object'
+  ) {
+    report.reload_data_wait_diagnostic = {
+      stage: 'extension_reload_reopen_data',
+      target: 'data_tab_and_linked_pane',
+      wait_label: error.waitLabel,
+      wait_failure_category: [
+        'panel_target_unavailable',
+        'panel_runtime_unavailable',
+        'panel_observation_unavailable',
+      ].includes(error.waitFailureCategory)
+        ? error.waitFailureCategory
+        : null,
+      last_wait: dataMemberReloadWaitSample(error.waitDiagnostic),
+    };
+  }
+  if (
     error?.waitLabel === 'data_member_pattern_name_entered' &&
     report &&
     typeof report === 'object'
@@ -85,4 +106,26 @@ export async function observeDataMemberNameEntry(report, stage, read) {
     .filter((value) => typeof value === 'number');
   entry.document_replaced =
     origins.length >= 2 ? origins.some((value) => value !== origins[0]) : null;
+}
+
+/** Fixed counts and categories only; transient errors, titles, identities and values never leave the wait. */
+export function dataMemberReloadWaitSample(value) {
+  const field = (raw, projected) => value?.[raw] ?? value?.[projected];
+  return {
+    sampled: typeof value?.active === 'boolean',
+    active: safeBoolean(value?.active),
+    matching_tab_count: safeCount(field('matchingTabCount', 'matching_tab_count')),
+    visible_tab_count: safeCount(field('visibleTabCount', 'visible_tab_count')),
+    active_tab_count: safeCount(field('activeTabCount', 'active_tab_count')),
+    selected_tab_count: safeCount(field('selectedTabCount', 'selected_tab_count')),
+    linked_pane_count: safeCount(field('linkedPaneCount', 'linked_pane_count')),
+    linked_active_pane_count: safeCount(field('linkedActivePaneCount', 'linked_active_pane_count')),
+    active_tab_category: ['data', 'chat', 'other', 'none', 'ambiguous'].includes(
+      field('activeTabCategory', 'active_tab_category'),
+    )
+      ? field('activeTabCategory', 'active_tab_category')
+      : null,
+    render_error_present: safeBoolean(field('renderErrorPresent', 'render_error_present')),
+    saved_pattern_visible: safeBoolean(field('savedPatternVisible', 'saved_pattern_visible')),
+  };
 }

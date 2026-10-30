@@ -9,15 +9,15 @@
     "macos": 0.062
   },
   "prices_source": "GitHub billing API pricePerUnit (Actions Linux / Windows / macOS 3-core), read 2026-10-11",
-  "total_usd_per_week": 412.8,
+  "total_usd_per_week": 646.51,
   "workflows": {
     "ci.yml": {
       "triggers": ["pull_request", "push", "workflow_dispatch"],
       "crons": [],
-      "benefit": "Full extension build/lint/tests and development artifact for runtime changes; the scope job first exercises its own fail-closed classification fixtures on every push and PR, then routes proven artifact-backed stabilization documentation to tracked-document validation. The release workflow_dispatch closes the GITHUB_TOKEN recursion gap by rebuilding the exact tagged release source through the same full CI checks before producing a development artifact.",
+      "benefit": "Full extension build/lint/tests and development artifact for runtime changes; the scope job first exercises its own fail-closed classification fixtures on every push and PR, then routes proven artifact-backed stabilization documentation to tracked-document validation. The release workflow_dispatch closes the GITHUB_TOKEN recursion gap by rebuilding the exact tagged release source through the same full CI checks before producing a development artifact. macOS retains its real resource integrations and native-architecture artifact admission; portable hosted lane/CLI/admission fixtures execute in the mandatory Linux focused suite.",
       "owner_reason": "Before it, nothing was enforced on PRs (AUDIT P0-8).",
-      "basis": "Conservative upper bound from observed 2026-10-02..09: ~2500 runs/week; sampled Linux 3.2 min and macOS 1.5 min. The docs-only path adds a short Linux classification/validation job but skips Linux full checks and macOS integration for eligible runs. At a hypothetical 10% eligible share, projected variable runner use falls by about $28/week at list price, before the small classifier cost; actual public-repo billed increment is $0. The manifest retains the higher all-full-run forecast until the eligible share and classifier duration are measured. Conservative all-full-run ceiling includes 0.6 Linux minute per run for the classifier, artifact-provenance API read, validation lane, and mandatory 16-case Node regression (~1.5 seconds locally; 0.1 minute conservative increment); no additional macOS time. Up to 13 release-linked exact-source CI runs/week add ~13 x (3.8 Linux + 1.5 macOS) minutes at list price, about $1.51/week. Public repository billed increment is $0; dedup against an existing exact-source CI run may reduce this.",
-      "usd_per_week": 291.01,
+      "basis": "Conservative all-full-run forecast retains 2513 runs/week (2500 ordinary plus up to 13 release-linked exact-source runs), 3.8 Linux minutes/run including scope/docs overhead, and now 3.0 macOS minutes/run. Official run 40943680643 on 2026-10-29 used about 149 seconds for the four real Mac resource suites, then timed out in a duplicate portable acceptance corpus. Linux passed that complete mandatory corpus in 98.7 seconds. The Mac lane retains all four resource suites and actual-host architecture provenance within its unchanged 5-minute deadline. Replacing the duplicate corpus adds no runner, job, trigger, cadence, dispatch or timeout; actual incremental billed cost is $0 on public standard runners. The macOS forecast corrects the stale 1.5-minute estimate, increasing forecast by $233.71/week without adding work. Future measured savings are unclaimed. Eligible docs-only runs still skip full Linux/Mac work; forecast does not assume an eligibility share.",
+      "usd_per_week": 524.72,
       "legs": {
         "linux": {
           "jobs": ["scope", "docs", "checks"],
@@ -28,8 +28,8 @@
         "macos": {
           "jobs": ["resource-guard-integration"],
           "runs_per_week": 2513,
-          "minutes_per_run": 1.5,
-          "usd_per_week": 233.71
+          "minutes_per_run": 3.0,
+          "usd_per_week": 467.42
         }
       }
     },

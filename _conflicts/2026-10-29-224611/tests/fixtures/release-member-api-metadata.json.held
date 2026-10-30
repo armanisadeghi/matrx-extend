@@ -1,0 +1,41 @@
+matrx-auto-git-conflict-file-work-delete-this-when-resolved
+
+HELD CONFLICT, written by scripts/sync-main.py
+File:      tests/fixtures/release-member-api-metadata.json
+Why held:  deleted on one side, changed on the other
+GITHUB's version is live in the repo at the path above. LOCAL's version is at the bottom
+of this file, below the FACTS.
+Done with it: the final code is in the live file, this .held file is deleted, and its line
+in _conflicts/README.md is deleted. The list of open items is _conflicts/README.md.
+
+FACTS (computed by sync-main from git)
+
+THE TWO VERSIONS
+  LOCAL  = the version that was on this Mac. It is saved below, in this .held file.
+  GITHUB = the version from GitHub. It is LIVE in the repo right now, at tests/fixtures/release-member-api-metadata.json
+  Both grew from the same COMMON version: commit 5e198305b2, 2026-10-29 11:49.
+
+WHEN EACH SIDE CHANGED THIS FILE (newest first)
+  LOCAL:
+    (no change on this side)
+  GITHUB:
+    2026-10-29 21:25  98af8f6b63  "fix(ci): detach guard fixtures from local evidence archive"
+  Which side changed it last is UNKNOWN (the local edit was never committed and its save time was not recorded).
+
+SIZE: common version 0 lines, LOCAL 0 lines, GITHUB 30 lines
+
+WHAT EACH SIDE DID, compared with the common version
+  LOCAL deleted the whole file.
+  GITHUB added 21 lines and removed 0 lines.
+
+CODE ONE SIDE HAS THAT THE OTHER DOES NOT
+
+COMPARE THEM (the labels are correct; '-' lines are GITHUB, '+' lines are LOCAL):
+  diff -u --label 'GITHUB (live)' --label 'LOCAL (held)' <(git show 55af1f61ba7c:'tests/fixtures/release-member-api-metadata.json') <(git show 7b353768d8f5:'tests/fixtures/release-member-api-metadata.json')
+
+RECOVER EITHER VERSION FOREVER (works even after this .held file is deleted):
+  LOCAL : git show 7b353768d8f5:'tests/fixtures/release-member-api-metadata.json'
+  GITHUB: git show 55af1f61ba7c:'tests/fixtures/release-member-api-metadata.json'
+
+---------------- LOCAL VERSION BELOW ----------------
+(the local side deleted this file)

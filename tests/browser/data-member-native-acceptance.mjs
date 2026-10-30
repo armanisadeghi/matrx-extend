@@ -12,6 +12,7 @@ import { clickPickerDone, clickPickerField, pickerText } from './data-guest-pick
 import { runMemberAutoExtract } from './data-member-auto-extract-driver.mjs';
 import {
   dataMemberNameEntrySample,
+  dataMemberReloadWaitSample,
   observeDataMemberNameEntry,
   recordDataMemberDriverDiagnostic,
 } from './data-member-driver-diagnostic.mjs';
@@ -108,15 +109,39 @@ const report = {
     : 'Native member picker, save, run, clipboard, cancel and extension-reload behavior on the exact imported development artifact; no admin or Store claim.',
 };
 
-async function dataState(panel, name) {
+async function dataState(panel, name, reloadDiagnostic = false) {
   return evaluate(
     panel,
     `(() => {
       const root = ${activeTabPanelExpression('Data')};
-      if (!root) return { active: false };
+      const tabDiagnostic = (() => {
+        if (!${JSON.stringify(reloadDiagnostic)}) return {};
+        try {
+          const tabs = [...document.querySelectorAll('button[role="tab"]')];
+          const dataTabs = tabs.filter((tab) => (tab.getAttribute('title') ?? tab.getAttribute('data-matrx-title')) === 'Data');
+          const activeTabs = tabs.filter((tab) => tab.getAttribute('data-state') === 'active');
+          const linkedPanes = dataTabs.map((tab) => document.getElementById(tab.getAttribute('aria-controls'))).filter(Boolean);
+          const activeTitle = activeTabs.length === 1 ? (activeTabs[0].getAttribute('title') ?? activeTabs[0].getAttribute('data-matrx-title')) : null;
+          return {
+            matchingTabCount: dataTabs.length,
+            visibleTabCount: dataTabs.filter((tab) => {
+              const style = getComputedStyle(tab), rect = tab.getBoundingClientRect();
+              return rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden' && style.display !== 'none' && !tab.closest('[inert]');
+            }).length,
+            activeTabCount: dataTabs.filter((tab) => tab.getAttribute('data-state') === 'active').length,
+            selectedTabCount: dataTabs.filter((tab) => tab.getAttribute('aria-selected') === 'true').length,
+            linkedPaneCount: linkedPanes.length,
+            linkedActivePaneCount: linkedPanes.filter((pane) => pane.matches('[role="tabpanel"][data-state="active"]')).length,
+            activeTabCategory: activeTabs.length === 0 ? 'none' : activeTabs.length > 1 ? 'ambiguous' : activeTitle === 'Data' ? 'data' : activeTitle === 'Chat' ? 'chat' : 'other',
+            renderErrorPresent: [...document.querySelectorAll('#app p')].some((node) => node.textContent?.trim() === 'The panel hit a render error'),
+          };
+        } catch { return {}; }
+      })();
+      if (!root) return { active: false, ...tabDiagnostic };
       const text = root.textContent ?? '';
       const nameInput = root.querySelector('input[placeholder="Pattern name…"]');
       return {
+        ...tabDiagnostic,
         active: true,
         pickedTwo: text.includes('2 fields selected') && text.includes('field_1:') && text.includes('field_2:'),
         savePatternCount: [...root.querySelectorAll('button')].filter((button) => button.textContent.trim() === 'Save pattern').length,
@@ -675,13 +700,17 @@ try {
         await click(panel, 'title', 'Data');
         await waitFor(
           'data_member_reloaded_data_tab_ready',
-          () => dataState(panel, patternName),
+          () => dataState(panel, patternName, true),
           (state) => state?.active === true,
+          undefined,
+          dataMemberReloadWaitSample,
         );
         const reloaded = await waitFor(
           'data_member_saved_pattern_survived_reload',
-          () => dataState(panel, patternName),
+          () => dataState(panel, patternName, true),
           (state) => state?.active === true && state.savedPatternVisible === true,
+          undefined,
+          dataMemberReloadWaitSample,
         );
         assert.equal(
           reloaded.savedPatternVisible,

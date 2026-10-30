@@ -1,0 +1,30 @@
+{
+  "sourceCommit": "5447c68213b23f320a67d78b5dc0e502beef9363",
+  "captures": {
+    "beforeClick": {
+      "runId": 38160708149,
+      "observation": {
+        "active": true,
+        "target_count": 1,
+        "target_enabled": true,
+        "database_refused_notice_count": 1,
+        "dismiss_visible": true,
+        "hit_point_count": 9,
+        "notice_hit_point_count": 0
+      }
+    },
+    "afterReload": {
+      "runId": 38169337463,
+      "attempt": 2,
+      "observation": {
+        "active": true,
+        "target_count": 1,
+        "target_enabled": true,
+        "database_refused_notice_count": 1,
+        "dismiss_visible": true,
+        "hit_point_count": 9,
+        "notice_hit_point_count": 0
+      }
+    }
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "sourceCommit": "5447c68213b23f320a67d78b5dc0e502beef9363",
+  "cases": [
+    {
+      "featureId": "EXT-F-4061",
+      "selectors": ["keys"]
+    },
+    {
+      "featureId": "EXT-F-4062",
+      "selectors": ["hover-target"]
+    },
+    {
+      "featureId": "EXT-F-4063",
+      "selectors": ["focus-target", "other-focus"]
+    },
+    {
+      "featureId": "EXT-F-4064",
+      "selectors": ["blur-target"]
+    },
+    {
+      "featureId": "EXT-F-4065",
+      "selectors": ["context-target"]
+    },
+    {
+      "featureId": "EXT-F-4066",
+      "selectors": ["choice"]
+    },
+    {
+      "featureId": "EXT-F-4067",
+      "selectors": ["consent-test"]
+    },
+    {
+      "featureId": "EXT-F-4068",
+      "selectors": ["radio-a", "radio-b"]
+    },
+    {
+      "featureId": "EXT-F-4069",
+      "selectors": ["submit-test"]
+    }
+  ]
+}

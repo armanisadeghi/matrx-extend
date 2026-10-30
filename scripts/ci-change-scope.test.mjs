@@ -36,6 +36,28 @@ function fixture(fn) {
   }
 }
 
+test('moving operational JSON into reports requires fresh CI before later metadata reuse', () =>
+  fixture((root, artifact) => {
+    const oldLedger = commit(root, 'docs/stabilization/repository-ledger.json', '{}');
+    mkdirSync(join(root, 'docs/stabilization/reports'), { recursive: true });
+    git(
+      root,
+      'mv',
+      'docs/stabilization/repository-ledger.json',
+      'docs/stabilization/reports/repository-ledger.json',
+    );
+    git(root, 'commit', '-qm', 'Place operational ledger in reports');
+    const moved = git(root, 'rev-parse', 'HEAD');
+    assert.equal(classifyProvenChange(root, oldLedger, moved, artifact), 'full');
+    const updated = commit(
+      root,
+      'docs/stabilization/reports/repository-ledger.json',
+      '{"updated":true}',
+    );
+    assert.equal(classifyProvenChange(root, moved, updated, artifact), 'full');
+    assert.equal(classifyProvenChange(root, moved, updated, moved), 'docs');
+  }));
+
 test('stabilization report only takes docs validation', () =>
   fixture((root, base) => {
     const head = commit(root, 'docs/stabilization/reports/run.json', '{}');
@@ -383,6 +405,98 @@ test('workflow gates full jobs and development artifact behind the scope decisio
   assert.match(checks, /pnpm wxt build/);
   assert.match(checks, /current-test-artifact\.mjs produce/);
   assert.match(checks, /upload-artifact@v4/);
+});
+
+// This census catches a portable test corpus imported into both runner lanes,
+// including indirect suite imports; only actual-host artifact provenance belongs in both.
+function assertHostedLaneOwnership(workflow, focusedCommand) {
+  const mac = workflow.split('  resource-guard-integration:\n')[1]?.split('  checks:\n')[0];
+  const linux = workflow.split('  checks:\n')[1];
+  assert.match(mac, /timeout-minutes: 5\n/);
+  assert.match(linux, /run: pnpm test:focused-acceptance\n/);
+  const macRoots = [...mac.matchAll(/run: node --test ([^\n]+)/g)].flatMap((m) => m[1].split(' '));
+  const hostTests = [
+    'scripts/test-stabilization-resource-safety-integration.mjs',
+    'scripts/test-stabilization-resource-disk-integration.mjs',
+    'scripts/test-stabilization-resource-journal.mjs',
+    'scripts/test-stabilization-resource-cpu-integration.mjs',
+  ];
+  for (const path of hostTests)
+    assert.ok(macRoots.includes(path), `missing host boundary: ${path}`);
+  const graph = (roots) => {
+    const seen = new Set();
+    const tests = new Set();
+    const visit = (url) => {
+      if (seen.has(url.href)) return;
+      seen.add(url.href);
+      const source = readFileSync(url, 'utf8');
+      if (/from ['"]node:test['"]/.test(source)) tests.add(url.href);
+      for (const match of source.matchAll(/^import\s+['"](\.[^'"]+\.mjs)['"];?$/gm))
+        visit(new URL(match[1], url));
+    };
+    for (const path of roots) visit(new URL(`../${path}`, import.meta.url));
+    return tests;
+  };
+  const macTests = graph(macRoots);
+  const linuxTests = graph(focusedCommand.split(' ').filter((path) => path.endsWith('.mjs')));
+  const provenance = new URL('./hosted-artifact-provenance.test.mjs', import.meta.url).href;
+  assert.ok(
+    linuxTests.has(new URL('./test-hosted-acceptance-lanes.mjs', import.meta.url).href),
+    'portable acceptance corpus absent from Linux',
+  );
+  assert.ok(
+    macTests.has(provenance) && linuxTests.has(provenance),
+    'actual-host provenance coverage absent',
+  );
+  const duplicatePortable = [...macTests].filter(
+    (path) => linuxTests.has(path) && path !== provenance,
+  );
+  assert.deepEqual(
+    duplicatePortable,
+    [],
+    'portable acceptance repeated inside bounded Mac resource job',
+  );
+}
+
+test('CI runner census keeps portable acceptance on Linux and host boundaries on macOS', () => {
+  const workflow = readFileSync(new URL('../.github/workflows/ci.yml', import.meta.url), 'utf8');
+  const focused = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'))
+    .scripts['test:focused-acceptance'];
+  assertHostedLaneOwnership(workflow, focused);
+  assert.throws(
+    () =>
+      assertHostedLaneOwnership(
+        workflow.replace(
+          'run: node --test scripts/hosted-artifact-provenance.test.mjs',
+          'run: node --test scripts/hosted-artifact-provenance.test.mjs scripts/test-hosted-acceptance-lanes.mjs',
+        ),
+        focused,
+      ),
+    /portable acceptance repeated/,
+  );
+  assert.throws(
+    () =>
+      assertHostedLaneOwnership(
+        workflow.replace('run: pnpm test:focused-acceptance', 'run: true'),
+        focused,
+      ),
+    /pnpm test:focused-acceptance/,
+  );
+  for (const path of [
+    'scripts/test-stabilization-resource-safety-integration.mjs',
+    'scripts/test-stabilization-resource-disk-integration.mjs',
+    'scripts/test-stabilization-resource-journal.mjs',
+    'scripts/test-stabilization-resource-cpu-integration.mjs',
+    'scripts/hosted-artifact-provenance.test.mjs',
+  ])
+    assert.throws(
+      () =>
+        assertHostedLaneOwnership(
+          workflow.replace(`run: node --test ${path}`, 'run: true'),
+          focused,
+        ),
+      /missing host boundary|actual-host provenance coverage absent/,
+    );
 });
 
 test('documentation validator rejects malformed changed JSON', () =>
