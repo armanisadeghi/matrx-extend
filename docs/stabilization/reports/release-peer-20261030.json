@@ -1,0 +1,95 @@
+{
+  "task": "release_capacity_peer_0202",
+  "at": "2026-10-30T02:39:32.457143+00:00",
+  "status": "DONE_BOUNDED_RELEASE_CAPACITY_PRIVACY_REVIEW",
+  "scope": "Fresh retained-evidence/source/privacy review only. No live GUI, tests, credentials, dispatch, mutation, native replay or cleanup action by reviewer.",
+  "A": {
+    "verdict": "PASS_BOUNDED_OBSERVATIONS_WITH_PRIVATE_STORE_AND_GUEST_UNKNOWN",
+    "evidence": [
+      "Both full Store AX originals retain exact primary installed ID,0.2.577,enabled,Pin on and Chrome Web Store source. Inspected PNG corroborates installed577/ID/owner window but lower source/pin controls are AX evidence. Exact publisher account appears in private profile original before later auth actions.",
+      "Private official Gmail query/message originals match recorded bytes and hashes; exact account, official sender/subject, primary item ID,0.2.577 and Public text independently present. One query result is bounded evidence of the October23 publication, not present pending/reviewer status.",
+      "After-groom checkpoint records no authenticated dashboard observation and no Guest profile/Chat sends. Last authenticated October28 Published577/public and Draft577/unpublished remain historical bounds.",
+      "One masked saved-password submission, an empty-field validation, one later nonempty code flow, read-only recovery-link inspection/closure and six-hour notice are retained operator/call-trace observations. Code flow advancement is not independent factor-validation proof; no mandatory new-password stage or exhausted human-only2FA is established.",
+      "Anonymous API body is102bytes with exact keys git_sha,built_at,branch and hash ecaae59af9163e05c260a1f53e0841a83d1e4546ea8e95016c857d0a472bea19; advertised49f36ff3796951850cea00826f04090918931379/built01:08:00Z matches receipt. No Store override/per-stream/current guest inference."
+    ],
+    "limits": [
+      "Recovery excerpt is declared derived/operator-observed; raw auth/code/recovery URL originals were intentionally not retained, so reviewer does not independently replay or certify those screens.",
+      "Mailbox result absence never proves pending status. No upload, submission, baseline, grant, reset or rotation claimed.",
+      "Clipboard/tabs/CUA reset and no credential entry on recovery link rely partly on original operator provenance; no independent current UI/process/clipboard probe. Empty-session\u2192empty-text is not identical format-set restoration."
+    ]
+  },
+  "B": {
+    "verdict": "PASS_SCOPED_RESOURCE_SOURCE_PROVENANCE_PRIVACY_WITH_CLEANUP_LIMIT",
+    "evidence": [
+      "All nine receipt original byte counts and hashes independently match.98 trace entries,97 monotonic exact intervals and group-count sum98/max4 verified. First getApp lacks exact times;72native/26browser split and group/journal-before-each assertions remain operator classifications, not a complete retained low-level execution trace.",
+      "First3-record journal independently matches DISK_LOW18.28934097290039GiB/admittedfalse/exit2/refused. Its29-read watch ends holderfalse/admittedfalse with maxgap2.011207s. It is not retroactively valid.",
+      "Canonical temp--apply command receipt and raw-log hash match. No cleaner active beforehand is recorded. Helper report says temp freed11.4GB; observed profile statvfs18.301177978515625\u219226.241649627685547GiB is separate evidence, not proof that11.4GB physical internal capacity was reclaimed.",
+      "Inspected canonical helper source uses exclusive temp-sweep flock, open-path lsof fail-closed handling, active socket/pipe checks, age recheck, protected/primary checkout and unsaved-temp-clone safeguards. Log categories show stale temp and orphaned code-sign clones; no dev-caches,Docker,worktree or browser-user-profile cleanup invoked. No schedule/guard threshold/profile-path/build change is evidenced.",
+      "Second74-record journal independently matches admission02:13:49.088, healthy samples/no unsafe events, UI ended02:31:54.855 before normal SIGINT02:32:26.500 and finalvalid0 at02:32:26.512.582-read independent watch maxgap2.010956s ends holderfalse; no bypass or joined-attempt acceptance.",
+      "Three trace failures are two stale accessibility elements and empty clipboard-item validation. Supported empty-text restoration and documented preserving native paste are retained; no genuine browser safety refusal was bypassed in this evidence.",
+      "Approved six publication candidates inspected for auth URL/token/value leakage; Store PNG shows only existing Vault tab title, no Vault content. Full mail DOM/profile popup/groom log stay private."
+    ],
+    "limits": [
+      "The cleanup helper overall exit0 is not all-candidate cleanup success:20 raw-log FAIL entries are PermissionError(Operation not permitted). Capacity recovery and fresh admission still pass; do not claim every candidate deleted, scheduled/unattended cleanup repaired, or a permission bypass.",
+      "No per-delete independent filesystem preimage audit; source/log review supports bounded approved-helper scope, not proof about every historical path.",
+      "No exact first API timing or full call-method/group-boundary/journal chronology certification. No independent OS clipboard all-format restoration or live process/fixture cleanup replay."
+    ]
+  },
+  "resource": {
+    "first": {
+      "journal_sha256": "4c0cdfcdf8b5a053722f22c4d90fee4e8a7f99c3fbfc3945facd0b379c33e337",
+      "watch_sha256": "950025773407d14d75662be82876d44e8a1a8f09b658901b206ca0a92c0bcea8",
+      "watch_reads": 29,
+      "max_gap_seconds": 2.011207,
+      "admitted": false,
+      "exit": 2,
+      "decision": "refused",
+      "final_holder_alive": false
+    },
+    "after_groom": {
+      "journal_sha256": "ab54ea3dad5dca1930b7bf67e97b6b0e30e1c45e11b33fe8cb4c4400ccf38373",
+      "watch_sha256": "ec5117e93e27fba18aef2d5e9919445f0662be76983a462b7f1cd6fe655b6216",
+      "watch_reads": 582,
+      "max_gap_seconds": 2.010956,
+      "admitted": true,
+      "resource_invalid": false,
+      "exit": 0,
+      "decision": "valid",
+      "final_holder_alive": false
+    },
+    "cleanup_permission_failures": 20,
+    "cleanup_failure_category": "PermissionError(Operation not permitted)",
+    "groom_log_sha256": "ebf17739e5bca8d8c69d277168a52f70c893b8ae42665c3a08dcb47a795e190e"
+  },
+  "privacy": {
+    "approved_originals": [
+      "owner-store.original.ax.txt",
+      "owner-store-restored.original.ax.txt",
+      "owner-store-restored.original.png",
+      "api-calls.private.json",
+      "official-mail-excerpt.json",
+      "recovery-notice-excerpt.json"
+    ],
+    "private_only": [
+      "owner-profile.private.ax.txt",
+      "official-mail-query.private.dom.txt",
+      "official-mail-message.private.dom.txt",
+      "groom-temp.log",
+      "server-before.headers"
+    ],
+    "approved_api_body": "release/server-before.body only; exact anonymous JSON body may be losslessly encoded with SHA/byte count",
+    "derived_items": ["official-mail-excerpt.json", "recovery-notice-excerpt.json"],
+    "exclude": "Auth URL/token/code/password/Vault contents and full publisher mail/profile captures."
+  },
+  "findings": [
+    {
+      "severity": "minor_provenance_limit",
+      "item": "20 per-entry permission failures during successful partial cleanup",
+      "required_record": "Retain aggregate count/category in capacity summary; no all-candidates or unattended-cleaner success claim. No raw paths and no bypass."
+    }
+  ],
+  "owned_processes": [],
+  "owned_cleanup_obligations": [],
+  "commits": [],
+  "next_action": "Parent may publish only approved safe originals with exact payload/normalized-view declarations; retain partial cleanup and operator-attestation limits. Private Store state and current-server guest flow remain unverified; do not blindly restart recovery or rotate credentials."
+}

@@ -1,0 +1,17 @@
+{
+  "observed_at": "2026-10-30T02:31:21Z approximateoperatorclock;exactcallsretained",
+  "account": "arman@armansadeghi.com",
+  "account_proof": "ExactGoogleAccountlabelinsettledqueryDOM",
+  "query": "from:chromewebstore-noreply@google.com \"Matrx Extend\" after:2026/10/22",
+  "visible_result_rows": 1,
+  "subject": "Chrome Web Store: Item successfully published",
+  "sender": "chromewebstore-noreply@google.com",
+  "rendered_date": "Fri, Oct23,2026,8:01PM; timezoneunverified",
+  "version": "0.2.577",
+  "visibility": "Public",
+  "item_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+  "item_id_proof": "ExactunbrokenprimaryIDinpreservedofficialpublic-itemlink;displaytextwraps",
+  "raw_query_sha256": "64cbc76963008ca62df2dd5f0796814fd5b7aa69ddb5f4be2f313486109c6435",
+  "raw_message_sha256": "6229b6a51b8b15c9219d1e16dc0e910c7848689c181d3d140dc05c4ee2af75b6",
+  "scope": "SelectedsafeexcerptfromexistingauthenticatedpublisherGmail. One boundedquery only; no recentabsence/pendingstate/revieweraction inference. FullmailDOM staysprivate."
+}

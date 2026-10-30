@@ -1,0 +1,211 @@
+{
+  "schema": 1,
+  "originals": [
+    {
+      "name": "server-after.json",
+      "original_sha256": "5e9f772b128c6c9af44431f3feb93e81794caca93659ade2f6c984cd7fabe6cf",
+      "original_bytes": 367,
+      "published": "docs/stabilization/evidence/guest-store-20261030/server-after.json",
+      "transformation": "Semantic readable JSON; exact original bytes in lossless payload.",
+      "published_sha256": "5e9f772b128c6c9af44431f3feb93e81794caca93659ade2f6c984cd7fabe6cf",
+      "raw_payload_file": "docs/stabilization/evidence/guest-store-20261030/original-payloads.json"
+    },
+    {
+      "name": "demo.original.ax.txt",
+      "original_sha256": "74ff4775d614d5131bfbe519709edfddaeb0dc024122add2a77fed736348de49",
+      "original_bytes": 5007,
+      "published": "docs/stabilization/evidence/guest-store-20261030/demo.original.ax.txt",
+      "transformation": "Strip line-end whitespace and normalize one final newline; exact original bytes in lossless payload.",
+      "published_sha256": "6b14d031ac9a858e1090fbb01018af9700101ed3ac47be78b075c84f9c0304f6",
+      "raw_payload_file": "docs/stabilization/evidence/guest-store-20261030/original-payloads.json",
+      "capture_shape": "raw AX diff"
+    },
+    {
+      "name": "first-current.original.png",
+      "original_sha256": "6cb2d84183b4258520bee08646e325ea5f8ac690a36fe6e3128c5ba1954a597e",
+      "original_bytes": 255978,
+      "published": "docs/stabilization/evidence/guest-store-20261030/first-current.original.png",
+      "transformation": "none; exact original PNG"
+    },
+    {
+      "name": "owner-store-restored.original.ax.txt",
+      "original_sha256": "361832ddba4a2eba0bacf532887a8af0feb2b2b342bdf992b2f034ca13364fc9",
+      "original_bytes": 6036,
+      "published": "docs/stabilization/evidence/guest-store-20261030/owner-store-restored.original.ax.txt",
+      "transformation": "Strip line-end whitespace and normalize one final newline; exact original bytes in lossless payload.",
+      "published_sha256": "5ef43fec71fc62fb42e4d32fb1747675d8cdfce460b3b07cb71a4fe4f35e7955",
+      "raw_payload_file": "docs/stabilization/evidence/guest-store-20261030/original-payloads.json",
+      "capture_shape": "As recorded in original receipt; some captures are AX diffs, decisive first/both terminal full AX also retained."
+    },
+    {
+      "name": "second-terminal.original.png",
+      "original_sha256": "dad5b06b9ce046bf749a4b006c3243d1f07c1ebf48cfe23be7bff9ea00dc9410",
+      "original_bytes": 257951,
+      "published": "docs/stabilization/evidence/guest-store-20261030/second-terminal.original.png",
+      "transformation": "none; exact original PNG"
+    },
+    {
+      "name": "first-after-send.original.ax.txt",
+      "original_sha256": "eb0cc1e39d8dc71427d9c7830318826e94d2145d5f01348a7c043b6b4e5c6665",
+      "original_bytes": 7432,
+      "published": "docs/stabilization/evidence/guest-store-20261030/first-after-send.original.ax.txt",
+      "transformation": "Strip line-end whitespace and normalize one final newline; exact original bytes in lossless payload.",
+      "published_sha256": "c438cf6adb576301953c25dfde03f28e9ceef1dd4ca0f7f332a99fbcf09741fa",
+      "raw_payload_file": "docs/stabilization/evidence/guest-store-20261030/original-payloads.json",
+      "capture_shape": "As recorded in original receipt; some captures are AX diffs, decisive first/both terminal full AX also retained."
+    },
+    {
+      "name": "server-before.json",
+      "original_sha256": "5311d8c110c8269776d8b066798d0856f4634f9400f7bc57f188151d5b20ca41",
+      "original_bytes": 367,
+      "published": "docs/stabilization/evidence/guest-store-20261030/server-before.json",
+      "transformation": "Semantic readable JSON; exact original bytes in lossless payload.",
+      "published_sha256": "5311d8c110c8269776d8b066798d0856f4634f9400f7bc57f188151d5b20ca41",
+      "raw_payload_file": "docs/stabilization/evidence/guest-store-20261030/original-payloads.json"
+    },
+    {
+      "name": "guest-account.original.ax.txt",
+      "original_sha256": "838f6550baec72dfa821a494ff4caa37e470246ccb2a5297d917069091538a49",
+      "original_bytes": 1660,
+      "published": "docs/stabilization/evidence/guest-store-20261030/guest-account.original.ax.txt",
+      "transformation": "Strip line-end whitespace and normalize one final newline; exact original bytes in lossless payload.",
+      "published_sha256": "d661390bdcddfa477e04b5c44bf9c1ed04dd72618750c1a7873de46454596464",
+      "raw_payload_file": "docs/stabilization/evidence/guest-store-20261030/original-payloads.json",
+      "capture_shape": "raw AX diff showing explicitGuest; chain context in full panel capture"
+    },
+    {
+      "name": "first-current.original.ax.txt",
+      "original_sha256": "89660de0a774b5df3d391786563f3e13387f130da8194730053e1298c17ab7df",
+      "original_bytes": 8479,
+      "published": "docs/stabilization/evidence/guest-store-20261030/first-current.original.ax.txt",
+      "transformation": "Strip line-end whitespace and normalize one final newline; exact original bytes in lossless payload.",
+      "published_sha256": "bdf011cc230627c0b63aca5b80b8e4488212e3f95fc0ad014b69cbb252748a5c",
+      "raw_payload_file": "docs/stabilization/evidence/guest-store-20261030/original-payloads.json",
+      "capture_shape": "full"
+    },
+    {
+      "name": "first-progress.original.png",
+      "original_sha256": "c0226a47c58db75b1a55f8d8d67d9a0c0ed5ee627e772818430c221972222ffa",
+      "original_bytes": 238904,
+      "published": "docs/stabilization/evidence/guest-store-20261030/first-progress.original.png",
+      "transformation": "none; exact original PNG"
+    },
+    {
+      "name": "second-current.original.png",
+      "original_sha256": "8a3cb0b18370ac7512f5d4cf6e5bd82d897ba5684f58ef3ab051a34d07d03dba",
+      "original_bytes": 258510,
+      "published": "docs/stabilization/evidence/guest-store-20261030/second-current.original.png",
+      "transformation": "none; exact original PNG"
+    },
+    {
+      "name": "both-terminal.original.png",
+      "original_sha256": "47d9a1088f05f1c3d03a27aed6a3f0f7c7c5167d2e181ff32015829fd94d0739",
+      "original_bytes": 248661,
+      "published": "docs/stabilization/evidence/guest-store-20261030/both-terminal.original.png",
+      "transformation": "none; exact original PNG"
+    },
+    {
+      "name": "first-reply.original.ax.txt",
+      "original_sha256": "22bdad5c07e0e7bac263c9d5b18f1623733360bc2f5ffa3f3c8f8e43f0553264",
+      "original_bytes": 7565,
+      "published": "docs/stabilization/evidence/guest-store-20261030/first-reply.original.ax.txt",
+      "transformation": "Strip line-end whitespace and normalize one final newline; exact original bytes in lossless payload.",
+      "published_sha256": "d9398acb9412ae822ed8646170618b9a92f7ed9216e8473a3af9cad381b82416",
+      "raw_payload_file": "docs/stabilization/evidence/guest-store-20261030/original-payloads.json",
+      "capture_shape": "As recorded in original receipt; some captures are AX diffs, decisive first/both terminal full AX also retained."
+    },
+    {
+      "name": "native-calls.json",
+      "original_sha256": "7f69dddd062e84077af000260e6f48140f40ca11e51db614e503a0d2923ed79e",
+      "original_bytes": 6209,
+      "published": "docs/stabilization/evidence/guest-store-20261030/native-calls.json",
+      "transformation": "Semantic readable JSON; exact original bytes in lossless payload.",
+      "published_sha256": "807e80c51a9152c390a1a534ebbed339182ad83e460399a2fa91f5fbf9fe3582",
+      "raw_payload_file": "docs/stabilization/evidence/guest-store-20261030/original-payloads.json"
+    },
+    {
+      "name": "guest-store-identity.original.ax.txt",
+      "original_sha256": "c2d7903512676751467546ff7614e782d6c574c7f92d50d8a6d981acb53f6da6",
+      "original_bytes": 5942,
+      "published": "docs/stabilization/evidence/guest-store-20261030/guest-store-identity.original.ax.txt",
+      "transformation": "Strip line-end whitespace and normalize one final newline; exact original bytes in lossless payload.",
+      "published_sha256": "015d33443b6206353655819f2619ac9cdc1bdeb29a12a5170ca3efac021b6a3c",
+      "raw_payload_file": "docs/stabilization/evidence/guest-store-20261030/original-payloads.json",
+      "capture_shape": "As recorded in original receipt; some captures are AX diffs, decisive first/both terminal full AX also retained."
+    },
+    {
+      "name": "second-terminal.original.ax.txt",
+      "original_sha256": "0393ab0f36103718ed6f67e944f02c83f9105c1df34c9710214c41d831acce0d",
+      "original_bytes": 9955,
+      "published": "docs/stabilization/evidence/guest-store-20261030/second-terminal.original.ax.txt",
+      "transformation": "Strip line-end whitespace and normalize one final newline; exact original bytes in lossless payload.",
+      "published_sha256": "d72b55d23af2779c2e67a4fc81f817e139ca739f31f9196e93b86e2f2c546237",
+      "raw_payload_file": "docs/stabilization/evidence/guest-store-20261030/original-payloads.json",
+      "capture_shape": "As recorded in original receipt; some captures are AX diffs, decisive first/both terminal full AX also retained."
+    },
+    {
+      "name": "second-after-send.original.ax.txt",
+      "original_sha256": "779afd47c44f2a84e9af2ecdbde0c8143ed18130e4131658de7ec7e58da8d5b8",
+      "original_bytes": 9137,
+      "published": "docs/stabilization/evidence/guest-store-20261030/second-after-send.original.ax.txt",
+      "transformation": "Strip line-end whitespace and normalize one final newline; exact original bytes in lossless payload.",
+      "published_sha256": "7dfc05181808b540e3f5b9726f650ecfd71c86581044408a953c20afca35db7a",
+      "raw_payload_file": "docs/stabilization/evidence/guest-store-20261030/original-payloads.json",
+      "capture_shape": "As recorded in original receipt; some captures are AX diffs, decisive first/both terminal full AX also retained."
+    },
+    {
+      "name": "server-after.body",
+      "original_sha256": "ecaae59af9163e05c260a1f53e0841a83d1e4546ea8e95016c857d0a472bea19",
+      "original_bytes": 102,
+      "published": "docs/stabilization/evidence/guest-store-20261030/server-after.body",
+      "transformation": "Semantic readable JSON; exact original bytes in lossless payload.",
+      "published_sha256": "117b89303916554563e7850b518c8143413b820af7e54bba5a00ec06c6358f7e",
+      "raw_payload_file": "docs/stabilization/evidence/guest-store-20261030/original-payloads.json"
+    },
+    {
+      "name": "guest-panel-before.original.ax.txt",
+      "original_sha256": "8a1da3c63d79fa01471aaf56f16c0bbf26eb44fae5996db1f7838ea3625c8e5d",
+      "original_bytes": 6936,
+      "published": "docs/stabilization/evidence/guest-store-20261030/guest-panel-before.original.ax.txt",
+      "transformation": "Strip line-end whitespace and normalize one final newline; exact original bytes in lossless payload.",
+      "published_sha256": "1bda1c47a187bffd12322899ce1519ea2b1794e8d31e74bb5e91002f1de7f828",
+      "raw_payload_file": "docs/stabilization/evidence/guest-store-20261030/original-payloads.json",
+      "capture_shape": "As recorded in original receipt; some captures are AX diffs, decisive first/both terminal full AX also retained."
+    },
+    {
+      "name": "second-current.original.ax.txt",
+      "original_sha256": "0845f08b40e82431eff1474381ab64d32cb7b3d5e875d79d9f81cb19f834b296",
+      "original_bytes": 9402,
+      "published": "docs/stabilization/evidence/guest-store-20261030/second-current.original.ax.txt",
+      "transformation": "Strip line-end whitespace and normalize one final newline; exact original bytes in lossless payload.",
+      "published_sha256": "9ad29f9df8a74fa9078142a09baa9a062f0bf1fdf419013861a9a377e71e31bf",
+      "raw_payload_file": "docs/stabilization/evidence/guest-store-20261030/original-payloads.json",
+      "capture_shape": "As recorded in original receipt; some captures are AX diffs, decisive first/both terminal full AX also retained."
+    },
+    {
+      "name": "both-terminal.original.ax.txt",
+      "original_sha256": "63acb6824a87617fc766bc11891a0f8212b28c5c66f365ce5e28bd930150ff05",
+      "original_bytes": 9963,
+      "published": "docs/stabilization/evidence/guest-store-20261030/both-terminal.original.ax.txt",
+      "transformation": "Strip line-end whitespace and normalize one final newline; exact original bytes in lossless payload.",
+      "published_sha256": "7392a11d01818d4f24c4cfdb4ec921e35bdec42e4e25799bc70a390ffa88bc88",
+      "raw_payload_file": "docs/stabilization/evidence/guest-store-20261030/original-payloads.json",
+      "capture_shape": "full"
+    },
+    {
+      "name": "server-before.body",
+      "original_sha256": "ecaae59af9163e05c260a1f53e0841a83d1e4546ea8e95016c857d0a472bea19",
+      "original_bytes": 102,
+      "published": "docs/stabilization/evidence/guest-store-20261030/server-before.body",
+      "transformation": "Semantic readable JSON; exact original bytes in lossless payload.",
+      "published_sha256": "117b89303916554563e7850b518c8143413b820af7e54bba5a00ec06c6358f7e",
+      "raw_payload_file": "docs/stabilization/evidence/guest-store-20261030/original-payloads.json"
+    }
+  ],
+  "private_excluded": [
+    "guest-restored.private.ax.txt",
+    "server-before.headers",
+    "server-after.headers"
+  ],
+  "scope": "Only independently approved files; raw auth, headers, profile lists and unrelated browsing state excluded."
+}

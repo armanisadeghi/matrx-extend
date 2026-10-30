@@ -1,0 +1,87 @@
+The following is a diff from the previous accessibility tree for Window: "Matrx Extend Demo Page — AI Matrx" with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+Removed element IDs: 18-114
+~0 standard window Matrx Extend Demo Page — AI Matrx - Google Chrome - Matrx Guest Test, URL: aimatrx.com/matrx-extend-demo, Secondary Actions: Raise
+~	1 container Matrx Extend Demo Page — AI Matrx - Google Chrome - Matrx Guest Test, URL: aimatrx.com/matrx-extend-demo
+~					8 pop up button View site information
+~					9 text field (settable) Address and search bar, Value: aimatrx.com/matrx-extend-demo, Placeholder: Ask Google or type a URL
++					137 button Install AI Matrx
+~					12 pop up button Matrx
+Has access to this site
+~					13 pop up button Matrx Extend DEV
+Has access to this site
++				138 scroll area
++					139 HTML content Matrx Extend Demo Page — AI Matrx, URL: aimatrx.com/matrx-extend-demo
++						140 container
++							141 link AI Matrx home, Value: aimatrx.com/
++							142 link Download, Value: aimatrx.com/download
++							143 link Discover, Value: aimatrx.com/canvas/discover
++							144 link Templates, Value: aimatrx.com/templates
++							145 button Switch to dark theme
++							146 toggle button Show canvas, Value: 0
++							147 button Sign in
++						148 container
++							149 text MATRX EXTEND DEMO
++							150 heading A clear three-stage browser workflow, Value: 1
++								151 text A clear three-stage browser workflow
++							152 text This stable sample page lets anyone try Matrx Extend without signing in. The page contains a real article, useful links, a structured table, and JSON-LD metadata so the extension's page-aware features have predictable material to work with.
++							153 container The three workflow stages
++								154 heading The three workflow stages, Value: 2
++									155 text The three workflow stages
++								156 table
++									157 row
++										158 column header
++											159 text Stage
++										160 column header
++											161 text Purpose
++										162 column header
++											163 text Expected result
++									164 row
++										165 row header
++											166 text Capture
++										167 cell
++											168 text Turn the open page into readable content.
++										169 cell
++											170 text Article text, links, media, metadata, and schema.
++									171 row
++										172 row header
++											173 text Understand
++										174 cell
++											175 text Ask questions about what is actually on the page.
++										176 cell
++											177 text Answers grounded in the current page.
++									178 row
++										179 row header
++											180 text Use
++										181 cell
++											182 text Extract the details needed for the next task.
++										183 cell
++											184 text Structured rows that can be copied or reused.
++							185 container Why page-aware assistance matters
++								186 heading Why page-aware assistance matters, Value: 2
++									187 text Why page-aware assistance matters
++								188 text A browser assistant is most useful when its answer is grounded in the page the user chose. Matrx Extend can capture readable content on demand, inspect page structure, and use that context to answer a direct question. Automatic capture is optional and is off on a fresh installation.
++								189 text The user remains in control: read-only tools can inspect the active page, while the default interaction mode asks before an action changes a page. Privileged actions always require confirmation.
++							190 container Related resources
++								191 heading Related resources, Value: 2
++									192 text Related resources
++								193 content list
++									194 link Matrx Extend privacy policy, Value: aimatrx.com/privacy-policy/extension
++									195 link Contact AI Matrx support, Value: aimatrx.com/contact
++									196 link How AI Matrx works, Value: aimatrx.com/how-it-works
++						197 container
++							198 text ©  2026  AI Matrx · Operated by
++							199 link ALL GREEN ELECTRONICS RECYCLING, LLC, Value: allgreenrecycling.com/
++							200 container Footer
++								201 link Matrx Desktop, Value: aimatrx.com/desktop
++								202 link Matrx Extend, Value: aimatrx.com/extend
++								203 link Download, Value: aimatrx.com/download
++								204 link How It Works, Value: aimatrx.com/how-it-works
++								205 link Why AI Matrx, Value: aimatrx.com/why-ai-matrx
++								206 link How We Prove It, Value: aimatrx.com/how-we-prove-it
++								207 link The Landscape, Value: aimatrx.com/the-landscape
++								208 link Privacy Policy, Value: aimatrx.com/privacy-policy
++								209 link Terms of Service, Value: aimatrx.com/terms-of-service
++								210 link Contact, Value: aimatrx.com/contact
++						211 container Notifications alt+T
+~					120 tab (selected, settable, boolean) Matrx Extend Demo Page — AI Matrx, Value: on
+The focused UI element is 139 HTML content Matrx Extend Demo Page — AI Matrx, URL: aimatrx.com/matrx-extend-demo

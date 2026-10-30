@@ -1,0 +1,37 @@
+The following is a diff from the previous accessibility tree for Window: "Matrx Extend Demo Page — AI Matrx" with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+Removed element IDs: 96-122
++					150 container
++						151 tab group
++							152 tab (selected) Chat, Value: 1
++							153 tab (settable, integer) Scrape, Value: 0
++							154 tab (settable, integer) Data, Value: 0
++							155 tab (settable, integer) SEO, Value: 0
++							156 tab (settable, integer) Settings, Value: 0
++						157 pop up button Site access
++						158 pop up button G, Help: Account
++						159 container Chat
++							160 toggle button Conversations, Value: 0
++							161 button New chat
++							162 container
++								163 heading Evening, Value: 1
++									164 text Evening
++								165 pop up button Files, Help: Attach a Google Doc or Sheet you've shared with AI Matrx
++								166 text entry area (settable) How can I help you today?
++								167 button Chat Options
++								168 container
++									169 toggle button Record audio, Value: 0
++									170 pop up button Choose microphone
++								171 button Live audio, Help: Live audio — talk and hear the answer
++								172 button (disabled) Send message
++								173 pop up button Sources
++								174 button 8 included
++								175 button Agent: Matrx Browser Agent · Claude Sonnet 5.5
++								176 container Loading quick actions
++						177 container
++							178 text G
++							179 text Guest
++							180 text Desktop:
++							181 text Not connected
++							182 button Preferences
++							183 button Sign out
+The focused UI element is 182 button Preferences

@@ -269,6 +269,31 @@
       "advertised_api_sha": "7f9d5c6be42463b235609e337e0118813d05beb8",
       "scope": "Anonymouscurl200APIonly at01:02:25UTC; separateurllib403. No actualStorebackend/perstream/currentguestChat proof.",
       "owned_obligations": 0
+    },
+    "latest_release_resume": {
+      "report": "docs/stabilization/reports/release-resume-20261030.json",
+      "private_dashboard_status": "unverified; another6hnotice after existing-code flow, no reset/rotation/newgrant",
+      "official_mail": "Oct23primary577/Public boundedquery1result; no pendinginference",
+      "public_listing": "cached577updatedOct23, notprivatependingproof",
+      "store_actions": 0
+    },
+    "latest_published_guest_flow": {
+      "report": "docs/stabilization/reports/guest-store-20261030.json",
+      "peer": "docs/stabilization/reports/guest-peer-20261030.json",
+      "actual_installed_version": "0.2.577",
+      "surface": "actual docked Chrome side panel",
+      "identity": "explicit Guest",
+      "UI_sends": 2,
+      "first_and_same_conversation_followup": "correct actual content, streamingStop\u2192settled Send/noStop/noerror",
+      "advertised_api_before_after_sha": "49f36ff3796951850cea00826f04090918931379",
+      "limits": "UIcompletion only; wire/perstream/backendguestauth/providercost/count unknown; no fullreleaseacceptance",
+      "cleanup": "ownedtab/panelclosed; originalGuestNewTab+ownerStoreforeground restored; CUAreset/guardsvalid0/obligations0"
+    },
+    "latest_member_t08": {
+      "run_id": 40989701105,
+      "report": "docs/stabilization/reports/member-t08-40989701105-20261030.json",
+      "peer": "docs/stabilization/reports/member-t08-peer-20261030.json",
+      "scope": "One memberapplicable-statepass; admin/retryexecution/reload/originalfailurebranchunverified; cleanup0"
     }
   }
 }
