@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-30T01:09:06.513525+00:00",
+  "updated_at": "2026-10-30T02:39:16.254674+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -51632,37 +51632,141 @@
               "detail": "Signed-out useAutoExtract returns before starting the automatic extraction path; this does not waive guest Data or access-control checks."
             },
             "member": {
-              "status": "unverified",
-              "run_id": 40596980098,
-              "source_sha": "513d1bb71aa11e66b119df5bdb6d43776527652b",
-              "development_ci_run_id": 40594372373,
-              "development_artifact_id": 12776012647,
-              "build_version": "0.2.630",
+              "status": "pass",
+              "run_id": 40989701105,
+              "source_sha": "00185648a6143bf031cb0cbe0108f88eeabf498e",
+              "workflow_source_sha": "d8215d2163149d6ad6320f41f5fe0054a16f647f",
+              "development_ci_run_id": 40960544186,
+              "development_artifact_id": 12936850820,
+              "result_artifact_id": 12948434226,
+              "build_version": "0.2.631",
               "resource_invalid": false,
-              "acceptance_run_successful": false,
-              "full_case_pass": false,
-              "new_product_credit": false,
-              "failure_stage": "input/panel_context",
-              "error_code": "native_acceptance_error; BROWSER_PANEL_CONTEXT_FAILURE retained log",
-              "supporting_branch": "intentional initial panel wall-budget expiry",
-              "auth_preconditions_verified": false,
-              "not_exercised": [
-                "browser member sign-in/proof",
-                "auth pointer receipt",
-                "original name entry",
-                "automatic extraction states"
+              "acceptance_run_successful": true,
+              "full_case_pass": true,
+              "scope": "One ordinary-member T08 pass for its applicable written expected states, not all roles/wholeData/Store acceptance. Manual action AVAILABILITY is the written member bar; actual retry click and full reload not tested.",
+              "new_product_credit": true,
+              "auth_preconditions_verified": true,
+              "verified_subtargets": {
+                "picker_field_clicks_landed": true,
+                "two_distinct_previews": true,
+                "save_pattern_visible": true,
+                "pattern_name_visible": true,
+                "pattern_write_requests": 1,
+                "pattern_write_status": 201,
+                "saved_row_lookup_verified": true,
+                "request_body_organization_present": true,
+                "request_body_organization_matched_selected": true,
+                "request_header_organization_matched_body": true,
+                "request_header_organization_matched_selected": true,
+                "saved_pattern_refreshed": true
+              },
+              "automatic_states": {
+                "running": "pass",
+                "success": "pass",
+                "no_match": "pass",
+                "error": "pass",
+                "manual_action": "pass",
+                "pattern_reads": [
+                  {
+                    "signed_in": true,
+                    "status": 200
+                  },
+                  {
+                    "signed_in": true,
+                    "status": 200
+                  },
+                  {
+                    "signed_in": true,
+                    "status": 200
+                  },
+                  {
+                    "signed_in": true,
+                    "status": 200
+                  },
+                  {
+                    "signed_in": true,
+                    "status": 200
+                  },
+                  {
+                    "signed_in": true,
+                    "status": 200
+                  },
+                  {
+                    "signed_in": true,
+                    "status": 200
+                  },
+                  {
+                    "signed_in": true,
+                    "status": 200
+                  },
+                  {
+                    "signed_in": true,
+                    "status": 200
+                  },
+                  {
+                    "signed_in": true,
+                    "status": 200
+                  },
+                  {
+                    "signed_in": true,
+                    "status": 200
+                  },
+                  {
+                    "signed_in": true,
+                    "status": 200
+                  },
+                  {
+                    "signed_in": true,
+                    "status": 200
+                  },
+                  {
+                    "signed_in": true,
+                    "status": 200
+                  }
+                ],
+                "original_root_read_verified": true,
+                "invalid_root_write_verified": true,
+                "original_root_restored": true
+              },
+              "name_diagnostic_scope": "Focus false beforeclick→true afterclick; afterinsert50/50matching. Documentoriginunchanged; inputreplacementexplicitlyunknown. Original failure reporting path not exercised.",
+              "normal_verifier_valid": true,
+              "native_owned_pattern_cleanup": {
+                "verified": true,
+                "deleted_rows": 1,
+                "exact_owned_name_organization_lookup": true,
+                "active_rows_after_delete": 0
+              },
+              "fixture_secret_cleanup": {
+                "at": "2026-10-30T02:14:52.163895+00:00",
+                "status": "TERMINAL_CLEANUP_VERIFIED",
+                "run_id": 40989701105,
+                "attempt": 1,
+                "official_status": "completed",
+                "official_conclusion": "success",
+                "owned_secret_absent_complete_paginated_inventory": true,
+                "fixture_original_archive_restored_and_separate_readback": true,
+                "local_auth_files_absent": true,
+                "obligations_remaining": 0
+              },
+              "fixture_control": "Owned invalid selector deliberately written/read back and original restored/read back; no natural database/provider failure.",
+              "unverified": [
+                "Admin role",
+                "Actual manual retry execution",
+                "Full extension reload/D303",
+                "Original D301 failed-input report path",
+                "D300 interruption evidence",
+                "Guest Data access controls and whole Data/Store acceptance"
               ],
               "evidence": [
-                "docs/stabilization/reports/member-513-report-20261027.json",
-                "docs/stabilization/reports/member-513-panel-diagnosis-20261027.json"
-              ],
-              "scope": "Last retained exact context rejected after shared15s wall setup deadline. FollowUp reused original sample, not fresh worker read; later frame/renderer exact/ready diagnostics are not acceptance. ThreeCPU_PENDING/oneRECOVERED48.211s span overlaps failure but physical causal explanation unproven. Normal verifier correctly refuses failed run. Actor exactnewrun rows0/archive restored/readback and secret/authfiles absent; independent retained-byte/script/instant checks, not independent live DB cleanup or remote deletion. No native retry/timeout/timeexclusion/newcapture or productcause/closure."
+                "docs/stabilization/reports/member-t08-40989701105-20261030.json",
+                "docs/stabilization/reports/member-t08-peer-20261030.json"
+              ]
             },
             "admin": {
               "status": "unverified"
             }
           },
-          "verification_status": "member-unverified-current-513; frozen0.2.493 pass retained; guest-not-applicable; admin-unverified; feature-incomplete",
+          "verification_status": "member-pass-once-001856-current-applicable-states; guest-not-applicable; admin-unverified; feature-incomplete",
           "previous_results": [
             {
               "mode": "member",
@@ -51765,6 +51869,36 @@
               },
               "superseded_at": "2026-10-27T22:55:44.753564+00:00",
               "reason": "New513 attempt stopped earlier at initial panel setup wall-budget deadline; originalf670 authpointer and1038 nameentry observations remain retained."
+            },
+            {
+              "mode": "member",
+              "result": {
+                "status": "unverified",
+                "run_id": 40596980098,
+                "source_sha": "513d1bb71aa11e66b119df5bdb6d43776527652b",
+                "development_ci_run_id": 40594372373,
+                "development_artifact_id": 12776012647,
+                "build_version": "0.2.630",
+                "resource_invalid": false,
+                "acceptance_run_successful": false,
+                "full_case_pass": false,
+                "new_product_credit": false,
+                "failure_stage": "input/panel_context",
+                "error_code": "native_acceptance_error; BROWSER_PANEL_CONTEXT_FAILURE retained log",
+                "supporting_branch": "intentional initial panel wall-budget expiry",
+                "auth_preconditions_verified": false,
+                "not_exercised": [
+                  "browser member sign-in/proof",
+                  "auth pointer receipt",
+                  "original name entry",
+                  "automatic extraction states"
+                ],
+                "evidence": [
+                  "docs/stabilization/reports/member-513-report-20261027.json",
+                  "docs/stabilization/reports/member-513-panel-diagnosis-20261027.json"
+                ],
+                "scope": "Last retained exact context rejected after shared15s wall setup deadline. FollowUp reused original sample, not fresh worker read; later frame/renderer exact/ready diagnostics are not acceptance. ThreeCPU_PENDING/oneRECOVERED48.211s span overlaps failure but physical causal explanation unproven. Normal verifier correctly refuses failed run. Actor exactnewrun rows0/archive restored/readback and secret/authfiles absent; independent retained-byte/script/instant checks, not independent live DB cleanup or remote deletion. No native retry/timeout/timeexclusion/newcapture or productcause/closure."
+              }
             }
           ],
           "attempt_history": [

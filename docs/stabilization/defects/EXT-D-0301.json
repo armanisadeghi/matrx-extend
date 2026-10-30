@@ -19,7 +19,7 @@
     "Independent source review confirms waitFor already attaches diagnostic/category while outer safe failure reporting discards these fields."
   ],
   "expected": "Best-effort read-only before/after/last-wait observations for the owned Pattern name input remain safely available; primary error, input event order and cleanup stay unchanged.",
-  "actual": "DataT08 automatic states untested; product vs driver cause unknown. Picker setup observations and confirmed member context retained; exact fixture cleanup and zero owned patterns verified.",
+  "actual": "Original failed-input run omitted available focus/wait diagnostics. Later001856 memberT08 pass retains before/after focus,50/50 matching insertion and all automatic expected states, but the original failing-report branch remains unexercised; no closure or app-cause inference.",
   "cause": "Known acceptance reporting omission, not proven UI or React input defect.",
   "evidence": [
     "docs/stabilization/reports/member-data-1038-failure-diagnosis-20261027.json",
@@ -74,5 +74,14 @@
     "verification": "docs/stabilization/reports/auth-pointer-capture-fix-20261027.json",
     "independent_review": "docs/stabilization/reports/auth-pointer-final-peer-20261027.json",
     "gate_audit": "docs/stabilization/reports/auth-pointer-gate-audit-20261027.json"
+  },
+  "latest_current_native_success": {
+    "run_id": 40989701105,
+    "source_sha": "00185648a6143bf031cb0cbe0108f88eeabf498e",
+    "evidence": [
+      "docs/stabilization/reports/member-t08-40989701105-20261030.json",
+      "docs/stabilization/reports/member-t08-peer-20261030.json"
+    ],
+    "scope": "One successful member flow with diagnostics; original failure capture remains unverified, no state transition."
   }
 }
