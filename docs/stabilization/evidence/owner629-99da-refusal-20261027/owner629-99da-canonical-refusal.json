@@ -1,6 +1,0 @@
-{
-  "at": "2026-10-27T04:29:36.558Z",
-  "allowed": false,
-  "errorCode": "ci_dev_runtime_source_changed",
-  "scope": "Canonical promotion sourceEligibility precheck; no import or promotion attempted"
-}

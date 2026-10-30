@@ -22,12 +22,12 @@ If you only read three sentences:
 
 Three sources of truth, in priority order:
 
-1. **[`.research/page-kinds-roadmap.md`](../.research/page-kinds-roadmap.md)** —
+1. **[`docs/page-kinds-roadmap.md`](./page-kinds-roadmap.md)** —
    the canonical catalog. Items marked 🔨 (quick win), 📋 (planned), or
    🔮 (future). Pick from there. Snapshot at top tells you what's already
    ✅. The roadmap is also a reasoning surface — open it, write down a new
    page kind, propose it for the next sprint.
-2. **[`.research/2026-04-30-browser-agent-frontier.md`](../.research/2026-04-30-browser-agent-frontier.md)** —
+2. **[`docs/2026-04-30-browser-agent-frontier.md`](./2026-04-30-browser-agent-frontier.md)** —
    competitive intelligence and capability gaps. Shows what other harnesses
    surface that we don't.
 3. **The chat itself** — when an agent struggles ("I had to call read_page
@@ -158,7 +158,7 @@ For dynamic keys, write one sentence on what triggers attachment.
 
 ### Step 6 — Update the roadmap
 
-In [`.research/page-kinds-roadmap.md`](../.research/page-kinds-roadmap.md):
+In [`docs/page-kinds-roadmap.md`](./page-kinds-roadmap.md):
 
 - Find the matching entry (or add one if your kind isn't listed).
 - Flip the status from 📋/🔨/🔮 to ✅.

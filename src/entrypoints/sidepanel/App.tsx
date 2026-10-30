@@ -312,7 +312,7 @@ export function App() {
 
   // Once-per-mount identity log. Surfaces the runtime extension id +
   // redirect URI in the debug log so any ID drift is visible BEFORE the
-  // user clicks Sign in. See .research/v0.1.4-auth-incident.md for why.
+  // user clicks Sign in. See docs/v0.1.4-auth-incident.md for why.
   useEffect(() => {
     void import('@/lib/auth/identity').then(({ logExtensionIdentityOnce }) => {
       logExtensionIdentityOnce();

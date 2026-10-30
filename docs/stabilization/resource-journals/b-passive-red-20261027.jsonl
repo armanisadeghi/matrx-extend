@@ -1,3 +1,0 @@
-{"schema":1,"at":"2026-10-27T04:35:46.789Z","runId":"b-passive-red-20261027","code":"RESOURCE_JOURNAL_OPENED"}
-{"schema":1,"at":"2026-10-27T04:35:46.801Z","runId":"b-passive-red-20261027","code":"RESOURCE_COMMAND_NOT_ALLOWED:see docs/stabilization/resource-policy.json"}
-{"schema":1,"at":"2026-10-27T04:35:46.808Z","runId":"b-passive-red-20261027","admitted":false,"resourceInvalid":false,"exitCode":2,"decision":"refused","code":"RESOURCE_FINAL_DECISION"}

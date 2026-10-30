@@ -6,6 +6,7 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { EXTEND_GITHUB_REPO, TAG_PREFIX } from './app-layout.mjs';
 import { sanitizeHostedResourceJournal } from './copy-hosted-resource-journal.mjs';
 import { isSuccessfulDevelopmentCiRun } from './development-ci-event.mjs';
 import {
@@ -18,7 +19,7 @@ import {
   requirePublishedStoreCrxTarget,
 } from './published-store-crx-target.mjs';
 
-const OWNER = 'armanisadeghi/matrx-extend';
+const OWNER = EXTEND_GITHUB_REPO; // standalone armanisadeghi/matrx-extend, nested aidream
 const PHASES = ['hosted-package', 'hosted-browser', 'hosted-guest'];
 const DISPATCH_REQUESTER = 'extend-stabilization';
 // Reviewed bytes of this narrow lane's active hosted workflow. Any workflow edit needs review.
@@ -373,7 +374,7 @@ async function guestChatCli(mode, args) {
       }),
     );
     if (!/^\d+\.\d+\.\d+$/.test(receipt.version ?? '')) refuse('HOSTED_CHAT_VERSION_INVALID');
-    const tagRef = `refs/tags/v${receipt.version}`;
+    const tagRef = `refs/tags/${TAG_PREFIX}v${receipt.version}`;
     const tags = git(['ls-remote', 'origin', tagRef, `${tagRef}^{}`])
       .split('\n')
       .map((line) => line.split('\t'));

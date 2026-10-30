@@ -7,12 +7,13 @@ import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { EXTEND_GITHUB_REPO, TAG_PREFIX } from './app-layout.mjs';
 import { isRuntimeEquivalentDocumentationPath } from './development-source-compatibility.mjs';
 import {
   requireSynchronizedDispatchSource,
   verifyHostedWorkflowCheckout,
 } from './hosted-remote-admission.mjs';
-const OWNER = 'armanisadeghi/matrx-extend';
+const OWNER = EXTEND_GITHUB_REPO; // standalone armanisadeghi/matrx-extend, nested aidream
 const SHA = /^[a-f0-9]{40}$/;
 const HASH = /^[a-f0-9]{64}$/;
 const decimal = /^[1-9][0-9]*$/;
@@ -481,7 +482,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
       }),
     );
     assert.match(receipt.version ?? '', /^\d+\.\d+\.\d+$/, 'release_member_version_invalid');
-    const tagRef = `refs/tags/v${receipt.version}`;
+    const tagRef = `refs/tags/${TAG_PREFIX}v${receipt.version}`;
     const remoteTags = git(['ls-remote', 'origin', tagRef, `${tagRef}^{}`])
       .split('\n')
       .map((line) => line.split('\t'));

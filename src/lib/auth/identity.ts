@@ -11,7 +11,7 @@
  * extension ID and callback. The resulting authorization error had no
  * on-device signal pointing at the identity mismatch. This log fixes that.
  *
- * See `.research/v0.1.4-auth-incident.md` for the full incident write-up.
+ * See `docs/v0.1.4-auth-incident.md` for the full incident write-up.
  */
 
 import { ENV } from '@/config/env';

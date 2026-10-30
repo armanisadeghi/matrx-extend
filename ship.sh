@@ -30,6 +30,20 @@ fi
 DRY_RUN=false
 for arg in "$@"; do [[ "$arg" == "--dry-run" ]] && DRY_RUN=true; done
 
+# NESTED IN THE AIDREAM MONOREPO (apps/matrx-extend): ONE sync owns the shared checkout, the host
+# repository's scripts/sync-main.py (this app's sync refuses its sweep/merge there), and its conflicts are
+# listed by the host's check. Standalone the toplevel IS this folder and nothing changes.
+# shellcheck source=scripts/app-git.sh
+source "$ROOT/scripts/app-git.sh" || exit 1
+app_git_layout "$ROOT" || exit 1
+SYNC_TOOL="$ROOT/scripts/sync-main.py"
+CONFLICT_CHECK="$ROOT/scripts/check-conflict-markers.py"
+if app_is_nested; then
+    [[ -f "$GIT_TOP/scripts/sync-main.py" ]] && SYNC_TOOL="$GIT_TOP/scripts/sync-main.py"
+    [[ -f "$GIT_TOP/scripts/check-conflict-markers.py" ]] && CONFLICT_CHECK="$GIT_TOP/scripts/check-conflict-markers.py"
+    echo "ship.sh: nested in $GIT_TOP (${APP_PREFIX%/}) — syncing with $SYNC_TOOL; tags are ${TAG_PREFIX}v*."
+fi
+
 RELEASE=""
 for candidate in "$ROOT/scripts/release.sh" "$ROOT/release.sh"; do
     [[ -x "$candidate" || -f "$candidate" ]] && { RELEASE="$candidate"; break; }
@@ -46,8 +60,12 @@ fi
 if $DRY_RUN; then
     echo "ship.sh: --dry-run, so the sync was skipped (it commits and pushes for real)."
     SYNC_RC=0
+elif [[ "${MATRX_SHIP_SKIP_SYNC:-}" == "1" ]]; then
+    # ship-all already ran the host checkout's sync this round; it covers this app.
+    echo "ship.sh: MATRX_SHIP_SKIP_SYNC=1 — the host checkout's sync covers this app; releasing now."
+    SYNC_RC=0
 else
-    python3 "$ROOT/scripts/sync-main.py"
+    python3 "$SYNC_TOOL"
     SYNC_RC=$?
     if [[ $SYNC_RC -ne 0 ]]; then
         echo ""
@@ -69,7 +87,7 @@ fi
 # ── 3. open items ────────────────────────────────────────────────────────────
 echo ""
 if ! $DRY_RUN; then
-    if python3 "$ROOT/scripts/check-conflict-markers.py" >/tmp/ship-conflicts.$$ 2>&1; then
+    if python3 "$CONFLICT_CHECK" >/tmp/ship-conflicts.$$ 2>&1; then
         echo "ship.sh: nothing open in _conflicts/."
     else
         echo "ship.sh: open items in _conflicts/README.md:"

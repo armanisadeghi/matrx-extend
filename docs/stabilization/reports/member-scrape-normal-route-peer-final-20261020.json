@@ -1,8 +1,0 @@
-{
-  "source_receipt": "/tmp/member-scrape-normal-route-peer-final-20261020.json",
-  "status": "DONE",
-  "verdict_A": "PASS_SOURCE_BOUNDED",
-  "verdict_B": "PASS_BOUNDED",
-  "finding": "Focused test now invokes the real CLI verifier with a ZIP containing the named Scrape report and all three journals; checks valid certificate, failed-cleanup refusal, and wrong report-name refusal. Independent focused run passed 3/3.",
-  "limits": "No fresh exact-source CI artifact or live hosted member run. Synthetic receipts establish route and gate wiring only; production route/native driver alignment and product acceptance remain unverified."
-}

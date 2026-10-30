@@ -5,6 +5,7 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'nod
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { test } from 'node:test';
+import { EXTEND_GITHUB_REPO } from './app-layout.mjs';
 import {
   admitReleaseMember,
   releaseMemberPlan,
@@ -289,8 +290,8 @@ test('spaced workflow requester retains exact release provenance', () => {
     id: 39300233770,
     name: 'Hosted release (by release555_eligibility exact-candidate558)',
     head_sha: 'a326df07524ec2feba5e2104bf7405c93c4825a6',
-    repository: { id: 1225111202, full_name: 'armanisadeghi/matrx-extend' },
-    head_repository: { id: 1225111202, full_name: 'armanisadeghi/matrx-extend' },
+    repository: { id: 1225111202, full_name: EXTEND_GITHUB_REPO },
+    head_repository: { id: 1225111202, full_name: EXTEND_GITHUB_REPO },
   };
   const candidateArtifact = {
     ...artifact,

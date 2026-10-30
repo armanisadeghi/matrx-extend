@@ -1,4 +1,0 @@
-Window: "New Tab", App: Google Chrome.
-0 standard window New Tab - Google Chrome - Matrx Guest Test, URL: chrome://newtab/, Secondary Actions: Raise
-					69 tab (selected, settable, boolean) New Tab - Memory usage - 81.2 MB, Value: on
-The focused UI element is 9 text field (settable) Address and search bar, Placeholder: Press tab then enter to ask AI Mode. Press up or down arrow for auto completions. Type to autocomplete..

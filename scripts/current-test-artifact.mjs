@@ -8,6 +8,7 @@ import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { pipeline } from 'node:stream/promises';
 import { fileURLToPath } from 'node:url';
+import { EXTEND_GITHUB_REPO } from './app-layout.mjs';
 import { assertDevEmittedTitle } from './check-dev-emitted-title.mjs';
 import { isSuccessfulDevelopmentCiRun } from './development-ci-event.mjs';
 import {
@@ -18,7 +19,7 @@ import {
 import { hashReleaseTree } from './sync-unpacked-release.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const OWNER = 'armanisadeghi/matrx-extend';
+const OWNER = EXTEND_GITHUB_REPO; // standalone armanisadeghi/matrx-extend, nested aidream
 const DEV_ID = 'cihdmkcdjjckfhjpgoedmgfpoljebaml';
 const SHA = /^[a-f0-9]{40}$/;
 const SHA256 = /^[a-f0-9]{64}$/;

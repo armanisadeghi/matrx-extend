@@ -1,8 +1,0 @@
-{
-  "status": "APPLIED_DELTA_MATCHES_INDEPENDENTLY_REVIEWED_PROPOSAL_EXCEPT_APPLICATION_TIMESTAMPS",
-  "timestamp_fields": 12,
-  "reviewed_proposal_sha256": "436ebb98650869ba07a76f9a924118610757e0d8aeba9a5f971380aa9ad7edc9",
-  "applied_inventory_sha256": "51bfd99b6deda8c74409cedd27a48126917de8867c9fba875f88e50dd6d858ae",
-  "builder_sha256": "ff787a340f6bda3083b9537ac8a2994c8f0836c97e4a1f31bfac15a34f858b8b",
-  "limits": "Static data equivalence, no product/native credit. Inventory intentionally excluded by Biome config; canonical JSON serializer/renderer preserved."
-}

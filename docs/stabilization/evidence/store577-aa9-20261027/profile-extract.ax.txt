@@ -1,5 +1,0 @@
-+										99 text 156.0.8078.47  ( Official Build )  (arm64)
-+								133 container Profile Path:
-+									134 text Profile Path :
-+								135 container /Users/armanisadeghi/Library/Application Support/Google/Chrome/Profile 10
-+									136 text /Users/armanisadeghi/Library/Application Support/Google/Chrome/Profile 10

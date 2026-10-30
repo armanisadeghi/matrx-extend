@@ -1,4 +1,0 @@
-{"schema":1,"at":"2026-10-26T23:53:38.494Z","runId":"d297-fixture-class-green-20261026","code":"RESOURCE_JOURNAL_OPENED"}
-{"schema":1,"at":"2026-10-26T23:53:57.659Z","runId":"d297-fixture-class-green-20261026","signal":"SIGINT","code":"RESOURCE_STOP_REQUESTED"}
-{"schema":1,"at":"2026-10-26T23:54:45.742Z","runId":"d297-fixture-class-green-20261026","code":"RESOURCE_STOP_REQUESTED"}
-{"schema":1,"at":"2026-10-26T23:54:45.753Z","runId":"d297-fixture-class-green-20261026","admitted":false,"resourceInvalid":false,"exitCode":2,"decision":"refused","code":"RESOURCE_FINAL_DECISION"}

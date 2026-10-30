@@ -4,6 +4,7 @@ import { chmodSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'nod
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { test } from 'node:test';
+import { EXTEND_GITHUB_REPO } from './app-layout.mjs';
 import * as admission from './hosted-remote-admission.mjs';
 
 const sourceSha = '5b4678a4b'.padEnd(40, '0');
@@ -32,7 +33,7 @@ function nativeReport() {
     imported_artifact: {
       kind: 'ci_development_test',
       eligibleStore: false,
-      repository: 'armanisadeghi/matrx-extend',
+      repository: EXTEND_GITHUB_REPO,
       workflow: '.github/workflows/ci.yml',
       sourceSha,
       runId: Number(identity.developmentRunId),
@@ -408,7 +409,7 @@ if (process.argv[1].endsWith('/git')) {
     assert.deepEqual(JSON.parse(readFileSync(log)), [
       ...admission.planHostedNotes(input).args,
       '-R',
-      'armanisadeghi/matrx-extend',
+      EXTEND_GITHUB_REPO,
     ]);
     rmSync(log);
     const failed = execute('dispatch-notes', { dispatchFailure: true });

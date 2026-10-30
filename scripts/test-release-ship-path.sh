@@ -41,7 +41,7 @@ printf '{\n  "name": "matrx-extend",\n  "version": "0.1.0",\n  "private": true\n
 printf 'lockfileVersion: 9.0\n' > pnpm-lock.yaml
 mkdir -p scripts
 mv scripts-release-lock-conflict.mjs scripts/release-lock-conflict.mjs
-cp "$HARNESS_ROOT/scripts/release-snapshot-dependencies.sh" "$HARNESS_ROOT/scripts/release-owner-lock.sh" scripts/
+cp "$HARNESS_ROOT/scripts/release-snapshot-dependencies.sh" "$HARNESS_ROOT/scripts/release-owner-lock.sh" "$HARNESS_ROOT/scripts/app-git.sh" scripts/
 cp "$HARNESS_ROOT/scripts/release-package-diagnostics.mjs" scripts/
 cp "$HARNESS_ROOT/scripts/check-dev-emitted-title.mjs" scripts/
 mkdir -p types; echo "old catalog" > types/tool-catalog.md

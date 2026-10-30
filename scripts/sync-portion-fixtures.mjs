@@ -8,10 +8,11 @@
 import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { aidreamRoot } from './app-layout.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 export const SERVER_DIR = resolve(
-  process.env.AIDREAM_DIR ?? resolve(root, '../aidream'),
+  process.env.AIDREAM_DIR ?? aidreamRoot(),
   'packages/matrx-scraper/tests/fixtures/portions',
 );
 export const LOCAL_DIR = resolve(root, 'tests/fixtures/portions');

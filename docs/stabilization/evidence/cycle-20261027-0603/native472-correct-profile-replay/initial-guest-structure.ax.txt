@@ -1,7 +1,0 @@
-Window: "New Tab", App: Google Chrome.
-			3 toolbar
-				6 button Reload
-				15 button Matrx Guest Test
-				68 tab group
-					69 tab (selected, settable, boolean) New Tab - Memory usage - 83.6 MB, Value: on
-75 menu bar

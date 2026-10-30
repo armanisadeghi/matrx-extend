@@ -1,9 +1,0 @@
-{
-  "case_id": "EXT-F-1003-T52",
-  "decision": "PASS for narrow guest sign-in entrypoint, warm and actual extension Reload",
-  "criteria": "Both dimensions show guest Settings Sign in/Email —, Sign in opening aimatrx.com/login, and closing the auth popup restoring guest Settings. Inventory expected guest sign-in begins or authenticated user becomes guest; only the guest branch was exercised.",
-  "limits": "No completed sign-in, callback, token, account transition, sign-out from authenticated state, or other-role claim. No independent UI replay. Device organization is absent from the run record, despite inventory precondition requiring it.",
-  "resource_provenance": "Full journal contains admission at 05:44:19.235Z, eight healthy watches, stop confirmation, and valid exitCode 0 terminal at 05:46:29.783Z. Parent holder 99465 reportedly terminal 0; distinct evidence, not UI replay.",
-  "frozen_build": "Report agrees source 11ff2cf, CI 39546376658/artifact 12322875129, and tree d782f017. theme579-owner-binding corroborates import/promotion and immutable artifact for that frozen build; provenance is separate from T52 UI observations.",
-  "privacy": "Only sanitized origin/path recorded; no query auth values. No credentials, consent, permission approval, or owner-profile changes reported."
-}

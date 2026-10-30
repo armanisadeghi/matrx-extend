@@ -1503,11 +1503,28 @@ def nothing_left_after_wait():
     return rc == 0 and head.strip() == remote.strip()
 
 
+def refuse_when_nested():
+    """Nested in the aidream monorepo (apps/matrx-extend), ONE sync owns the shared checkout: aidream's
+    scripts/sync-main.py, which sweeps, merges and pushes every path, this app's included (ship.sh runs
+    it). This tool's sweep/merge/replay would commit and merge the WHOLE monorepo under a second lock, so
+    they refuse there; --wait-for-publish-train (release.sh's catch-up) needs no checkout and still runs.
+    Standalone the toplevel IS this app and nothing changes."""
+    app = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))   # judged from THIS file, never the cwd
+    r = subprocess.run(["git", "-C", app, "rev-parse", "--show-prefix", "--show-toplevel"],
+                       capture_output=True, text=True)
+    prefix, top = (r.stdout.splitlines() + ["", ""])[:2] if r.returncode == 0 else ("", "")
+    if prefix.strip():
+        die("this app is nested in a monorepo (at %s): its sync is the host's, not this one. Run "
+            "`python3 %s` (or ./ship.sh, which picks it)."
+            % (prefix.strip().rstrip("/"), os.path.join(top.strip(), "scripts", "sync-main.py")))
+
+
 def main():
     if sys.argv[1:2] == ["--wait-for-publish-train"]:
         # release.sh's @ai-matrx catch-up: wait for the npm publish runs in flight, print one line.
         say(wait_for_publish_train())
         return
+    refuse_when_nested()
     if sys.argv[1:2] == ["--replay"]:
         _, top, _ = git("rev-parse", "--show-toplevel")
         os.chdir(top.strip())

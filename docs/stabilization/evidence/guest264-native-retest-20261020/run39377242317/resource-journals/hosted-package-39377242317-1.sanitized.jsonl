@@ -1,3 +1,0 @@
-{"schema":1,"at":"2026-10-20T05:55:27.475Z","runId":"hosted-package-39377242317-1","admitted":true,"code":"RESOURCE_ADMITTED"}
-{"schema":1,"at":"2026-10-20T05:55:33.157Z","runId":"hosted-package-39377242317-1","childExitCode":0,"code":"RESOURCE_JOB_EXIT"}
-{"schema":1,"at":"2026-10-20T05:55:33.340Z","runId":"hosted-package-39377242317-1","admitted":true,"resourceInvalid":false,"exitCode":0,"decision":"valid","code":"RESOURCE_FINAL_DECISION"}

@@ -13,6 +13,7 @@ import {
 } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, relative, resolve } from 'node:path';
+import { aidreamRoot } from './app-layout.mjs';
 
 /* Builds only a declared, committed Firefox MV3 artifact. No source from the
  * caller checkout is copied into the build; both repositories enter through
@@ -122,7 +123,7 @@ const revision = process.env.MATRX_CANARY_COMMIT ?? 'HEAD';
 const sourceCommit = (
   await run('git', ['-C', repo, 'rev-parse', '--verify', `${revision}^{commit}`])
 ).stdout.trim();
-const aidreamRepo = resolve(repo, '../aidream');
+const aidreamRepo = aidreamRoot();
 const aidreamRevision = process.env.MATRX_CANARY_AIDREAM_COMMIT;
 if (!aidreamRevision)
   fail('set MATRX_CANARY_AIDREAM_COMMIT to the committed records-source revision');

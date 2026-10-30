@@ -84,7 +84,7 @@ export default defineConfig({
       // converge.
       //
       // The Chrome IDs and their exact callbacks live in src/config/identity.ts.
-      // Full incident: .research/v0.1.4-auth-incident.md.
+      // Full incident: docs/v0.1.4-auth-incident.md.
       ...(isKeyedChromeDevelopment ? { key: devExtensionKey } : {}),
       permissions: [
         'storage',

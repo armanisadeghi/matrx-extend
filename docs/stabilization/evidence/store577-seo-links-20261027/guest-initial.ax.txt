@@ -1,2 +1,0 @@
-There has been no change in the accessibility tree for Window: "New Tab".
-The focused UI element is 10 text field (settable) Address and search bar, Placeholder: Press tab then enter to ask AI Mode. Press up or down arrow for auto completions. Type to autocomplete..

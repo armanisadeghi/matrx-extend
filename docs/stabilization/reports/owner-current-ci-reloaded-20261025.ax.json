@@ -1,4 +1,0 @@
-{
-  "persisted_at": "2026-10-25T08:59:27.849Z",
-  "raw_ax": "The following is a diff from the previous accessibility tree for Window: \"Extensions - Matrx Extend DEV\" with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.\nRemoved element IDs: 13, 178, 189, 196-199, 237\n+\t\t\t\t\t250 pop up button Matrx Extend DEV\n+\t\t\t\t\t\t\t\t251 button Reload\n+\t\t\t\t\t\t\t\t252 text 184 MB\n+\t\t\t\t\t\t\t\t\t253 container\n+\t\t\t\t\t\t\t\t\t\t254 AXListMarker • \n+\t\t\t\t\t\t\t\t\t\t255 link service worker\n+\t\t\t\t\t\t\t\t\t\t\t256 text service worker\n+\t\t\t\t\t\t\t\t257 switch Pin to toolbar, Value: on\n+\t\t\t\t\t\t258 text Reloaded\n~\t\t\t\t\t248 tab (selected, settable, boolean) Extensions - Matrx Extend DEV - Memory usage - 51.4 MB, Value: on\nThe focused UI element is 150 HTML content Extensions - Matrx Extend DEV, URL: chrome://extensions/?id=cihdmkcdjjckfhjpgoedmgfpoljebaml"
-}

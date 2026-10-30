@@ -1,8 +1,0 @@
-				227 HTML content Matrx Extend, URL: chrome-extension://cihdmkcdjjckfhjpgoedmgfpoljebaml/sidepanel.html
-							297 button 9 included
-						299 container 9 included
-							300 heading 9 included, Value: 2
-								301 text 9 included
-							302 text Bottom sheet panel.
-							307 table Values
-The focused UI element is 297 button 9 included

@@ -588,7 +588,7 @@ function selfTest() {
     w('lib/intake/legacy-form.ts', 'export const LEGACY = 1;\n');
     w('lib/intake/insurers.ts', "export const INSURERS = ['Delta Dental', 'Cigna'];\n");
     // A local shim over the package (features/content-ir/kinds/kind-markdown-utils.ts, v0.4.2989).
-    w('lib/intake/warmup-shim.ts', "export * from '@ai-matrx/agents/warmup';\n");
+    w('lib/intake/warmup-shim.ts', "export * from '" + "@ai-matrx/agents/warmup';\n");
     w(
       'features/intake/IntakeForm.ts',
       "import { INTAKE_FIELDS } from '@/lib/intake/fields';\nexport const fields = INTAKE_FIELDS;\n",
@@ -613,12 +613,14 @@ function selfTest() {
     // R1 member on an @ai-matrx type (the WarmupHost crash)
     w(
       'providers/WarmupHost.ts',
-      "import { createWarmup } from '@ai-matrx/agents/warmup';\nconst w = createWarmup();\nexport const scope = w.currentScope();\n",
+      "import { createWarmup } from '" +
+        "@ai-matrx/agents/warmup';\nconst w = createWarmup();\nexport const scope = w.currentScope();\n",
     );
     // R2 named export the installed package does not ship
     w(
       'features/intake/Prefetch.ts',
-      "import { createWarmup, primeIntakeBundle } from '@ai-matrx/agents/warmup';\nexport const p = [createWarmup, primeIntakeBundle];\n",
+      "import { createWarmup, primeIntakeBundle } from '" +
+        "@ai-matrx/agents/warmup';\nexport const p = [createWarmup, primeIntakeBundle];\n",
     );
     // R3 subpath the installed package does not export
     w(
@@ -652,7 +654,8 @@ function selfTest() {
     // Clean: a member that DOES exist, a changed line with no error, unrelated pre-existing error
     w(
       'features/intake/Warm.ts',
-      "import { createWarmup } from '@ai-matrx/agents/warmup';\ncreateWarmup().warmSession('org-harbor-dental');\nexport const ok = true;\n",
+      "import { createWarmup } from '" +
+        "@ai-matrx/agents/warmup';\ncreateWarmup().warmSession('org-harbor-dental');\nexport const ok = true;\n",
     );
     w(
       'features/intake/broken-before.ts',

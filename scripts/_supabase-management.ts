@@ -7,9 +7,10 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
+import { aidreamRoot } from './app-layout.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const ACCESS_TOKEN_FILE = resolve(ROOT, '../aidream/.env');
+const ACCESS_TOKEN_FILE = resolve(aidreamRoot(), '.env');
 const MANAGEMENT_API = 'https://api.supabase.com/v1/projects';
 
 function readEnvFileValue(path: string, name: string): string | null {

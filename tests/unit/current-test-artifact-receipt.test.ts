@@ -3,6 +3,7 @@ import { createHash, randomBytes } from 'node:crypto';
 import { mkdir, readFile, rm, symlink, writeFile } from 'node:fs/promises';
 import { basename, join, resolve } from 'node:path';
 import { afterEach, it } from 'vitest';
+import { EXTEND_GITHUB_REPO } from '../../scripts/app-layout.mjs';
 import {
   selectOrImportNativeTarget,
   verifyDownloadedTree,
@@ -18,7 +19,7 @@ import {
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 
 const repo = resolve(import.meta.dirname, '..', '..');
-const owner = 'armanisadeghi/matrx-extend';
+const owner = EXTEND_GITHUB_REPO;
 const sha = 'ceda515a275d5ccfc0675e999ad2aa9307a70264';
 const digest = `sha256:${'a'.repeat(64)}`;
 const run = {

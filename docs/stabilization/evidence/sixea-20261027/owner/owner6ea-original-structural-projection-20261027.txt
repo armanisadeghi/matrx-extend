@@ -1,6 +1,0 @@
-Window: "Vault | AI Matrx — AI Matrx", App: Google Chrome.
-			4 toolbar
-					16 pop up button Matrx Extend DEV
-					17 pop up button Matrx
-					489 tab (selected, settable, boolean) Vault | AI Matrx — AI Matrx - Memory usage - 266 MB, Value: on
-496 menu bar

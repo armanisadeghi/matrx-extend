@@ -4,6 +4,7 @@ import { chmodSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'nod
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { test } from 'node:test';
+import { EXTEND_GITHUB_REPO } from './app-layout.mjs';
 import * as admission from './hosted-remote-admission.mjs';
 const sha = 'a'.repeat(40);
 const input = {
@@ -181,7 +182,7 @@ if (process.argv[1].endsWith('/git')) {
     assert.deepEqual(JSON.parse(readFileSync(log)), [
       ...admission.planHostedScrape(input).args,
       '-R',
-      'armanisadeghi/matrx-extend',
+      EXTEND_GITHUB_REPO,
     ]);
     rmSync(log);
     const failed = execute('dispatch-scrape', { dispatchFailure: true });

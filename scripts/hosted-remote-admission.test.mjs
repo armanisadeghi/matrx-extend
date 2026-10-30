@@ -14,6 +14,7 @@ import {
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { test } from 'node:test';
+import { EXTEND_GITHUB_REPO } from './app-layout.mjs';
 import { requireHostedDevelopmentCheckout } from './development-source-compatibility.mjs';
 import {
   matchesHostedRunName,
@@ -66,6 +67,7 @@ test('standalone hosted CLI reaches admission refusals without installed package
     mkdirSync(join(scratch, 'docs/stabilization'), { recursive: true });
     for (const name of [
       'hosted-remote-admission.mjs',
+      'app-layout.mjs',
       'copy-hosted-resource-journal.mjs',
       'stabilization-resource-journal.mjs',
       'development-source-compatibility.mjs',
@@ -227,7 +229,7 @@ function guestSeoReport() {
     imported_artifact: {
       kind: 'ci_development_test',
       eligibleStore: false,
-      repository: 'armanisadeghi/matrx-extend',
+      repository: EXTEND_GITHUB_REPO,
       workflow: '.github/workflows/ci.yml',
       sourceSha: 'a'.repeat(40),
       runId: 38116138170,
@@ -543,7 +545,7 @@ test('hosted verification refuses a same-name successful run whose exact checkou
     conclusion: 'success',
     run_attempt: 1,
   };
-  const endpoint = `repos/armanisadeghi/matrx-extend/contents/.github/workflows/hosted-guest-acceptance.yml?ref=${run.head_sha}`;
+  const endpoint = `repos/${EXTEND_GITHUB_REPO}/contents/.github/workflows/hosted-guest-acceptance.yml?ref=${run.head_sha}`;
   const response = (source) => ({
     path: run.path,
     type: 'file',
@@ -1267,7 +1269,7 @@ if (process.argv[1].endsWith('/git')) {
     assert.deepEqual(JSON.parse(readFileSync(log)), [
       ...admission.planHostedSettingsMember(input).args,
       '-R',
-      'armanisadeghi/matrx-extend',
+      EXTEND_GITHUB_REPO,
     ]);
     rmSync(log);
     for (const [change, reason] of [
@@ -1311,7 +1313,7 @@ if (process.argv[1].endsWith('/git')) {
         acceptanceCase: 'settings-controls',
       }).args,
       '-R',
-      'armanisadeghi/matrx-extend',
+      EXTEND_GITHUB_REPO,
     ]);
     rmSync(log);
     const captureDispatch = execute(
@@ -1321,11 +1323,7 @@ if (process.argv[1].endsWith('/git')) {
       'settings-auto-scrape-capture',
     );
     assert.equal(captureDispatch.status, 0, captureDispatch.stderr);
-    assert.deepEqual(JSON.parse(readFileSync(log)), [
-      ...captureExpected,
-      '-R',
-      'armanisadeghi/matrx-extend',
-    ]);
+    assert.deepEqual(JSON.parse(readFileSync(log)), [...captureExpected, '-R', EXTEND_GITHUB_REPO]);
     rmSync(log);
     const failed = execute('dispatch-settings-member', { dispatchFailure: true });
     assert.notEqual(failed.status, 0);
@@ -1780,7 +1778,7 @@ if (process.argv[1].endsWith('/git')) {
           )
           .flatMap((field) => ['-f', field]),
         '-R',
-        'armanisadeghi/matrx-extend',
+        EXTEND_GITHUB_REPO,
       ]);
     }
     const failure = execute('dispatch-startup-diagnostic', {
@@ -2084,6 +2082,7 @@ test('D295 actual prepareDevelopment body reaches real imported-evidence refetch
     mkdirSync(join(f.root, 'scripts'));
     for (const name of [
       'current-test-artifact.mjs',
+      'app-layout.mjs',
       'record-local-dev-build.mjs',
       'sync-unpacked-release.mjs',
       'check-dev-emitted-title.mjs',
@@ -2139,7 +2138,7 @@ test('D295 actual prepareDevelopment body reaches real imported-evidence refetch
       kind: 'ci_development_test',
       eligibleStore: false,
       publish_state: 'not_published',
-      repository: 'armanisadeghi/matrx-extend',
+      repository: EXTEND_GITHUB_REPO,
       workflow: '.github/workflows/ci.yml',
       event: 'push',
       ref: 'refs/heads/main',
@@ -2438,6 +2437,7 @@ test('D295 executed sabotages each fail at their own forcing assertion', async (
   const files = [
     'scripts/hosted-remote-admission.test.mjs',
     'scripts/hosted-remote-admission.mjs',
+    'scripts/app-layout.mjs',
     'scripts/development-source-compatibility.mjs',
     'scripts/development-ci-event.mjs',
     'scripts/copy-hosted-resource-journal.mjs',

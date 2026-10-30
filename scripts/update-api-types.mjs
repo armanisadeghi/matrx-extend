@@ -19,6 +19,7 @@ import { execSync } from 'node:child_process';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { aidreamRoot } from './app-layout.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = resolve(__dirname, '..');
@@ -39,7 +40,7 @@ const LOCAL_BACKEND_URL = 'http://localhost:8000';
 const backendUrl = getArg('--url', useLocal ? LOCAL_BACKEND_URL : LIVE_BACKEND_URL);
 const outDir = resolve(PROJECT_ROOT, 'types/python-generated');
 
-const AIDREAM_SYNC_SCRIPT = resolve(PROJECT_ROOT, '../aidream/scripts/sync-types.mjs');
+const AIDREAM_SYNC_SCRIPT = resolve(aidreamRoot(), 'scripts/sync-types.mjs');
 
 console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 console.log('  update-api-types');
@@ -50,7 +51,9 @@ console.log('━━━━━━━━━━━━━━━━━━━━━━�
 
 if (!existsSync(AIDREAM_SYNC_SCRIPT)) {
   console.error(`  ✗ sync-types.mjs not found at: ${AIDREAM_SYNC_SCRIPT}`);
-  console.error('    Make sure the aidream repo is cloned at ../aidream');
+  console.error(
+    '    Make sure the aidream repo is cloned at ../aidream (or this app is nested in it; AIDREAM_ROOT overrides)',
+  );
   process.exit(1);
 }
 

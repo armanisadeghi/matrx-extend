@@ -99,6 +99,7 @@ import { execFileSync, spawnSync } from "node:child_process";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import process from "node:process";
+import { aidreamRoot } from './app-layout.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -1403,7 +1404,7 @@ if (SELF_TEST) {
     }
   }
   let contentSample = null;
-  for (const c of ["kit/src/format.ts", "../aidream/apps/shared/kit/src/format.ts"]) {
+  for (const c of ["kit/src/format.ts", resolve(aidreamRoot(), "apps/shared/kit/src/format.ts")]) {
     try { contentSample = readFileSync(resolve(ROOT, c), "utf8"); break; } catch { /* next */ }
   }
   selfTestContentLane({ sampleSource: contentSample });
