@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-29T23:08:28.064926+00:00",
+  "updated_at": "2026-10-30T00:13:01.947313+00:00",
   "inventory_gate": "source-census-reconciled-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "e4b5e32b5e6936e302905ec327b3ab60f858c792",
@@ -35141,10 +35141,10 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "40760798455",
-              "source_sha": "d19043d8b95c05153fec3763559dfd6f57ebb882",
-              "development_ci_run_id": 40758972183,
-              "development_artifact_id": 12847457843,
+              "run_id": "40976935006",
+              "source_sha": "00185648a6143bf031cb0cbe0108f88eeabf498e",
+              "development_ci_run_id": 40960544186,
+              "development_artifact_id": 12936850820,
               "artifact_manifest_version": "0.2.631",
               "resource_decision": "valid",
               "resource_invalid": false,
@@ -35156,10 +35156,12 @@
               ],
               "full_case_pass": false,
               "evidence": [
-                "docs/stabilization/reports/wake2001-seo-native-20261028.json",
-                "docs/stabilization/reports/wake2001-peer-20261028.json"
+                "docs/stabilization/reports/seo-notice-40976935006-20261029.json",
+                "docs/stabilization/reports/seo-notice-peer-20261029.json"
               ],
-              "scope": "Frozen d190 DEV631 native360 controlled2notice fixture:9unobscuredReAudit hits; trustedrunning→settled/currenttitle; independentdismiss[0,1]→[0,0], cleanup2/2. Normalverifier valid/all3resources valid0; freshpeer boundedApartial/Bpass. Deliberate owned-worker notice injection, no naturalDBfailure or independentruntimeguestidentity. Startupimages do notshowtargetassertions. FullT02/D199/reload/otherroles/Store remainunverified."
+              "scope": "Frozen001856 DEV631 native360 controlled2ownednotice fixture:9clearReaudit point samples; trustedrunning→settled/currenttitle; independentdismiss[0,1]→[0,0], cleanup2/2. Normalverifier/all3resourcefinals valid0; freshretained-original peer subtargetApass/fullcasepartial andBboundedpass. Deliberate notice injection, no naturalDBfailure or independentguestidentity/reload/fullT02/D199/otherrole/Store proof. Startupimages are not decisive targetvisuals; no independentnative replay. Pollprecheck/unsupportedfield local errors and exact pre-call vs savedcompletion times retained in report.",
+              "workflow_source_sha": "02871fcd8394041dc52914481a45eaf5c5fc652f",
+              "result_artifact_id": 12942139968
             }
           },
           "result_history": [
@@ -35990,6 +35992,31 @@
                 "scope": "Frozen workflow3de/app909 guest native360 stacked/long notice target only:9target/0noticehits, trustedrunning→settled/currenttitle and independentdismiss2→1→0/cleanup2of2. All3resourcefinalsvalid0/no pending, originalhistoricalcertificate+freshcanonicalreplayvalid. Startupimages do notcorroboratetargetgeometry; browser/profile/backendunobserved. Originalwrong-source preflightrefusal retained, oneowner-authorized correctednormalattempt. FullT02/D199/otherroles/latest280/Store unchanged."
               },
               "superseded_at": "2026-10-28T20:19:27.066161+00:00"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "40760798455",
+                "source_sha": "d19043d8b95c05153fec3763559dfd6f57ebb882",
+                "development_ci_run_id": 40758972183,
+                "development_artifact_id": 12847457843,
+                "artifact_manifest_version": "0.2.631",
+                "resource_decision": "valid",
+                "resource_invalid": false,
+                "observed_subtargets": [
+                  {
+                    "id": "multiple_and_long_notice_clearance_at_native_360px",
+                    "status": "pass"
+                  }
+                ],
+                "full_case_pass": false,
+                "evidence": [
+                  "docs/stabilization/reports/wake2001-seo-native-20261028.json",
+                  "docs/stabilization/reports/wake2001-peer-20261028.json"
+                ],
+                "scope": "Frozen d190 DEV631 native360 controlled2notice fixture:9unobscuredReAudit hits; trustedrunning→settled/currenttitle; independentdismiss[0,1]→[0,0], cleanup2/2. Normalverifier valid/all3resources valid0; freshpeer boundedApartial/Bpass. Deliberate owned-worker notice injection, no naturalDBfailure or independentruntimeguestidentity. Startupimages do notshowtargetassertions. FullT02/D199/reload/otherroles/Store remainunverified."
+              }
             }
           ],
           "defect_ids": [

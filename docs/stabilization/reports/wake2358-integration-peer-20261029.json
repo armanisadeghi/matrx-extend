@@ -1,0 +1,49 @@
+{
+  "task": "wake2358_integration_reverify",
+  "at": "2026-10-30T00:14:31.070585+00:00",
+  "status": "DONE_BOUNDED_INTEGRATION_AND_MINOR_FINDING_REVERIFY",
+  "scope": "Fresh independent read-only integration reverify. No GUI/native replay/heavy job/authentication/dispatch/fixture mutation/source edits. Only this private report written.",
+  "reverify": {
+    "finding": "First valid snapshot timing label conflated pre-call admission and saved completion",
+    "status": "ADDRESSED",
+    "pre_call_admission_elapsed_seconds": 72.666112,
+    "independent_saved_completion_elapsed_seconds": 73.79618,
+    "evidence": "Private dispatch-completed-at2026-10-30T00:01:04.939369+00:00 to poll-1.at2026-10-30T00:02:18.735549+00:00 exactly73.796180s. Parsed report restored to2bc2e99f3 after undoing only the intended key rename and removing saved-completion field; all remaining fields equal."
+  },
+  "A": {
+    "verdict": "PASS_BOUNDED_CURRENT_TRUTH",
+    "evidence": [
+      "Inventory only refreshes EXT-F-1008-T02 guest partial result/current001856 artifact; full_case_pass remainsfalse. Entire oldd190 result appended unchanged in result_history. Reversing only those fields and globalupdated_at equals baselinebd76 inventory exactly.",
+      "All three generated headers match inventory.updated_at2026-10-30T00:13:01.947313+00:00; coverage counters remain92pass/116partial/1fail/1120unverified/11NA,0/402fullfeature-rolepairs. Updated T02 result bindings point to40976935006 and reviewed native/peer records. Checklist current-source freshness pointer advances tobd76 as expected.",
+      "Parent lane summary nowterminal/completed_success, controllednoticecleanup2/2 and noauth/sharedfixtureobligations. Metrics correctly count0fullcasepasses/0defectsclosed/0releases and1boundedsubtarget.",
+      "Settings exact-source plan refusalexit1/HOSTED_DEVELOPMENT_RUN_INVALID matches savedstderr. Current028 metadataCIgreen/noartifact is kept distinct from frozen001856 successful appartifact; no Settings dispatch/auth staging/source substitution claimed.",
+      "FullT02,D199closure,independentguestidentity,reload,naturalDBfailure,Store/current-serverChat/privatepublished-pending state remain unverified; D303cause/closure remains open."
+    ],
+    "limits": [
+      "No independent native browser replay or current remote CI/Store observation. Source/currentloadedartifact and source/runtime compatibility are retained evidence, not physical re-observation."
+    ]
+  },
+  "B": {
+    "verdict": "PASS_SCOPED_SOURCE_PRIVACY_WITH_MINOR_RECEIPT_FRESHNESS_OBSERVATION",
+    "evidence": [
+      "Timingfix has exactly three parsed differences: removes ambiguous prior key, adds explicit pre-call admission with unchanged72.666112, adds independentlycomputed savedcompletion73.79618; no native/source/predicate/auth/model changes.",
+      "Full prior T02 result and all other inventory semantics preserved; globalupdated_at is sole allowed metadata exception.",
+      "Public native report differs from previously privacy-approved projection only in timing labels/value; no new rawZIP/log/fullnative/startupPNG or authentication values introduced. Parent source/lane summary retains controlledfixture and resource/role/scope limits.",
+      "git diff --check passes. Generated status headlines/counters/source/evidence bindings inspected; no source generator edit or whole-system test performed."
+    ],
+    "limits": [
+      "Parent repository-ledger refresh and exact post-push cleanliness are outside this reverify; ledger remains pre-publication bounded."
+    ]
+  },
+  "findings": [
+    {
+      "severity": "Minor",
+      "item": "Parent lane-summary at timestamp remains original draft creation time while status is now terminal",
+      "evidence": "wake2358-lanes at00:04:50.621106+00:00 predates the terminal native outcome and current COMPLETE status update.",
+      "recommendation": "Refresh at when finalizing the report or explicitly label original creation timestamp. No product/privacy or inventory result effect."
+    }
+  ],
+  "owned_processes": [],
+  "owned_cleanup_obligations": [],
+  "commits": []
+}

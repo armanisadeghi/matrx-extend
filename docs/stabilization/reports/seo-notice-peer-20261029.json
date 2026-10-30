@@ -1,0 +1,64 @@
+{
+  "task": "seo_notice_original_peer_2358",
+  "at": "2026-10-30T00:11:58.288122+00:00",
+  "status": "DONE_BOUNDED_RETAINED_NATIVE_REVIEW",
+  "scope": "Independent retained original packet/source/provenance/privacy review only; no native browser replay, heavy job, dispatch, authentication, fixture mutation or source edits. Only private review/verifier files written.",
+  "run_id": 40976935006,
+  "result_artifact_id": 12942139968,
+  "reviewed_commit": "2bc2e99f3",
+  "A": {
+    "verdict": "PASS_BOUNDED_NATIVE_SUBTARGET_PARTIAL_FULL_CASE",
+    "evidence": [
+      "Official original ZIP digest and six member hashes/byte counts independently match saved official artifact12942139968 and worker report. Every public native field and imported_artifact is an exact semantic subset of the original native machine report.",
+      "Native360px: two distinct owned notices, long-message length199, two visible dismiss controls, nine clear Re-audit hit points and zero notice hit points; trusted click transitions enabled\u2192disabled/spinner\u2192settled/current title.",
+      "Independent dismiss count observations[0,1]\u2192[0,0] and actual owned-fixture cleanup attempted2/cleared2/failed0 match original.",
+      "Before/after runtime tree3b536e64... and DEV631/expected development ID retained; frozen app001856 is distinct from workflowcandidate02871."
+    ],
+    "limits": [
+      "Full T02, D199 closure, natural database failure, reload, other roles, Store acceptance and overall health remain unverified.",
+      "Guest is executor mode; actual independent guest identity not established by the selected record.",
+      "Two PNGs independently viewed: startup Chat and controlled Research brief page; neither shows decisive SEO target assertions. Target proof is native machine evidence, not post-action visual acceptance.",
+      "No independent native browser replay by reviewer."
+    ]
+  },
+  "B": {
+    "verdict": "PASS_SCOPED_PROVENANCE_PRIVACY_WITH_MINOR_TIMING_PRECISION_FINDING",
+    "evidence": [
+      "Worker commit2bc2e99f3 changes exactly one safe projection and three resource journals; no source/runtime/handler/predicate/model/auth changes.",
+      "All three raw resource journals independently end admittedtrue/resourceInvalidfalse/exit0/valid; zero unsafe records. Normal sanitizer outputs exactly equal all three published journal bytes.",
+      "Fresh independent normal verify-guest-seo actualexit0 returns validtrue, exact archive/source/candidate/artifact IDs and workflow hash.",
+      "Official run timing reports MACOS billedtotal_ms0, duration477000ms; not current aggregate weekly spend.",
+      "Six valid snapshot end timestamps independently reproduce public end-gap values, all greater than60seconds. The failed early local command reports unsupported JSON field and no returned status record; fallthrough is explicit, not a whole-procedure pass."
+    ],
+    "limits": [
+      "72.666112seconds is the pre-network elapsed admission value; saved first snapshot completion is73.796180seconds after recorded dispatch. Existing label is slightly ambiguous; neither value violates60second cadence.",
+      "Exact native operation chronology, remote temporary profile/process deletion and ephemeral runner destruction are not independently observed.",
+      "Parent lane summary was still in_progress at review; parent must update terminal bounded verdict before publication."
+    ]
+  },
+  "normal_verifier": {
+    "actual_exit": 0,
+    "valid": true,
+    "private_output": ".output/stabilization-checkpoints/wake2358-20261029/seo-peer-verifier.json",
+    "output_sha256": "6be9aa93f33e97c1fc5563ffdbc7cb835cc32717ba60a80d9106d474815a2e89",
+    "archiveDigest": "0437034db75760dd0acbfbc91398854db2082b5db20b9f257dac588a58ed47e8",
+    "workflowSourceSha256": "76e0578aaff6100aa51576036dea55c0028482ea250f2015951b473a98710fd2"
+  },
+  "privacy": {
+    "approved_public_projection": "Existing fixed native notice counts/booleans/categories/timed state samples/provenance in worker report and sanitized resource journals.",
+    "keep_private": ["full native report", "official ZIP/log", "startup PNGs"],
+    "notes": "No credential/auth URL/device code/access-token/refresh-token markers in selected public report; raw worker environment/process attribution omitted by sanitizer."
+  },
+  "findings": [
+    {
+      "severity": "Minor",
+      "item": "First valid snapshot timing label conflates pre-call admission and completion",
+      "evidence": "dispatch-completed-at to poll-1.at=73.796180s; public value72.666112 is atomic pre-call elapsed.",
+      "recommendation": "Label72.666112 as pre-call admission and retain73.796180 as saved snapshot completion. Both are safely>=60seconds and do not affect bounded product verdict."
+    }
+  ],
+  "recommendation": "May refresh only the same partial guest T02 subtarget/current artifact and preserve entire prior d190 result in history; no full-case upgrade or defect closure. Correct or explicitly retain timing precision limit; update parent terminal lane summary.",
+  "owned_processes": [],
+  "owned_cleanup_obligations": [],
+  "commits": []
+}

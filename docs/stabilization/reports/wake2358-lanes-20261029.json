@@ -1,0 +1,64 @@
+{
+  "schema": 1,
+  "at": "2026-10-30T00:14:42.083939+00:00",
+  "status": "COMPLETE_BOUNDED_NO_RELEASE_CHANGE",
+  "source_sha": "02871fcd8394041dc52914481a45eaf5c5fc652f",
+  "metadata_ci": {
+    "prior_run": 40971231461,
+    "prior_status": "failure_one_manifest_layout_error",
+    "fix_sha": "02871fcd8394041dc52914481a45eaf5c5fc652f",
+    "run": 40976893139,
+    "status": "success",
+    "development_artifacts": 0,
+    "A": "PASS_BOUNDED_SEMANTIC_EQUIVALENCE: parsed manifest equals HEAD; all original/published hashes and references unchanged.",
+    "B": "PASS_SCOPED_FORMAT: targeted Biome3files passed; diff only one-element array formatting, no source/runtime/raw evidence changes.",
+    "cause": "Final manifest reserialization after prior formatting restored an unformatted one-element array. Final formatting applied after serialization; parsed JSON/recorded hashes and raw evidence unchanged.",
+    "checks": "Targeted owner packet Biome3files and diff checks passed; no app/runtime/source predicate change."
+  },
+  "settings_lane": {
+    "case": "settings-controls",
+    "planned_source_sha": "02871fcd8394041dc52914481a45eaf5c5fc652f",
+    "development_run_id": 40960544186,
+    "development_artifact_id": 12936850820,
+    "plan_actual_exit": 1,
+    "refusal": "HOSTED_DEVELOPMENT_RUN_INVALID",
+    "scope": "Exact-source route requires a matching successful CI development artifact. Latest028 CI is successful metadata-only and produces no development artifact. The001 artifact is successful but not an exact-source match. No dispatch, fixture/auth staging, source substitution, threshold change or manual build.",
+    "product_verdict": "unverified"
+  },
+  "seo_lane": {
+    "owner": "seo_b_2358",
+    "run_id": 40976935006,
+    "attempt": 1,
+    "job_id": 123807173171,
+    "status": "completed_success",
+    "case": "guest-seo",
+    "subtarget": "notice-stacked",
+    "app_source_sha": "00185648a6143bf031cb0cbe0108f88eeabf498e",
+    "workflow_source_sha": "02871fcd8394041dc52914481a45eaf5c5fc652f",
+    "normal_plan_exit": 0,
+    "normal_dispatch_exit": 0,
+    "product_verdict": "partial: one controlled-notice/Reaudit subtarget passed; fullT02 and guestidentity/reload/naturalDBfailure/Store unknown",
+    "auth_fixture_obligations": 0,
+    "scope": "One reviewed generic runtime-equivalent lane B. Deliberately injected owned notices, not natural DB failure/fullSEO.",
+    "result_artifact_id": 12942139968,
+    "archive_sha256": "0437034db75760dd0acbfbc91398854db2082b5db20b9f257dac588a58ed47e8",
+    "normal_verifier_valid": true,
+    "cleanup": "Ownednotices2/2cleared; noauth/sharedfixturestaged; ownedobligations0.",
+    "evidence": [
+      "docs/stabilization/reports/seo-notice-40976935006-20261029.json",
+      "docs/stabilization/reports/seo-notice-peer-20261029.json"
+    ]
+  },
+  "store": "Same2026-10-29AmericaLosAngeles daily claim reused; Google six-hour wait notelapsed. No login retry/newOAuth/upload/submission/baseline change. Last exact private state remains bounded in canonical record. Current-server guestChat remains unverified.",
+  "owner_copy": "Last actual owner load001856/DEV631/tree3b536e64; latest028 main differs only operational documentation. No exact028 artifact or new physical reload claimed.",
+  "next_action": "Keep Settings/navigation unknown until matching exact-source successful development artifact exists; use existing authorized automatic source CI/build paths, never source substitution or local manual build. Continue remaining independent fullT02/guestidentity/reload and registered Scrape/Data/SEO gates; preserve D199/D303 open and current-server guestChat/privateStore status limits.",
+  "metrics": {
+    "full_product_case_passes": 0,
+    "bounded_native_subtargets_passed": 1,
+    "defects_closed": 0,
+    "releases": 0,
+    "source_format_checks_are_product_passes": false
+  },
+  "created_at": "2026-10-30T00:04:50.621106+00:00",
+  "timestamp_scope": "created_at is initial draft; at is this finalized terminal checkpoint snapshot. Native timestamps remain in owning run report."
+}
