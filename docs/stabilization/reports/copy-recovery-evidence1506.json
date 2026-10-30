@@ -1,8 +1,0 @@
-{
-  "status": "unverified_full_case",
-  "review_type": "fresh evidence-only; no independent UI replay",
-  "verdict_A": "One smaller-group public SVG URL copy observed; no full T42 role-cell acceptance",
-  "verdict_B": "Normal resource journal valid0, but role/loaded ID/version/build binding absent",
-  "format_repair": "Original reviewer returned prose to a .json path; owner wrapped it without dropping text.",
-  "raw_review": "A. Evidence supports one guest UI copy action: a tile under “9 SMALLER IMAGES” copied its public SVG URL; address-bar pasteback exactly matched the expected src, including query, with no navigation; the owned test tab was closed.\nThis demonstrates clipboard copy for that one smaller-group tile only; T42 requires distinct guaranteed large and medium non-icon tiles, and explicitly checks both size tiers.\nNo large/medium result, reload repeat, failure/clipboard-denial behavior, icon-control absence, or unchanged capture/tile state is proven; no full-case credit.\nIdentity is only reported as a guest G account indicator; do not infer signed-out role. Extension manager ID/version and frozen build were not verified; do not attribute to a specific loaded build.\nReport provenance is self-recorded UI evidence; it expressly claims no independent verifier or release credit. The 08:25 resource-invalid run (exit 3) earns no credit.\nThe 15:01 journal independently supports admission at 15:02:57, healthy samples, clean stop confirmation, and valid final decision/exit 0 at 15:05:30.193; it validates resources, not UI provenance.\nKeep T42 guest/member/admin unverified at case level (or track this as bounded guest sub-evidence); no pass/partial promotion is warranted from this run alone.\n"
-}

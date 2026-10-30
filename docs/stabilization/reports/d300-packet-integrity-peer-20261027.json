@@ -1,9 +1,0 @@
-{
-  "status": "PASS",
-  "scope": "Read-only packet integrity; no behavior rereview, tests, UI, jobs or source edits.",
-  "source_integrity": "Nine hashes agree across actual files, private owner boundary and all three public records; boundary mtimes/hash match.",
-  "resource_integrity": "All 13 completed d300 journals and finals/hash values agree; final focused 1181/1170/0/11, compile0, lint3506/0/1037, all valid0.",
-  "claims": "Failed rounds, argv refusal before host measurement, resolved Git witness/current-source mutation, noUnsafeFinally repair without waiver retained. A PARTIAL/B bounded PASS; late source-only, siblings unported/native unverified/in-fix preserved; no broad closure.",
-  "publication": "Typed public records, no credential-shaped values or embedded raw logs detected.",
-  "issues": []
-}

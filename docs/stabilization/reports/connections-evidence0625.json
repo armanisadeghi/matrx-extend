@@ -1,9 +1,0 @@
-{
-  "review": "fresh evidence reviewer",
-  "criteria": {
-    "EXT-F-1003-T79": "PARTIAL is justified: guest Settings UI showed Not connected warm and after Reload, but criterion requires comparison to observed bridge transport; neither transport nor settled health/version/service response was independently observed. No evidence supports pass or product failure.",
-    "EXT-F-1003-T96": "PARTIAL is justified: guest row was actually observed warm and post-Reload, distinctly from Matrx Local, but already settled at first read; no initial checking, underlying connection/session comparison, or alternate states. No evidence supports pass or product failure."
-  },
-  "provenance": "Strong resource provenance: admission 06:22:02.577Z precedes UI work; journal shows healthy watches, SIGINT, confirmed stop and valid exitCode 0 at 06:24:12.398Z; root independently polled holder 32670 actual exit 0. Browser/profile/extension identity and guest indicators are reported; frozen source/CI/artifact/tree binding exists, and correction from WXT development to production compilation is retained and supported by CI log/tree binding. Caveat: no independent raw screenshot/action timestamps; operator report is the UI observation source and loaded output was not independently hashed during UI replay. Identity mismatch with current main is explicitly disclaimed.",
-  "claim_quality": "Carefully bounded and internally consistent; partial is preferable to pass/fail. T79's 'unavailable/not-connected' UI text does not itself establish transport absence. T96 display copy does not establish session truth. Keep backend, other roles/states, and build freshness unverified."
-}

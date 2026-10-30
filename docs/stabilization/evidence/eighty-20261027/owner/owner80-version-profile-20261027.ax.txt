@@ -1,6 +1,0 @@
-Window: "About Version", App: Google Chrome.
-0 standard window About Version - Google Chrome - Arman (armansadeghi.com), URL: chrome://version/, Secondary Actions: Raise
-									28 text Google Chrome :
-										31 text 156.0.8078.48  ( Official Build )  (arm64)
-									66 text Profile Path :
-									68 text /Users/armanisadeghi/Library/Application Support/Google/Chrome/Profile 8

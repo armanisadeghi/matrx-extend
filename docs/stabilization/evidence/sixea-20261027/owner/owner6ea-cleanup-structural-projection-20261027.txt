@@ -1,8 +1,0 @@
-Window: "Vault | AI Matrx — AI Matrx", App: Google Chrome.
-0 standard window Vault | AI Matrx — AI Matrx - Google Chrome - Arman (armansadeghi.com), URL: aimatrx.com/vault, Secondary Actions: Raise
-			3 toolbar
-					15 pop up button Matrx Extend DEV
-					16 pop up button Matrx
-					488 tab (selected, settable, boolean) Vault | AI Matrx — AI Matrx - Memory usage - 266 MB, Value: on
-495 menu bar
-The focused UI element is 22 HTML content Vault | AI Matrx — AI Matrx, URL: aimatrx.com/vault

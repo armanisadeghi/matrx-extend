@@ -1,3 +1,0 @@
-				227 HTML content Matrx Extend, URL: chrome-extension://cihdmkcdjjckfhjpgoedmgfpoljebaml/sidepanel.html
-							297 button 9 included
-The focused UI element is 297 button 9 included

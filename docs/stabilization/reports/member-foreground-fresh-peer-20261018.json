@@ -1,7 +1,0 @@
-{
-  "status": "DONE_WITH_CONCERNS",
-  "verdictA": "PARTIAL: native repaired run pending",
-  "verdictB": "PASS",
-  "independentReport": "STATUS: DONE_WITH_CONCERNS\nVerdict A: PARTIAL \u2014 fresh native acceptance after foreground restoration remains pending; reserved for the parent\u2019s single current-candidate run.\nRetained run 39161061154 confirms an absent-role member, selected organization, two terminal replies in the same conversation, and matching organization headers.\nThat run correctly failed visible proof: `answer_unpainted`; both retained native answer screenshots show no readable reply, so prior transport success is not acceptance.\nThe source now closes the auth tab, foregrounds the owned root, uses the harness\u2019s exact-panel trusted reopen path, and requires native `visibilityState === visible` before Chat.\nVerdict B: PASS \u2014 narrow repair reuses native panel lifecycle and existing visibility wait; no CSS or answer-proof weakening found.\n`runMemberAnswerProofBoundary` and paint/scroll proof code are untouched by this diff; the strict proof remains the final acceptance gate.\nGuard test is red against commit 1ded56386 (2 failures) and green against the candidate (2 passes); hidden state is rejected by the foreground predicate.\nFocused Biome, Node syntax checks, and `git diff --check` pass.\nNo source-level functional defect found. The proof is bounded: neither the repaired run on a real native panel nor post-restoration visible replies have been observed here.\n",
-  "nativeRetest": "pending"
-}

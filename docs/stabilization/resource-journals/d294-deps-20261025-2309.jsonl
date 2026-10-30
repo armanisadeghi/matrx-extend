@@ -1,4 +1,0 @@
-{"schema":1,"at":"2026-10-25T23:09:20.996Z","runId":"d294-deps-20261025-2309","code":"RESOURCE_JOURNAL_OPENED"}
-{"schema":1,"at":"2026-10-25T23:10:28.246Z","runId":"d294-deps-20261025-2309","mode":"run","policySchema":1,"sample":{"pressureLevel":1,"availableMemoryGiB":10.4,"requiredMemoryGiB":4,"oneMinuteLoad":1.16,"logicalCpus":10,"cpuBusyFraction":0.13,"swapUsedMiB":2798.25,"repoFreeGiB":1599.3637962341309,"profileFreeGiB":1599.3637962341309,"safetyFreeGiB":22.589054107666016,"systemFreeGiB":22.589054107666016},"cpuBusySamples":[0.11,0.11,0.2,0.12,0.11,0.14,0.12],"reasons":[],"swapWindowSeconds":60,"code":"RESOURCE_ADMITTED"}
-{"schema":1,"at":"2026-10-25T23:10:30.633Z","runId":"d294-deps-20261025-2309","childExitCode":0,"childSignal":null,"code":"RESOURCE_JOB_EXIT"}
-{"schema":1,"at":"2026-10-25T23:10:30.684Z","runId":"d294-deps-20261025-2309","admitted":true,"resourceInvalid":false,"exitCode":0,"decision":"valid","code":"RESOURCE_FINAL_DECISION"}

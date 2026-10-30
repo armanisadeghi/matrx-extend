@@ -1,9 +1,0 @@
-{
-  "verdict_A": "PASS_PROCEDURE_PENDING_NATIVE",
-  "prior_findings_addressed": true,
-  "procedure": "Guest Chat step 3a asks for delegated query_elements and inspects the completed Chat tool row; step 3 inspects delegated get_page_text in the same surface. This reaches ToolTimelineRow via PilotView for client tool parts. It no longer treats signed-in Tools raw JSON as proof of the Chat row.",
-  "native_status": "Explicitly pending: no native run of the fixed build is evidenced here. Conditional delegation must actually occur and be observed before acceptance is claimed.",
-  "verdict_B": "PASS_BOUNDED",
-  "count_semantics": "query_elements computes total before applying limit and returned from out.length; registry displays output.total. get_page_text returns char_count as text.length; registry displays output.char_count with characters suffix.",
-  "scope": "Independent bounded procedure and source review only. I did not rerun tests, compile, lint, or native UI. Existing peer and builder verification remain separate evidence."
-}

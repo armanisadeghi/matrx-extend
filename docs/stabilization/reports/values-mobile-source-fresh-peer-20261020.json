@@ -1,8 +1,0 @@
-{
-  "schema": 1,
-  "source_label": "values-mobile-source-fresh-peer-20261020.json",
-  "original_sha256": "cbdf4f40cc861baa72894e9c82248d11972d8c889c6a4ec2c621aad4e1a424ba",
-  "format": "labeled_plain_text_summary",
-  "verdict": "PASS_SOURCE_FIX_AWAITING_NATIVE",
-  "original_text": "Status: PASS_SOURCE_FIX_AWAITING_NATIVE\nA — source/outcome: PASS. Frozen component/caller/media-query bundle hashes independently match the reported files; caller passes useIsMobile (767px) to ContextRulesChip; frozen 360px screenshot shows Values BottomSheet open after Escape.\nB — source quality: PASS. ca1c252bee moves existing contained-target Escape handler from PopoverContent to the body shared by BottomSheet and Popover; no extra listener/bypass/timeout or duplicate implementation.\nReal component evidence: test file renders ContextRulesChip without component mocks; focused test independently run, 42/42 passed. Captured old RED shows both mobile controls fail, desktop passes; captured broader green 70/70 reviewed.\nImportant findings: none.\nRefutable / limits: no post-fix trusted native run yet; product acceptance remains pending. Test KeyboardEvent is synthetic. I did not rerun the broader suite, mutation check, or package typecheck; reported baseline type-resolution failures remain unadjudicated.\nEvidence: ca1c252beec48565c47288b33e1adbdffbd816a3; frozen asset hashes: react 170c255c33fc0fb21e9e318b1e0daae6abdbc17b2c1fa79fe76097953da54d32, caller 18bfdba215fff3f9f64e48063e5ae50027ca23100ff515f2674d54ae3920682d, query 05a0ded7214bf2a262fd4b3597bc959bbe04e0bb285856d9176c8cf0c9f10d6d; screenshot sha 3b7cc89758a4a8dac85c739751a65c0203566b487003ebb0ee6741039fd873f9.\n"
-}

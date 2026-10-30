@@ -1,9 +1,0 @@
-{
-  "task_id": "data272-fresh-peer-20261020",
-  "source_commit": "08150841aea86868f28ada4ad03eecb619824ae8",
-  "verdict_A_source_spec": "PASS scoped: adopted replacement Data path awaits one visible tab with exact target ID/type/URL and frame URL before click; then executes actual Data active, saved-pattern and after-reload run assertions. Prior 39461020039 remains child_failed with zero post-reload credit; no native replay of this commit was performed.",
-  "verdict_B_quality": "PASS scoped: reuses bounded Settings readiness through a title parameter, preserves Settings wrapper/callers, records fixed booleans/counts/elapsed/stage without raw URL or account/render-error text, and fails closed on absent/duplicate/wrong target or frame. No Resource/CDP timeout or cap changes.",
-  "focused_checks": "node --test data-member-reload-readiness, data-member-reload-adoption, settings-panel-driver.guest, settings-replacement-tab, settings-reload-boundary: 35/35 pass; pnpm compile pass; scoped Biome 5/5 pass.",
-  "forcing_evidence": "New test extracts actual member reopen path and calls real shared click: delayed mount waits before mousePressed/mouseReleased; never-ready/duplicate/wrong-frame/wrong-target send zero input. Constant readiness return forces real pointer_target_not_unique on loading panel rather than false success.",
-  "limitation": "Controlled DOM/protocol seam establishes the driver behavior only. It cannot prove the replacement React panel eventually mounts in a hosted native replay or that saved pattern persists after reload; D272 source repair does not close EXT-F-2005-T03."
-}

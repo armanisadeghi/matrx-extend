@@ -1,5 +1,0 @@
-+115 window Accounts and sync, Arman Sadeghi, arman@armansadeghi.com, Secondary Actions: Raise
-+	116 container Accounts and sync, Arman Sadeghi, arman@armansadeghi.com
-+						121 container arman@armansadeghi.com
-+							123 text Arman • armansadeghi.com
-+							124 text arman@armansadeghi.com

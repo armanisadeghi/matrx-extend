@@ -1,9 +1,0 @@
-{
-  "observed_at": "2026-10-25T07:59:29.464603+00:00",
-  "url": "https://server.app.matrxserver.com/health/version",
-  "http": 200,
-  "fields": {
-    "git_sha": "18bc9b2596ba6416141849bbf55c0fad60fc274e",
-    "built_at": "2026-10-25T07:07:58Z"
-  }
-}

@@ -1,3 +1,0 @@
-{"schema":1,"at":"2026-10-26T04:04:35.016Z","runId":"resource-stop-red-20261026-0404","code":"RESOURCE_JOURNAL_OPENED"}
-{"schema":1,"at":"2026-10-26T04:04:35.022Z","runId":"resource-stop-red-20261026-0404","code":"RESOURCE_COMMAND_NOT_ALLOWED:see docs/stabilization/resource-policy.json"}
-{"schema":1,"at":"2026-10-26T04:04:35.028Z","runId":"resource-stop-red-20261026-0404","admitted":false,"resourceInvalid":false,"exitCode":2,"decision":"refused","code":"RESOURCE_FINAL_DECISION"}

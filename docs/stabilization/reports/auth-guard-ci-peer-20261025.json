@@ -1,7 +1,0 @@
-{
-  "status": "DONE",
-  "A_supporting_ci": "PASS: CI 40205134209 (source 90768b2) and 40205631572 (source b97aa77) each had 378 passing unit files, 2 skipped, and exactly one failure: tests/unit/auth-gate.test.tsx expected retired 'Sign-in failed:' copy while AuthNotice showed the real supplied invalid_grant detail. Full CI 40206117015 on f7711e9954dd8d1e992a1f5c549d5af63d5e2ca9 passes: 379 unit files, 2 skipped; typecheck, lint, hosted integration guards and extension build succeeded. Artifact 12603809037 is attached to that exact head SHA, digest sha256:c2bbeb53990d6a7b6b54844836fc2bbc7d0fefbc8300ee63e20528fd3620cc60.",
-  "A_scope": "The commit changes only one test expectation; no product source fix. CI establishes hosted unit/type/lint/build PASS. No live Chrome UI/native manual session was run or claimed.",
-  "B_evidence_quality": "PASS for the narrow correction: current test still checks role=alert and the supplied error detail, invokes retry once, forbids signIn, and verifies guest Chat content. AuthNotice renders the supplied error unchanged after its sign-in intro. Exact diff only replaces stale copy expectation with 'Token exchange failed (400): invalid_grant'.",
-  "limits": "Evidence is CI run metadata/logs, commit diff, and source at f7711e9. Does not certify full sign-in flow, browser rendering, or broader auth behavior. No local tests/UI/heavy commands, source edits, or commits were performed."
-}

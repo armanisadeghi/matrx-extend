@@ -1,9 +1,0 @@
-{
-  "schema_version": 1,
-  "kind": "local_dev_unpacked",
-  "publish_state": "not_published",
-  "observedAt": "2026-10-27T03:38:24.865Z",
-  "extensionDir": "/Volumes/Samsung2TB/code/matrx-extend/test-results/ci-artifacts/35b619573fbddb462f046d6326084b20cf83f23c/40443458190-1/chrome-mv3",
-  "version": "0.2.629",
-  "treeSha256": "ff0809892d18c580b5d3a834f344e8bde9dd347e5aa35e243954eaedea44c5b5"
-}

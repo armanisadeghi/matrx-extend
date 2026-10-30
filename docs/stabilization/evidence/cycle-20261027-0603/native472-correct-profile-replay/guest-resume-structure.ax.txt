@@ -1,8 +1,0 @@
-Window: "Matrx Extend Demo Page — AI Matrx", App: Google Chrome.
-			3 toolbar
-				6 button Reload
-				16 button Matrx Guest Test
-				95 tab group
-					96 tab (settable, boolean) New Tab - Memory usage - 84.1 MB, Value: off
-					98 tab (selected, settable, boolean) Matrx Extend Demo Page — AI Matrx - Memory usage - 289 MB, Value: on
-104 menu bar

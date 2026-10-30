@@ -1,8 +1,0 @@
-ℹ tests 1141
-ℹ suites 0
-ℹ pass 1130
-ℹ fail 0
-ℹ cancelled 0
-ℹ skipped 11
-ℹ todo 0
-ℹ duration_ms 146443.376458
