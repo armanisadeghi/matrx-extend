@@ -4,7 +4,8 @@ import { click, evaluate, openSection, waitFor } from './settings-panel-driver.m
 
 /** Remove credentials only in the disposable profile, retaining the profile fetched by real sign-in.
  * Reload uses the production restore path; UI and HTTP are never stubbed. */
-export async function prepareStaleProfileGuest(native, identity, evidence) {
+export async function prepareStaleProfileGuest(native, identity, evidence, onProgress) {
+  onProgress({ phase: 'credentials_remove' });
   await native
     .resourceAction(() =>
       evaluate(
@@ -23,26 +24,32 @@ export async function prepareStaleProfileGuest(native, identity, evidence) {
     .then((value) => {
       evidence.fixture = value;
     });
+  onProgress({ phase: 'credentials_assertion', ...evidence.fixture });
   assert.equal(evidence.fixture.credentials_removed, true, 'd217_no_real_session_to_remove');
+  onProgress({ phase: 'extension_reload' });
   const replacement = await native.resourceAction(() => native.reloadExtension());
   evidence.fixture.restore_via_full_extension_reload =
     replacement.management_reload_clicked &&
     replacement.worker_replaced &&
     replacement.old_targets_retired;
   const panel = replacement.panel;
-  await assertStaleGuest(panel, identity.profileId);
+  await assertStaleGuest(panel, identity.profileId, onProgress);
   evidence.fixture.guest_restore_observed = true;
   return panel;
 }
 
-export async function assertStaleGuest(panel, profileId) {
+export async function assertStaleGuest(panel, profileId, onProgress) {
+  onProgress({ phase: 'settings_click' });
   await click(panel, 'title', 'Settings');
+  onProgress({ phase: 'account_open' });
   await openSection(panel, 'Account');
+  onProgress({ phase: 'rendered_guest' });
   await waitFor(
     'd217_rendered_guest_required',
     () => accountIdentity(panel, ''),
     (state) => state?.signInEnabled && !state.signOutVisible,
   );
+  onProgress({ phase: 'storage_read' });
   const stored = await evaluate(
     panel,
     `(async () => {
@@ -53,12 +60,15 @@ export async function assertStaleGuest(panel, profileId) {
       supabase_sessions_absent: !Object.keys(stored).some((key) => /^sb-.*-auth-token$/.test(key)) };
   })()`,
   );
+  onProgress({ phase: 'storage_assertion', ...stored });
   assert.equal(
     Object.values(stored).every(Boolean),
     true,
     'd217_guest_has_credentials_or_profile_lost',
   );
+  onProgress({ phase: 'scrape_click' });
   await click(panel, 'title', 'Scrape');
+  onProgress({ phase: 'complete' });
   return stored;
 }
 
@@ -164,6 +174,7 @@ export async function exerciseStaleProfileRetry({
   evidence,
   readSources,
   onPanel,
+  onStaleGuestProgress,
 }) {
   let observer = observeStaleProfileRequests(panel, identity.organizationId, D217_EDIT_MARKER);
   try {
@@ -192,7 +203,7 @@ export async function exerciseStaleProfileRetry({
       worker_replaced: replacement.worker_replaced,
       panel_replaced: replacement.panel_replaced,
     };
-    await assertStaleGuest(panel, identity.profileId);
+    await assertStaleGuest(panel, identity.profileId, onStaleGuestProgress);
     observer = observeStaleProfileRequests(panel, identity.organizationId, D217_EDIT_MARKER);
     await observer.start();
     const before = await queuedState(panel, sourceUrl, D217_EDIT_MARKER);

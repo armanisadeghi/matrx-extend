@@ -79,7 +79,42 @@ const COUNT_FIELDS = [
   'matched_target_count',
   'visible_target_count',
 ];
+const STALE_GUEST_PHASES = new Set([
+  'credentials_remove',
+  'credentials_assertion',
+  'extension_reload',
+  'settings_click',
+  'account_open',
+  'rendered_guest',
+  'storage_read',
+  'storage_assertion',
+  'scrape_click',
+  'complete',
+]);
 const count = (value) => (Number.isSafeInteger(value) && value >= 0 ? value : null);
+
+export function safeScrapeSaveStaleGuestProgress(value) {
+  if (
+    !STALE_GUEST_PHASES.has(value?.phase) ||
+    !['prepare', 'postreload_retry'].includes(value?.context)
+  )
+    return null;
+  return {
+    context: value.context,
+    phase: value.phase,
+    ...Object.fromEntries(
+      [
+        'credentials_removed',
+        'profile_matches',
+        'oauth_absent',
+        'legacy_bearer_absent',
+        'supabase_sessions_absent',
+      ]
+        .filter((key) => typeof value[key] === 'boolean')
+        .map((key) => [key, value[key]]),
+    ),
+  };
+}
 
 /** Project only the member driver's finite labels, booleans and counts. */
 export function safeScrapeSaveAuthDiagnostic(value) {
@@ -210,9 +245,23 @@ function publishScrapeSaveReport(report, outputDir) {
 }
 
 export function recordScrapeSaveCheckpoint(report, kind, value, outputDir = 'test-results') {
+  const staleGuestProgress =
+    kind === 'stale_guest_progress'
+      ? safeScrapeSaveStaleGuestProgress(value)
+      : safeScrapeSaveStaleGuestProgress(report.stale_guest_progress);
+  const staleGuestStage = staleGuestProgress
+    ? staleGuestProgress.phase === 'complete'
+      ? staleGuestProgress.context === 'prepare'
+        ? 'member_logical_organization_proof'
+        : 'save_submit'
+      : staleGuestProgress.context === 'prepare'
+        ? 'stale_profile_guest_prepare'
+        : 'stale_profile_guest_postreload'
+    : null;
   if (
     (kind === 'native_stage' && !NATIVE_STAGES.has(value)) ||
     (kind === 'auth_stage' && !AUTH_STAGES.has(value)) ||
+    (kind === 'stale_guest_progress' && !staleGuestProgress) ||
     ![
       'native_stage',
       'auth_stage',
@@ -220,6 +269,7 @@ export function recordScrapeSaveCheckpoint(report, kind, value, outputDir = 'tes
       'auth_start',
       'auth_complete',
       'pre_save',
+      'stale_guest_progress',
     ].includes(kind)
   )
     throw new Error('scrape_save_checkpoint_boundary_invalid');
@@ -236,15 +286,24 @@ export function recordScrapeSaveCheckpoint(report, kind, value, outputDir = 'tes
     nextDiagnostic = next;
   }
   const label =
-    kind === 'auth_diagnostic'
-      ? [nextDiagnostic.phase, nextDiagnostic.target].filter(Boolean).join(':')
-      : ['native_stage', 'auth_stage'].includes(kind)
-        ? value
-        : kind;
+    kind === 'stale_guest_progress'
+      ? `${staleGuestProgress.context}:${staleGuestProgress.phase}`
+      : kind === 'auth_diagnostic'
+        ? [nextDiagnostic.phase, nextDiagnostic.target].filter(Boolean).join(':')
+        : ['native_stage', 'auth_stage'].includes(kind)
+          ? value
+          : kind;
   const key = `${kind}:${label}`;
   const prior = report.diagnostic_progress ?? { sequence: 0, boundaries: [] };
   const previous = prior.boundaries.find((entry) => entry.key === key);
-  if (previous && prior.latest?.key === key && kind !== 'auth_diagnostic') return;
+  if (
+    previous &&
+    prior.latest?.key === key &&
+    kind !== 'auth_diagnostic' &&
+    (kind !== 'stale_guest_progress' ||
+      JSON.stringify(staleGuestProgress) === JSON.stringify(report.stale_guest_progress))
+  )
+    return;
   const at = new Date().toISOString();
   const latest = { key, kind, label, at, sequence: prior.sequence + 1 };
   const nextProgress = {
@@ -291,6 +350,20 @@ export function recordScrapeSaveCheckpoint(report, kind, value, outputDir = 'tes
             ? report.auth_stage
             : null,
       auth_diagnostic: nextDiagnostic,
+      ...(staleGuestProgress && {
+        stage:
+          kind === 'stale_guest_progress'
+            ? staleGuestStage
+            : [
+                  'stale_profile_guest_prepare',
+                  'stale_profile_guest_postreload',
+                  'member_logical_organization_proof',
+                  'save_submit',
+                ].includes(report.stage)
+              ? report.stage
+              : null,
+        stale_guest_progress: staleGuestProgress,
+      }),
       diagnostic_progress: nextProgress,
     },
     outputDir,
@@ -299,6 +372,10 @@ export function recordScrapeSaveCheckpoint(report, kind, value, outputDir = 'tes
   if (kind === 'native_stage') report.native_stage = value;
   if (kind === 'auth_stage') report.auth_stage = value;
   if (kind === 'auth_diagnostic') report.auth_diagnostic = nextDiagnostic;
+  if (kind === 'stale_guest_progress') {
+    report.stage = staleGuestStage;
+    report.stale_guest_progress = staleGuestProgress;
+  }
 }
 
 export function recordScrapeMemberAuthFailure(report, error) {
