@@ -72,6 +72,9 @@ import { dirname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { emitItem, endItems } from './checks/items.mjs';
+// Self-test fixtures spell the scope through this constant, so a scanner of real imports (aidream's
+// pre-push build-breaker check) never mistakes a fixture string for this file's own import.
+const MATRX_SCOPE = '@ai-matrx';
 
 const require = createRequire(import.meta.url);
 // TypeScript 7 (the native compiler) ships no JS API; a repo on it installs the 6.x API beside it
@@ -604,7 +607,7 @@ export function audit(rootDir, { only = null } = {}) {
 // ── the installed package graph: one @ai-matrx package importing another ─────
 //
 // THE DEFECT THIS EXISTS FOR (2026-10-06, v0.4.2925 red on all four Vercel projects)
-// design-system 0.69.1 shipped `import … from "@ai-matrx/kit/content-transfer"`;
+// design-system 0.69.1 shipped `import … from @ai-matrx/kit/content-transfer`;
 // it depends on kit `latest`, and kit 0.25.0 had renamed that subpath to
 // `./transfer-json`. Every app import was fine, so the scan above was green; the
 // break lived entirely INSIDE node_modules, and only `next build` saw it
@@ -932,7 +935,7 @@ function selfTest() {
     );
     writeFileSync(
       join(tmp, 'features', 'subpath.ts'),
-      `import { x } from "@ai-matrx/content-ir/nope";\n`,
+      `import { x } from "${MATRX_SCOPE}/content-ir/nope";\n`,
     );
 
     // RED: 0.18.6 does not ship createKindValidator (the live 2026-09-25 case), and a non-exported subpath.
@@ -1044,7 +1047,7 @@ function selfTest() {
       'design-system',
       '0.69.1',
       { './data-table': './dist/data-table/index.js' },
-      `import { normalizeTransferJson } from "@ai-matrx/kit/content-transfer";\nimport { f } from "@ai-matrx/kit/format";\nconst m = () => import("@ai-matrx/design-system/data-table");\n`,
+      `import { normalizeTransferJson } from "${MATRX_SCOPE}/kit/content-transfer";\nimport { f } from "${MATRX_SCOPE}/kit/format";\nconst m = () => import("${MATRX_SCOPE}/design-system/data-table");\n`,
     );
     pkgDirCache.clear();
     let g = auditPackageGraph(tmp);
@@ -1118,7 +1121,7 @@ function selfTest() {
     });
     writeFileSync(
       join(tmp, 'features', 'probe.ts'),
-      `import { fetchModelOptions } from "@ai-matrx/chat/agents/model-registry/modelRegistrySlice";\nexport { fetchModelOptions };\n`,
+      `import { fetchModelOptions } from "${MATRX_SCOPE}/chat/agents/model-registry/modelRegistrySlice";\nexport { fetchModelOptions };\n`,
     );
     wild('0.4.0', false);
     pkgDirCache.clear();
@@ -1146,7 +1149,7 @@ function selfTest() {
       'design-system',
       '0.80.0',
       { './data-table': './dist/data-table/index.js' },
-      `import { fetchModelOptions } from "@ai-matrx/chat/agents/model-registry/modelRegistrySlice";\n`,
+      `import { fetchModelOptions } from "${MATRX_SCOPE}/chat/agents/model-registry/modelRegistrySlice";\n`,
     );
     wild('0.4.0', false);
     pkgDirCache.clear();
@@ -1170,9 +1173,9 @@ function selfTest() {
       force: true,
     });
     const whole = {
-      'stored-scope.ts': `export const loadStream = () => require("@ai-matrx/chat/agents/model-registry/modelRegistrySlice");\n`,
-      'lazy-models.ts': `export const lazyModels = () => import("@ai-matrx/chat/agents/model-registry/modelRegistrySlice");\n`,
-      'kind-markdown-utils.ts': `export * from "@ai-matrx/chat/agents/model-registry/modelRegistrySlice";\n`,
+      'stored-scope.ts': `export const loadStream = () => require("${MATRX_SCOPE}/chat/agents/model-registry/modelRegistrySlice");\n`,
+      'lazy-models.ts': `export const lazyModels = () => import("${MATRX_SCOPE}/chat/agents/model-registry/modelRegistrySlice");\n`,
+      'kind-markdown-utils.ts': `export * from "${MATRX_SCOPE}/chat/agents/model-registry/modelRegistrySlice";\n`,
     };
     for (const [file, text] of Object.entries(whole)) {
       rmSync(join(tmp, 'features'), { recursive: true, force: true });
